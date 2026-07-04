@@ -518,6 +518,58 @@ describe('文件夹与屏幕管理', () => {
 })
 
 describe('持久化', () => {
+  it('初始化会迁移旧默认壁纸，并补齐自定义壁纸列表', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        screens: [makeScreen('s1', [])],
+        dock: [],
+        todos: [],
+        settings: {
+          wallpaper: '/scenery1.png',
+          hour12: false,
+          searchEngine: 'baidu',
+          placementMode: 'compact',
+        },
+      }),
+    )
+
+    const store = useLauncherStore()
+
+    expect(store.settings.wallpaper).toBe('/scenery1.jpg')
+    expect(store.settings.customWallpapers).toEqual([])
+  })
+
+  it('初始化会清洗自定义壁纸，丢弃空名称或空地址', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        screens: [makeScreen('s1', [])],
+        dock: [],
+        todos: [],
+        settings: {
+          wallpaper: '/custom.jpg',
+          customWallpapers: [
+            { id: 'ok', name: '  我的壁纸  ', src: '  /custom.jpg  ' },
+            { id: 'bad-name', name: ' ', src: '/bad.jpg' },
+            { id: 'bad-src', name: '坏数据', src: ' ' },
+          ],
+          hour12: false,
+          searchEngine: 'baidu',
+          placementMode: 'compact',
+        },
+      }),
+    )
+
+    const store = useLauncherStore()
+
+    expect(store.settings.customWallpapers).toEqual([
+      { id: 'ok', name: '我的壁纸', src: '/custom.jpg' },
+    ])
+  })
+
   it('数据变化后防抖写入 localStorage', async () => {
     vi.useFakeTimers()
     const store = setupFixture()

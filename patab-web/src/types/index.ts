@@ -72,10 +72,22 @@ export type SearchEngineId = 'baidu' | 'bing' | 'google'
  */
 export type PlacementMode = 'compact' | 'free'
 
+/** 用户添加的壁纸条目 */
+export interface CustomWallpaper {
+  /** 唯一标识，用于列表渲染与后续去重 */
+  id: string
+  /** 用户命名的壁纸名称 */
+  name: string
+  /** 图片地址或本地图片 Data URL */
+  src: string
+}
+
 /** 用户偏好设置 */
 export interface Settings {
   /** 壁纸地址（默认使用内置壁纸） */
   wallpaper: string
+  /** 用户自定义添加的壁纸列表 */
+  customWallpapers: CustomWallpaper[]
   /** 是否 12 小时制 */
   hour12: boolean
   /** 当前搜索引擎 */

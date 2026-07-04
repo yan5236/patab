@@ -7,9 +7,12 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import GlassPanel from './GlassPanel.vue'
 
-defineProps<{ title: string }>()
+withDefaults(defineProps<{ title: string; panelClass?: string }>(), {
+  panelClass: '',
+})
 const emit = defineEmits<{ close: [] }>()
 
+/** 处理 ESC 关闭弹窗，保证键盘与鼠标关闭行为一致 */
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') emit('close')
 }
@@ -24,7 +27,10 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
       <div class="fixed inset-0 z-50 flex items-center justify-center" @contextmenu.prevent>
         <!-- 遮罩：点击关闭 -->
         <div class="modal-mask absolute inset-0 bg-black/30 backdrop-blur-sm" @click="emit('close')" />
-        <GlassPanel strong class="modal-card relative w-[420px] max-w-[92vw] rounded-3xl p-6">
+        <GlassPanel
+          strong
+          :class="['modal-card relative w-[420px] max-w-[92vw] rounded-3xl p-6', panelClass]"
+        >
           <h2 class="mb-4 text-lg font-semibold text-neutral-800">{{ title }}</h2>
           <slot />
           <div v-if="$slots.footer" class="mt-5 flex justify-end gap-2">

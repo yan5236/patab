@@ -11,6 +11,7 @@
 import { ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import type {
+  CustomWallpaper,
   DragSource,
   DropTarget,
   Folder,
@@ -37,6 +38,12 @@ import {
 
 /** localStorage 存储键（含版本号，便于将来迁移） */
 export const STORAGE_KEY = 'patab:v1'
+
+/** 默认壁纸地址，必须与 public 中真实文件一致 */
+const DEFAULT_WALLPAPER = '/scenery1.jpg'
+
+/** 旧版本误写的默认壁纸地址，用于无感迁移 */
+const LEGACY_DEFAULT_WALLPAPER = '/scenery1.png'
 
 /** 创建一个快捷方式实体 */
 function buildShortcut(data: { name: string; url: string; iconUrl?: string }): Shortcut {
@@ -101,7 +108,8 @@ function buildSeedState(): LauncherState {
       { id: createId(), text: '长按图标拖动一下', done: false },
     ],
     settings: {
-      wallpaper: '/scenery1.png',
+      wallpaper: DEFAULT_WALLPAPER,
+      customWallpapers: [],
       hour12: false,
       searchEngine: 'baidu',
       placementMode: 'compact',
@@ -124,6 +132,13 @@ function loadPersisted(): LauncherState | null {
 
 export const useLauncherStore = defineStore('launcher', () => {
   const initial = loadPersisted() ?? buildSeedState()
+  // 兼容旧持久化数据：修正不存在的默认壁纸，并补齐自定义壁纸列表
+  if (!initial.settings.wallpaper || initial.settings.wallpaper === LEGACY_DEFAULT_WALLPAPER) {
+    initial.settings.wallpaper = DEFAULT_WALLPAPER
+  }
+  initial.settings.customWallpapers = sanitizeCustomWallpapers(
+    initial.settings.customWallpapers,
+  )
   // 兼容旧持久化数据：缺少排列模式时默认紧凑
   initial.settings.placementMode ??= 'compact'
   // 为主屏幕图块补齐网格坐标：兼容旧紧凑数据（无坐标）与种子数据，幂等不丢块
@@ -543,6 +558,25 @@ export const useLauncherStore = defineStore('launcher', () => {
   }
 
   /* ---------- 设置 ---------- */
+
+  /** 清洗自定义壁纸列表，兼容旧数据并避免空名称、空地址进入运行态 */
+  function sanitizeCustomWallpapers(value: unknown): CustomWallpaper[] {
+    if (!Array.isArray(value)) return []
+    return value
+      .filter(
+        (item): item is CustomWallpaper =>
+          typeof item?.id === 'string' &&
+          typeof item?.name === 'string' &&
+          typeof item?.src === 'string' &&
+          !!item.name.trim() &&
+          !!item.src.trim(),
+      )
+      .map((item) => ({
+        id: item.id,
+        name: item.name.trim(),
+        src: item.src.trim(),
+      }))
+  }
 
   function updateSettings(patch: Partial<Settings>) {
     Object.assign(settings.value, patch)
