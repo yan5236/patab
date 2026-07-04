@@ -23,7 +23,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
     <Transition name="modal" appear>
       <div class="fixed inset-0 z-50 flex items-center justify-center" @contextmenu.prevent>
         <!-- 遮罩：点击关闭 -->
-        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="emit('close')" />
+        <div class="modal-mask absolute inset-0 bg-black/30 backdrop-blur-sm" @click="emit('close')" />
         <GlassPanel strong class="modal-card relative w-[420px] max-w-[92vw] rounded-3xl p-6">
           <h2 class="mb-4 text-lg font-semibold text-neutral-800">{{ title }}</h2>
           <slot />
@@ -37,21 +37,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </template>
 
 <style scoped>
-/* 弹窗入退场：遮罩淡入 + 卡片缩放 */
-.modal-enter-active,
-.modal-leave-active {
+/* 弹窗入退场：先模糊遮罩，再弹出卡片 */
+.modal-enter-active .modal-mask,
+.modal-leave-active .modal-mask {
   transition: opacity 0.18s ease;
 }
-.modal-enter-active .modal-card,
-.modal-leave-active .modal-card {
-  transition: transform 0.18s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
+.modal-enter-from .modal-mask,
+.modal-leave-to .modal-mask {
   opacity: 0;
+}
+
+/* 卡片保留原来的淡入+缩放，但稍等遮罩模糊后再开始 */
+.modal-enter-active .modal-card {
+  transition: opacity 0.18s ease 0.05s, transform 0.18s ease 0.05s;
+}
+.modal-leave-active .modal-card {
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 .modal-enter-from .modal-card,
 .modal-leave-to .modal-card {
+  opacity: 0;
   transform: scale(0.92);
 }
 </style>

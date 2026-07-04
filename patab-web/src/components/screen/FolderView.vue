@@ -62,7 +62,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
         <!-- 遮罩：点击关闭；同时是"拖出文件夹"的放置目标 -->
         <div
           data-drop="folder-outside"
-          class="absolute inset-0 bg-black/25 backdrop-blur-sm transition-colors"
+          class="folder-mask absolute inset-0 bg-black/25 backdrop-blur-sm transition-colors"
           :class="isOutsideHovered ? 'bg-black/10' : ''"
           @click="ui.closeFolder()"
         />
@@ -112,20 +112,26 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </template>
 
 <style scoped>
-.folder-enter-active,
-.folder-leave-active {
+/* 文件夹弹层：先模糊遮罩，再弹出面板 */
+.folder-enter-active .folder-mask,
+.folder-leave-active .folder-mask {
   transition: opacity 0.2s ease;
 }
-.folder-enter-active .folder-card,
-.folder-leave-active .folder-card {
-  transition: transform 0.2s ease;
-}
-.folder-enter-from,
-.folder-leave-to {
+.folder-enter-from .folder-mask,
+.folder-leave-to .folder-mask {
   opacity: 0;
+}
+
+/* 面板保留原来的淡入+缩放，但稍等遮罩模糊后再开始 */
+.folder-enter-active .folder-card {
+  transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
+}
+.folder-leave-active .folder-card {
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 .folder-enter-from .folder-card,
 .folder-leave-to .folder-card {
+  opacity: 0;
   transform: scale(0.85);
 }
 </style>
