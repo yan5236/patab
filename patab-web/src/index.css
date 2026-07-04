@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/* ========== PaTab 全局样式 ========== */
+
+html,
+body,
+#app {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Inter',
+    'PingFang SC',
+    'Microsoft YaHei',
+    system-ui,
+    sans-serif;
+  /* 类操作系统桌面：禁止文本被随意选中，交互更像原生应用 */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 输入类控件恢复可选中 */
+input,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* 时钟等数字使用等宽数字，避免跳动 */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 弹层内滚动条的轻量化样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
