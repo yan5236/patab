@@ -302,6 +302,7 @@ export const useLauncherStore = defineStore('launcher', () => {
     return !!screen?.tiles.some((t) => t.type === 'widget' && t.widgetType === 'todo')
   }
 
+  /** 在指定屏幕添加待办事项组件；同一屏幕已有时直接忽略，避免重复卡片 */
   function addTodoWidget(screenId: string) {
     if (hasTodoWidget(screenId)) return
     const screen = findScreen(screenId)

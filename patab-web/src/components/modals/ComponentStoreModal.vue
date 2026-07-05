@@ -1,0 +1,86 @@
+<script setup lang="ts">
+/**
+ * ComponentStoreModal —— 从 Dock 打开的组件商店弹窗
+ * 负责搜索可添加组件，并把选中的组件添加到当前应用屏幕。
+ */
+import { computed, ref } from 'vue'
+import { ListTodo } from '@lucide/vue'
+import BaseModal from '@/components/common/BaseModal.vue'
+import { useLauncherStore } from '@/stores/launcher'
+import { useUiStore } from '@/stores/ui'
+import TodoWidget from '@/components/widgets/TodoWidget.vue'
+import ComponentStoreItem from './ComponentStoreItem.vue'
+
+const launcher = useLauncherStore()
+const ui = useUiStore()
+const query = ref('')
+
+const components = [
+  {
+    id: 'todo',
+    title: '待办事项',
+    description: '记录今天要做的事',
+    icon: ListTodo,
+  },
+] as const
+
+/** 按名称和简介搜索组件，保持商店结果简单可预期 */
+const filteredComponents = computed(() => {
+  const keyword = query.value.trim().toLowerCase()
+  if (!keyword) return components
+  return components.filter((item) =>
+    `${item.title} ${item.description}`.toLowerCase().includes(keyword),
+  )
+})
+
+/** 判断当前屏幕是否已经添加过指定组件 */
+function isAdded(id: string): boolean {
+  const screen = ui.currentScreen
+  return id === 'todo' && !!screen && launcher.hasTodoWidget(screen.id)
+}
+
+/** 把指定组件添加到当前应用屏幕，成功后关闭商店 */
+function addComponent(id: string) {
+  const screen = ui.currentScreen
+  if (!screen || isAdded(id)) return
+  if (id === 'todo') launcher.addTodoWidget(screen.id)
+  ui.closeModal()
+}
+</script>
+
+<template>
+  <BaseModal title="组件商店" panel-class="w-[720px] max-h-[86vh] overflow-y-auto" @close="ui.closeModal()">
+    <div class="space-y-5">
+      <input
+        v-model="query"
+        type="search"
+        placeholder="搜索组件"
+        class="h-11 w-full rounded-2xl bg-white/65 px-4 text-sm text-neutral-700 outline-none ring-1 ring-white/60 placeholder:text-neutral-500 focus:ring-sky-300"
+      >
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <ComponentStoreItem
+          v-for="item in filteredComponents"
+          :key="item.id"
+          :title="item.title"
+          :description="item.description"
+          :icon="item.icon"
+          :added="isAdded(item.id)"
+          @add="addComponent(item.id)"
+        >
+          <template #preview>
+            <div class="pointer-events-none h-full w-full max-w-[270px]">
+              <TodoWidget tile-id="component-store-preview-todo" />
+            </div>
+          </template>
+        </ComponentStoreItem>
+        <div
+          v-if="filteredComponents.length === 0"
+          class="rounded-[1.75rem] bg-white/45 px-4 py-14 text-center text-sm text-neutral-500 sm:col-span-2"
+        >
+          没找到相关组件
+        </div>
+      </div>
+    </div>
+  </BaseModal>
+</template>

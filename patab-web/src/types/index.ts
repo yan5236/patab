@@ -160,4 +160,6 @@ export type ModalState =
   | { type: 'screen-edit'; screenId: string }
   /** 设置，可指定默认高亮的页签 */
   | { type: 'settings'; tab?: 'general' | 'wallpaper' | 'about' }
+  /** 组件商店 */
+  | { type: 'component-store' }
   | null

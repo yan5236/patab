@@ -18,6 +18,7 @@ import DragGhost from '@/components/common/DragGhost.vue'
 import ShortcutEditModal from '@/components/modals/ShortcutEditModal.vue'
 import ScreenEditModal from '@/components/modals/ScreenEditModal.vue'
 import SettingsModal from '@/components/modals/SettingsModal.vue'
+import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -77,5 +78,6 @@ function onRootContextMenu(event: MouseEvent) {
       :screen-id="ui.modal.screenId"
     />
     <SettingsModal v-if="ui.modal?.type === 'settings'" />
+    <ComponentStoreModal v-if="ui.modal?.type === 'component-store'" />
   </div>
 </template>

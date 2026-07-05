@@ -1,10 +1,10 @@
 <script setup lang="ts">
 /**
  * DockBar —— 底部 Dock 栏（Mac 风格）
- * 左侧：常用快捷方式（可拖入 / 拖出 / 重排）；右侧固定：设置、快速添加
+ * 左侧：常用快捷方式（可拖入 / 拖出 / 重排）；右侧固定：设置、快速添加、组件商店
  * 容器自身是放置目标（拖到空白 = 追加到 Dock 末尾）
  */
-import { Plus, Settings } from '@lucide/vue'
+import { Plus, Settings, Store } from '@lucide/vue'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import GlassPanel from '@/components/common/GlassPanel.vue'
@@ -56,6 +56,14 @@ function quickAdd() {
         @click="quickAdd"
       >
         <Plus class="h-6 w-6" />
+      </button>
+
+      <button
+        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        title="组件商店"
+        @click="ui.openModal({ type: 'component-store' })"
+      >
+        <Store class="h-6 w-6" />
       </button>
     </GlassPanel>
   </div>

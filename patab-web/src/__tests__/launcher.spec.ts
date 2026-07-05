@@ -242,6 +242,14 @@ describe('增删改', () => {
     expect(store.findFolder('f1')!.children).toHaveLength(0)
     expect(store.dock).toHaveLength(0)
   })
+
+  it('addTodoWidget 同一屏幕重复添加时只保留一个待办组件', () => {
+    const store = setupFixture()
+    store.addTodoWidget('s2')
+    store.addTodoWidget('s2')
+    const widgets = store.findScreen('s2')!.tiles.filter((t) => t.type === 'widget')
+    expect(widgets).toHaveLength(1)
+  })
 })
 
 describe('拖拽移动 handleDrop', () => {

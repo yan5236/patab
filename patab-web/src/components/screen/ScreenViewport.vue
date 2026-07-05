@@ -2,10 +2,10 @@
 /**
  * ScreenViewport —— 应用屏幕容器
  * - 渲染当前屏幕的网格，切换时按方向做滑动过渡
- * - 空白处右键：新建快捷方式 / 新建文件夹 / 添加待办小组件 / 更换壁纸
+ * - 空白处右键：新建快捷方式 / 新建文件夹 / 更换壁纸
  */
 import { computed } from 'vue'
-import { FolderPlus, Image, ListTodo, SquarePlus } from '@lucide/vue'
+import { FolderPlus, Image, SquarePlus } from '@lucide/vue'
 import type { MenuItem } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -36,13 +36,6 @@ function onBlankMenu(event: MouseEvent) {
       action: () => launcher.addFolder(screen.id, '新建文件夹'),
     },
   ]
-  if (!launcher.hasTodoWidget(screen.id)) {
-    items.push({
-      label: '添加待办小组件',
-      icon: ListTodo,
-      action: () => launcher.addTodoWidget(screen.id),
-    })
-  }
   items.push({
     label: '更换壁纸',
     icon: Image,

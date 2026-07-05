@@ -1,0 +1,45 @@
+<script setup lang="ts">
+/**
+ * ComponentStoreItem —— 组件商店中的单个可添加条目
+ * 上方展示组件预览，下方展示名称、简介和添加按钮；点击行为交给父组件处理。
+ */
+import type { Component } from 'vue'
+
+defineProps<{
+  title: string
+  description: string
+  icon: Component
+  added?: boolean
+}>()
+
+const emit = defineEmits<{ add: [] }>()
+</script>
+
+<template>
+  <article class="overflow-hidden rounded-[1.75rem] bg-white/55 shadow-sm ring-1 ring-white/60">
+    <div class="flex h-48 items-center justify-center bg-gradient-to-br from-sky-100/80 via-white/60 to-emerald-100/70 p-5">
+      <slot name="preview" />
+    </div>
+
+    <div class="space-y-3 p-4">
+      <div class="flex items-start gap-3">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 text-neutral-700 shadow-sm">
+          <component :is="icon" class="h-5 w-5" />
+        </span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate text-base font-semibold text-neutral-800">{{ title }}</span>
+          <span class="mt-1 block text-sm leading-5 text-neutral-500">{{ description }}</span>
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="flex h-10 w-full cursor-pointer items-center justify-center rounded-2xl bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-700 disabled:cursor-default disabled:bg-white/70 disabled:text-neutral-500"
+        :disabled="added"
+        @click="emit('add')"
+      >
+        {{ added ? '已添加' : '添加到屏幕' }}
+      </button>
+    </div>
+  </article>
+</template>
