@@ -6,7 +6,7 @@
  * 右键：打开 / 解散文件夹 / 删除
  */
 import { computed } from 'vue'
-import { FolderOpen, Trash2, Ungroup } from '@lucide/vue'
+import { FolderOpen, Ungroup } from '@lucide/vue'
 import type { Folder } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -28,12 +28,6 @@ function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
     { label: '打开', icon: FolderOpen, action: () => ui.openFolder(props.folder.id) },
     { label: '解散文件夹', icon: Ungroup, action: () => launcher.disbandFolder(props.folder.id) },
-    {
-      label: '删除文件夹',
-      icon: Trash2,
-      danger: true,
-      action: () => launcher.removeTile(props.folder.id),
-    },
   ])
 }
 </script>
