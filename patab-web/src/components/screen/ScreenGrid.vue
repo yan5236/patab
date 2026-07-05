@@ -11,7 +11,7 @@ import type { Screen } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useGridFlip } from '@/composables/useGridFlip'
-import { COLS, ROWS, tileSize } from '@/utils/grid'
+import { COLS, ROWS, rowMajorOrder, tileSize } from '@/utils/grid'
 import TileItem from './TileItem.vue'
 
 const props = defineProps<{ screen: Screen }>()
@@ -21,6 +21,11 @@ const launcher = useLauncherStore()
 
 /** 紧凑模式：整格网格作为放置面板 + 手机式让位；自由模式沿用空格 slot 放置层 */
 const isCompact = computed(() => launcher.settings.placementMode === 'compact')
+
+/** 紧凑模式按当前行主序渲染，保证手机端自动流式网格与数据坐标一致 */
+const renderedTiles = computed(() =>
+  isCompact.value ? rowMajorOrder(props.screen.tiles) : props.screen.tiles,
+)
 
 /** 网格容器引用，供 FLIP 采集各图块位置做让位滑动 */
 const gridRef = ref<HTMLElement | null>(null)
@@ -91,7 +96,7 @@ const emptyCells = computed(() => {
     :data-screen="isCompact ? screen.id : undefined"
   >
     <TileItem
-      v-for="(tile, i) in props.screen.tiles"
+      v-for="(tile, i) in renderedTiles"
       :key="tile.id"
       :tile="tile"
       zone="screen"

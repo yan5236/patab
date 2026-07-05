@@ -476,23 +476,24 @@ export const useLauncherStore = defineStore('launcher', () => {
       }
       const moved = takeFromSource(tileId, source)
       if (!moved) return
+      if (source.kind === 'screen' && source.screenId !== screen.id) {
+        const sourceScreen = findScreen(source.screenId)
+        if (sourceScreen) recompactScreen(sourceScreen)
+      }
       // 剩余图块按行主序，在 index 处插入被拖图块后统一重排
       const order = rowMajorOrder(screen.tiles)
       const index = Math.max(0, Math.min(target.index, order.length))
       order.splice(index, 0, moved)
       const positions = packOrder(order)
       // 回写全部图块坐标（含被拖图块），空位自然被后续图块补齐
-      for (const t of screen.tiles) {
+      for (const t of order) {
         const pos = positions.get(t.id)
         if (pos) {
           t.col = pos.col
           t.row = pos.row
         }
       }
-      const movedPos = positions.get(moved.id)
-      moved.col = movedPos?.col ?? 0
-      moved.row = movedPos?.row ?? 0
-      screen.tiles.push(moved)
+      screen.tiles = order
       return
     }
 

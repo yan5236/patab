@@ -13,7 +13,7 @@ import type { DragSource, Tile } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useLongPressDrag } from '@/composables/useLongPressDrag'
-import { tileSize } from '@/utils/grid'
+import { COLS, tileSize } from '@/utils/grid'
 import ShortcutTile from './ShortcutTile.vue'
 import FolderTile from './FolderTile.vue'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
@@ -70,6 +70,7 @@ const cellStyle = computed(() => {
   return {
     gridColumn: `${col + 1} / span ${w}`,
     gridRow: `${row + 1} / span ${h}`,
+    order: row * COLS + col,
     touchAction: tileTouchAction.value,
   } as const
 })

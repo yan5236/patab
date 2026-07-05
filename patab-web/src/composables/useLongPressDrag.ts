@@ -21,7 +21,14 @@ import { useDragStore, dropTargetKey } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { getPressMoveDecision } from '@/utils/dragGesture'
-import { cellFromPoint, insertionIndex, packOrder, rowMajorOrder, tileAt } from '@/utils/grid'
+import {
+  cellFromPoint,
+  insertionIndex,
+  insertionIndexFromRects,
+  packOrder,
+  rowMajorOrder,
+  tileAt,
+} from '@/utils/grid'
 
 /** 长按触发时长（毫秒） */
 const LONG_PRESS_MS = 300
@@ -125,6 +132,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let pressElement: HTMLElement | null = null
   let pointerId: number | null = null
   let touchMenuOpened = false
+  let mouseDragArmed = false
   let removeNativeMenuBlockTimer: ReturnType<typeof setTimeout> | undefined
   let scrollElement: HTMLElement | null = null
   let scrollAxis: ScrollAxis | null = null
@@ -152,15 +160,15 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     pressElement = event.currentTarget as HTMLElement
     pointerId = event.pointerId
     touchMenuOpened = false
+    mouseDragArmed = false
     // 在按下时捕获来源尺寸：此刻元素确定存在、布局稳定
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
     srcW = rect.width
     srcH = rect.height
     pressTimer = setTimeout(() => {
       if (pointerType === 'touch') openTouchMenu()
-      else beginDrag(startX, startY)
+      else mouseDragArmed = true
     }, LONG_PRESS_MS)
-    capturePointer()
     window.addEventListener('pointermove', onPrePressMove)
     window.addEventListener('pointerup', cancelPress)
     window.addEventListener('pointercancel', cancelPress)
@@ -170,7 +178,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function onPrePressMove(event: PointerEvent) {
     const dx = event.clientX - startX
     const dy = event.clientY - startY
-    const decision = getPressMoveDecision(dx, dy, MOVE_TOLERANCE, touchMenuOpened)
+    const decision = getPressMoveDecision(dx, dy, MOVE_TOLERANCE, touchMenuOpened, mouseDragArmed)
     if (decision === 'wait') return
     if (decision === 'drag') {
       beginDrag(event.clientX, event.clientY)
@@ -200,6 +208,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
 
   function cancelPress() {
     clearTimeout(pressTimer)
+    mouseDragArmed = false
     window.removeEventListener('pointermove', onPrePressMove)
     window.removeEventListener('pointerup', cancelPress)
     window.removeEventListener('pointercancel', cancelPress)
@@ -317,11 +326,15 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     if (!screen) return null
     const rect = gridEl.getBoundingClientRect()
     const { col, row } = cellFromPoint(rect, x, y)
+    const directTarget = isValidTarget(dragTile, resolveTarget(x, y))
 
     // 悬停到文件夹图标上：短暂保持窗口内「不让位」，让用户可把快捷方式放进文件夹。
     // 用真实布局判定悬停格（不受让位位移影响，避免文件夹被推走后判不准）。
     if (dragTile.type === 'shortcut') {
-      const hovered = tileAt(screen.tiles, col, row, dragTile.id)
+      const hovered =
+        directTarget?.kind === 'folder-tile'
+          ? launcher.findFolder(directTarget.folderId)
+          : tileAt(screen.tiles, col, row, dragTile.id)
       if (hovered?.type === 'folder') {
         // 进入某文件夹：开启保持窗口（超时后才允许让位）
         if (pendingFolderId !== hovered.id) {
@@ -345,7 +358,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
 
     // 排除被拖图块后的当前行主序序列 → 悬停格插入下标
     const order = rowMajorOrder(screen.tiles).filter((t) => t.id !== dragTile.id)
-    const index = insertionIndex(order, col, row)
+    const index = resolveCompactIndex(gridEl, order, dragTile.id, x, y, col, row)
     // 插入下标未变（仍在同格同屏）则复用现有预览，避免每次移动重建 Map 触发无谓重排/动画
     if (dragStore.previewScreenId === screenId && dragStore.compactIndex === index) {
       return { kind: 'grid', screenId, index }
@@ -353,6 +366,32 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     order.splice(index, 0, dragTile)
     dragStore.setCompactPreview(screenId, packOrder(order), index)
     return { kind: 'grid', screenId, index }
+  }
+
+  /** 根据当前响应式布局计算紧凑模式插入下标：手机端用真实矩形，桌面端用固定格坐标 */
+  function resolveCompactIndex(
+    gridEl: HTMLElement,
+    order: Tile[],
+    dragTileId: string,
+    x: number,
+    y: number,
+    col: number,
+    row: number,
+  ): number {
+    if (!window.matchMedia('(max-width: 640px)').matches) return insertionIndex(order, col, row)
+    const rects = [...gridEl.querySelectorAll<HTMLElement>('[data-flip-tile]')]
+      .filter((el) => el.dataset.flipTile && el.dataset.flipTile !== dragTileId)
+      .map((el) => {
+        const rect = el.getBoundingClientRect()
+        return {
+          id: el.dataset.flipTile!,
+          left: rect.left,
+          top: rect.top,
+          width: rect.width,
+          height: rect.height,
+        }
+      })
+    return insertionIndexFromRects(rects, x, y)
   }
 
   /** 退出文件夹保持窗口（移开文件夹 / 拖非快捷方式时） */
@@ -416,6 +455,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     lastHoverKey = ''
     activePayload = null
     pressTarget = null
+    mouseDragArmed = false
     releasePointer()
     pressElement = null
     pointerId = null

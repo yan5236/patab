@@ -223,6 +223,41 @@ export function cellFromPoint(rect: DOMRect, x: number, y: number): { col: numbe
   }
 }
 
+/** 已渲染图块的矩形信息，用于手机端按真实视觉顺序计算插入点 */
+export interface RenderedTileRect {
+  id: string
+  left: number
+  top: number
+  width: number
+  height: number
+}
+
+/** 按图块实际矩形分行，返回指针在手机流式网格中的插入下标 */
+export function insertionIndexFromRects(
+  rects: RenderedTileRect[],
+  x: number,
+  y: number,
+): number {
+  const rows: RenderedTileRect[][] = []
+  const sorted = [...rects].sort((a, b) => a.top - b.top || a.left - b.left)
+  for (const rect of sorted) {
+    const row = rows.find((items) => Math.abs(items[0]!.top - rect.top) < 8)
+    if (row) row.push(rect)
+    else rows.push([rect])
+  }
+
+  let offset = 0
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i]!.sort((a, b) => a.left - b.left)
+    const nextTop = rows[i + 1]?.[0]?.top ?? Number.POSITIVE_INFINITY
+    if (y < nextTop) {
+      return offset + row.filter((rect) => x > rect.left + rect.width / 2).length
+    }
+    offset += row.length
+  }
+  return sorted.length
+}
+
 /**
  * 由悬停格算出被拖图块应插入有序序列的下标。
  * 规则：悬停格线性秩 rank = row*COLS+col；返回序列中「原点秩 < 悬停秩」的图块数，

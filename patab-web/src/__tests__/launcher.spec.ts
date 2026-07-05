@@ -12,6 +12,7 @@ import {
   cellFromPoint,
   firstFreeSlot,
   insertionIndex,
+  insertionIndexFromRects,
   isAreaFree,
   layoutScreen,
   packOrder,
@@ -187,6 +188,19 @@ describe('grid 紧凑让位工具', () => {
     expect(insertionIndex(order, 2, 0)).toBe(2)
     expect(insertionIndex(order, 5, 0)).toBe(3) // 悬停到空白尾部 → 插到最后
   })
+
+  it('insertionIndexFromRects：按手机端真实矩形分行计算插入下标', () => {
+    const rects = [
+      { id: 'a', left: 0, top: 0, width: 80, height: 100 },
+      { id: 'b', left: 96, top: 0, width: 80, height: 100 },
+      { id: 'c', left: 0, top: 116, width: 80, height: 100 },
+      { id: 'd', left: 96, top: 116, width: 80, height: 100 },
+    ]
+    expect(insertionIndexFromRects(rects, 10, 10)).toBe(0)
+    expect(insertionIndexFromRects(rects, 120, 10)).toBe(1)
+    expect(insertionIndexFromRects(rects, 10, 130)).toBe(2)
+    expect(insertionIndexFromRects(rects, 999, 999)).toBe(4)
+  })
 })
 
 describe('增删改', () => {
@@ -291,6 +305,7 @@ describe('拖拽移动 handleDrop', () => {
     expect({ col: byId('a').col, row: byId('a').row }).toEqual({ col: 2, row: 0 })
     // 小组件仍在其后
     expect({ col: byId('w1').col, row: byId('w1').row }).toEqual({ col: 3, row: 0 })
+    expect(idsOf(store, 's1')).toEqual(['b', 'f1', 'a', 'w1'])
   })
 
   it('紧凑 grid 跨屏移入：按插入下标紧凑落位', () => {
