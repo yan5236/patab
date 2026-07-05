@@ -19,8 +19,8 @@ const position = computed(() => {
   if (!menu) return { left: 0, top: 0 }
   const height = menu.items.length * ITEM_HEIGHT + 12
   return {
-    left: Math.min(menu.x, window.innerWidth - MENU_WIDTH - 8),
-    top: Math.min(menu.y, window.innerHeight - height - 8),
+    left: Math.max(8, Math.min(menu.x, window.innerWidth - MENU_WIDTH - 8)),
+    top: Math.max(8, Math.min(menu.y, window.innerHeight - height - 8)),
   }
 })
 

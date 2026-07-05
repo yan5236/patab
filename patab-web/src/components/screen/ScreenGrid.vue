@@ -84,7 +84,7 @@ const emptyCells = computed(() => {
 <template>
   <div
     ref="gridRef"
-    class="grid gap-3 p-2"
+    class="screen-grid grid gap-3 p-2"
     :class="isOverflow ? 'overflow-y-auto' : 'h-full w-full overflow-hidden'"
     :style="gridStyle"
     :data-drop="isCompact ? 'grid' : undefined"
@@ -128,3 +128,31 @@ const emptyCells = computed(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* 手机端主屏改为纵向流式网格，保留桌面端固定坐标网格。 */
+@media (max-width: 640px) {
+  .screen-grid {
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: 112px !important;
+    align-content: start;
+    gap: 1rem;
+    height: 100%;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 0.25rem;
+  }
+
+  .screen-grid :deep(.screen-tile) {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
+  .screen-grid :deep(.screen-tile--widget) {
+    grid-column: span 3 !important;
+    grid-row: span 3 !important;
+    min-height: 220px;
+  }
+}
+</style>

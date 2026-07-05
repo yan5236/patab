@@ -58,7 +58,7 @@ const isHoverCell = computed(
 
 /** 主屏图块的网格定位（坐标 + 占位跨度）；文件夹内走自动流式排列 */
 const cellStyle = computed(() => {
-  if (props.zone !== 'screen') return { touchAction: 'none' } as const
+  if (props.zone !== 'screen') return { touchAction: 'pan-y' } as const
   const { w, h } = tileSize(props.tile)
   // 紧凑让位预览生效时按预览坐标渲染，否则用图块自身坐标
   const pos = previewPos.value
@@ -67,15 +67,18 @@ const cellStyle = computed(() => {
   return {
     gridColumn: `${col + 1} / span ${w}`,
     gridRow: `${row + 1} / span ${h}`,
-    touchAction: 'none',
+    touchAction: 'pan-y',
   } as const
 })
+
 </script>
 
 <template>
   <div
     class="relative rounded-2xl transition-all duration-150"
     :class="[
+      zone === 'screen' ? 'screen-tile' : '',
+      zone === 'screen' && tile.type === 'widget' ? 'screen-tile--widget' : '',
       zone === 'screen' && isDragSource ? 'invisible' : '',
       zone === 'folder' && isDragSource ? 'opacity-30' : '',
       isDragSource ? 'pointer-events-none' : '',

@@ -45,17 +45,17 @@ function onRootContextMenu(event: MouseEvent) {
     <!-- 轻微暗化，保证白色文字可读 -->
     <div class="pointer-events-none absolute inset-0 bg-black/10" />
 
-    <div class="relative flex h-full flex-col items-center px-8">
-      <ClockDisplay class="mt-10 shrink-0" />
-      <SearchBar class="mt-6 shrink-0" />
+    <div class="relative flex h-full flex-col items-center px-4 sm:px-8">
+      <ClockDisplay class="mt-8 shrink-0 sm:mt-10" />
+      <SearchBar class="mt-4 shrink-0 sm:mt-6" />
 
       <!-- 应用屏幕区 -->
-      <div class="mt-6 min-h-0 w-full max-w-5xl flex-1">
+      <div class="mt-4 min-h-0 w-full max-w-5xl flex-1 pb-40 sm:mt-6 sm:pb-0">
         <ScreenViewport />
       </div>
 
-      <ScreenPager class="mb-3 shrink-0" />
-      <DockBar class="mb-5 shrink-0" />
+      <ScreenPager class="fixed bottom-24 left-1/2 z-30 -translate-x-1/2 sm:static sm:mb-3 sm:translate-x-0" />
+      <DockBar class="mb-0 shrink-0 sm:mb-5" />
     </div>
 
     <!-- 全局层 -->

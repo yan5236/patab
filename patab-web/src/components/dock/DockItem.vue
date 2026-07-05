@@ -59,12 +59,13 @@ function onMenu(event: MouseEvent) {
     },
   ])
 }
+
 </script>
 
 <template>
   <div
-    class="group relative"
-    style="touch-action: none"
+    class="group relative shrink-0"
+    style="touch-action: pan-x"
     data-drop="dock"
     :data-index="index"
     @pointerdown="onPointerdown"

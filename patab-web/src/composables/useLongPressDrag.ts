@@ -32,6 +32,9 @@ const PAGER_HOVER_SWITCH_MS = 500
 const FOLDER_CLOSE_HOVER_MS = 300
 /** 紧凑模式：拖拽悬停到文件夹图标上，多久内「不让位」以便放入文件夹（毫秒） */
 const FOLDER_HOLD_MS = 500
+/** 触摸长按菜单相对手指的偏移，避免菜单挡住后续拖拽起手路径 */
+const TOUCH_MENU_OFFSET_X = 28
+const TOUCH_MENU_OFFSET_Y = 132
 
 /** 被拖拽元素需要提供的载荷（图块本体 + 来源位置） */
 export interface DragPayload {
@@ -100,6 +103,10 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let lastHoverKey = ''
   let startX = 0
   let startY = 0
+  let pointerType = ''
+  let pressTarget: EventTarget | null = null
+  let touchMenuOpened = false
+  let removeNativeMenuBlockTimer: ReturnType<typeof setTimeout> | undefined
   /** 来源图块的像素尺寸（长按判定阶段捕获，供幽灵图标等比还原） */
   let srcW = 0
   let srcH = 0
@@ -117,11 +124,17 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     activePayload = payload
     startX = event.clientX
     startY = event.clientY
+    pointerType = event.pointerType
+    pressTarget = event.target
+    touchMenuOpened = false
     // 在按下时捕获来源尺寸：此刻元素确定存在、布局稳定
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
     srcW = rect.width
     srcH = rect.height
-    pressTimer = setTimeout(() => beginDrag(startX, startY), LONG_PRESS_MS)
+    pressTimer = setTimeout(() => {
+      if (pointerType === 'touch') openTouchMenu()
+      else beginDrag(startX, startY)
+    }, LONG_PRESS_MS)
     window.addEventListener('pointermove', onPrePressMove)
     window.addEventListener('pointerup', cancelPress)
   }
@@ -132,14 +145,49 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
       Math.abs(event.clientX - startX) > MOVE_TOLERANCE ||
       Math.abs(event.clientY - startY) > MOVE_TOLERANCE
     ) {
-      cancelPress()
+      if (pointerType === 'touch' && touchMenuOpened) beginDrag(event.clientX, event.clientY)
+      else cancelPress()
     }
+  }
+
+  /** 触摸长按先打开业务菜单；继续拖动时再进入拖拽并自动关闭菜单 */
+  function openTouchMenu() {
+    touchMenuOpened = true
+    clearTimeout(pressTimer)
+    clearTimeout(removeNativeMenuBlockTimer)
+    const target = pressTarget instanceof Element ? pressTarget : null
+    target?.dispatchEvent(
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: startX + TOUCH_MENU_OFFSET_X,
+        clientY: startY - TOUCH_MENU_OFFSET_Y,
+      }),
+    )
+    window.addEventListener('contextmenu', blockNativeTouchMenu, { capture: true })
+    window.addEventListener('click', swallowClick, { capture: true, once: true })
   }
 
   function cancelPress() {
     clearTimeout(pressTimer)
     window.removeEventListener('pointermove', onPrePressMove)
     window.removeEventListener('pointerup', cancelPress)
+    if (touchMenuOpened) {
+      removeNativeMenuBlockTimer = setTimeout(removeNativeMenuBlock, 600)
+    } else {
+      removeNativeMenuBlock()
+    }
+  }
+
+  /** 屏蔽触摸长按后浏览器补发的原生 contextmenu，避免覆盖偏移后的业务菜单位置 */
+  function blockNativeTouchMenu(event: MouseEvent) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  function removeNativeMenuBlock() {
+    clearTimeout(removeNativeMenuBlockTimer)
+    window.removeEventListener('contextmenu', blockNativeTouchMenu, { capture: true })
   }
 
   /* ---------- 阶段二：拖拽会话 ---------- */
@@ -147,6 +195,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function beginDrag(x: number, y: number) {
     cancelPress()
     if (!activePayload) return
+    ui.closeContextMenu()
     dragStore.start(activePayload.tile, activePayload.source, x, y, srcW, srcH)
     window.addEventListener('pointermove', onDragMove)
     window.addEventListener('pointerup', onDragUp)
@@ -287,9 +336,12 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function finishDrag() {
     clearTimeout(pagerTimer)
     clearTimeout(folderCloseTimer)
+    removeNativeMenuBlock()
     resetFolderHold()
     lastHoverKey = ''
     activePayload = null
+    pressTarget = null
+    touchMenuOpened = false
     dragStore.end()
     window.removeEventListener('pointermove', onDragMove)
     window.removeEventListener('pointerup', onDragUp)

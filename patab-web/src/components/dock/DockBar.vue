@@ -22,39 +22,43 @@ function quickAdd() {
 </script>
 
 <template>
-  <GlassPanel
-    class="flex items-center gap-2 rounded-3xl px-3 py-2"
-    data-drop="dock"
-    :data-index="launcher.dock.length"
+  <div
+    class="fixed inset-x-0 bottom-0 z-30 flex w-full justify-center px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:w-auto sm:px-0 sm:pb-0"
   >
-    <TransitionGroup name="dock">
-      <DockItem v-for="(item, i) in launcher.dock" :key="item.id" :item="item" :index="i" />
-    </TransitionGroup>
-
-    <!-- Dock 为空时的占位提示 -->
-    <span v-if="launcher.dock.length === 0" class="px-2 text-xs text-neutral-500">
-      把常用的快捷方式拖到这里
-    </span>
-
-    <!-- 分隔线 + 固定功能按钮 -->
-    <div class="mx-1 h-10 w-px bg-neutral-500/30" />
-
-    <button
-      class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
-      title="设置"
-      @click="ui.openModal({ type: 'settings' })"
+    <GlassPanel
+      class="flex max-w-full flex-nowrap items-center gap-2 overflow-x-auto rounded-3xl px-3 py-2"
+      data-drop="dock"
+      :data-index="launcher.dock.length"
     >
-      <Settings class="h-6 w-6" />
-    </button>
+      <TransitionGroup name="dock">
+        <DockItem v-for="(item, i) in launcher.dock" :key="item.id" :item="item" :index="i" />
+      </TransitionGroup>
 
-    <button
-      class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
-      title="新建快捷方式"
-      @click="quickAdd"
-    >
-      <Plus class="h-6 w-6" />
-    </button>
-  </GlassPanel>
+      <!-- Dock 为空时的占位提示 -->
+      <span v-if="launcher.dock.length === 0" class="shrink-0 px-2 text-xs text-neutral-500">
+        把常用的快捷方式拖到这里
+      </span>
+
+      <!-- 分隔线 + 固定功能按钮 -->
+      <div class="mx-1 h-10 w-px shrink-0 bg-neutral-500/30" />
+
+      <button
+        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        title="设置"
+        @click="ui.openModal({ type: 'settings' })"
+      >
+        <Settings class="h-6 w-6" />
+      </button>
+
+      <button
+        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        title="新建快捷方式"
+        @click="quickAdd"
+      >
+        <Plus class="h-6 w-6" />
+      </button>
+    </GlassPanel>
+  </div>
 </template>
 
 <style scoped>
