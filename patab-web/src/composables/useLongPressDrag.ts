@@ -23,12 +23,18 @@ import { useUiStore } from '@/stores/ui'
 import { getPressMoveDecision } from '@/utils/dragGesture'
 import {
   cellFromPoint,
+  COLS,
   insertionIndex,
-  insertionIndexFromRects,
+  insertionSlotFromGeometry,
   packOrder,
   rowMajorOrder,
   tileAt,
 } from '@/utils/grid'
+
+/** 当前是否为手机端流式布局视口（与 ScreenGrid 的 max-width:640px 媒体查询一致） */
+function isMobileViewport(): boolean {
+  return window.matchMedia('(max-width: 640px)').matches
+}
 
 /** 长按触发时长（毫秒） */
 const LONG_PRESS_MS = 300
@@ -43,6 +49,8 @@ const FOLDER_HOLD_MS = 500
 /** 触摸长按菜单相对手指的偏移，避免菜单挡住后续拖拽起手路径 */
 const TOUCH_MENU_OFFSET_X = 28
 const TOUCH_MENU_OFFSET_Y = 132
+/** 紧凑让位预览的指针距离迟滞（像素）：距上次让位提交不足此值不重建预览，吸收手指微抖 */
+const COMMIT_GATE = 6
 type ScrollAxis = 'x' | 'y'
 
 /** 被拖拽元素需要提供的载荷（图块本体 + 来源位置） */
@@ -124,6 +132,9 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let pendingFolderId: string | null = null
   /** 保持窗口是否已超时（true = 允许该文件夹让位） */
   let folderYielded = false
+  /** 上次让位预览提交时的指针坐标（用于 COMMIT_GATE 距离迟滞） */
+  let lastCommitX = 0
+  let lastCommitY = 0
   let lastHoverKey = ''
   let startX = 0
   let startY = 0
@@ -325,16 +336,21 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     const screen = launcher.findScreen(screenId)
     if (!screen) return null
     const rect = gridEl.getBoundingClientRect()
+    const mobile = isMobileViewport()
+    // 悬停格坐标仅桌面端 8 列模型有效；手机端为流式网格，此坐标无意义故不用于命中判定
     const { col, row } = cellFromPoint(rect, x, y)
     const directTarget = isValidTarget(dragTile, resolveTarget(x, y))
 
     // 悬停到文件夹图标上：短暂保持窗口内「不让位」，让用户可把快捷方式放进文件夹。
-    // 用真实布局判定悬停格（不受让位位移影响，避免文件夹被推走后判不准）。
+    // 桌面端用真实布局格坐标兜底判定（不受让位位移影响）；手机端 8 列格坐标与 4 列视觉网格错位，
+    // 会把手指误判到文件夹逻辑格上（触发无谓的 clearCompactPreview → 空位卡回原位），故手机端只信 DOM 命中。
     if (dragTile.type === 'shortcut') {
       const hovered =
         directTarget?.kind === 'folder-tile'
           ? launcher.findFolder(directTarget.folderId)
-          : tileAt(screen.tiles, col, row, dragTile.id)
+          : mobile
+            ? undefined
+            : tileAt(screen.tiles, col, row, dragTile.id)
       if (hovered?.type === 'folder') {
         // 进入某文件夹：开启保持窗口（超时后才允许让位）
         if (pendingFolderId !== hovered.id) {
@@ -358,40 +374,58 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
 
     // 排除被拖图块后的当前行主序序列 → 悬停格插入下标
     const order = rowMajorOrder(screen.tiles).filter((t) => t.id !== dragTile.id)
-    const index = resolveCompactIndex(gridEl, order, dragTile.id, x, y, col, row)
+    const index = resolveCompactIndex(gridEl, order, x, y, col, row, mobile)
     // 插入下标未变（仍在同格同屏）则复用现有预览，避免每次移动重建 Map 触发无谓重排/动画
     if (dragStore.previewScreenId === screenId && dragStore.compactIndex === index) {
       return { kind: 'grid', screenId, index }
     }
+    // 距离迟滞：同屏且指针距上次让位提交不足 COMMIT_GATE 时，不重建预览，
+    // 吸收手指微抖跨中心线导致的下标抖动（沿用上次预览下标）。首次进入网格（previewScreenId 为 null）不受此限。
+    if (
+      dragStore.previewScreenId === screenId &&
+      Math.hypot(x - lastCommitX, y - lastCommitY) < COMMIT_GATE
+    ) {
+      return { kind: 'grid', screenId, index: dragStore.compactIndex }
+    }
+    lastCommitX = x
+    lastCommitY = y
     order.splice(index, 0, dragTile)
     dragStore.setCompactPreview(screenId, packOrder(order), index)
     return { kind: 'grid', screenId, index }
   }
 
-  /** 根据当前响应式布局计算紧凑模式插入下标：手机端用真实矩形，桌面端用固定格坐标 */
+  /** 根据当前响应式布局计算紧凑模式插入下标：桌面端用 8 列固定格坐标，手机端用流式网格几何 */
   function resolveCompactIndex(
     gridEl: HTMLElement,
     order: Tile[],
-    dragTileId: string,
     x: number,
     y: number,
     col: number,
     row: number,
+    mobile: boolean,
   ): number {
-    if (!window.matchMedia('(max-width: 640px)').matches) return insertionIndex(order, col, row)
-    const rects = [...gridEl.querySelectorAll<HTMLElement>('[data-flip-tile]')]
-      .filter((el) => el.dataset.flipTile && el.dataset.flipTile !== dragTileId)
-      .map((el) => {
-        const rect = el.getBoundingClientRect()
-        return {
-          id: el.dataset.flipTile!,
-          left: rect.left,
-          top: rect.top,
-          width: rect.width,
-          height: rect.height,
-        }
-      })
-    return insertionIndexFromRects(rects, x, y)
+    const rect = gridEl.getBoundingClientRect()
+    // 桌面端固定 8 列坐标网格：由指针在悬停格内的水平比例判定「插到该格之前/之后」，
+    // 右半 → after，令「落到满行最后一个图标之后」在本行内即可达。
+    if (!mobile) {
+      const cw = rect.width / COLS
+      const frac = (x - rect.left) / cw - col // 悬停格内水平比例 [0,1)
+      return insertionIndex(order, col, row, frac > 0.5)
+    }
+    // 手机端流式网格：读网格实际渲染的列数/格距做纯几何换算得到流式插入槽位，
+    // 不读各图块矩形——避免被拖图标占预览槽位、测量又排除它形成的自我参照反馈（空位滞后手指一格 / 疯狂闪烁）。
+    const cs = getComputedStyle(gridEl)
+    const colWidths = cs.gridTemplateColumns.split(' ').filter(Boolean)
+    const cols = Math.max(1, colWidths.length)
+    const cellW = parseFloat(colWidths[0] ?? '') || rect.width / cols
+    const rowH = parseFloat(cs.gridAutoRows) || parseFloat(cs.gridTemplateRows) || cellW
+    const pitchX = cellW + (parseFloat(cs.columnGap) || 0)
+    const pitchY = rowH + (parseFloat(cs.rowGap) || 0)
+    const relX = x - rect.left - (parseFloat(cs.paddingLeft) || 0) + gridEl.scrollLeft
+    const relY = y - rect.top - (parseFloat(cs.paddingTop) || 0) + gridEl.scrollTop
+    const slot = insertionSlotFromGeometry(relX, relY, pitchX, pitchY, cols)
+    // 槽位可能超出实际图块数（手指落在末行空白）→ 夹紧为「追加到末尾」
+    return Math.min(slot, order.length)
   }
 
   /** 退出文件夹保持窗口（移开文件夹 / 拖非快捷方式时） */
@@ -452,6 +486,8 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     clearTimeout(folderCloseTimer)
     removeNativeMenuBlock()
     resetFolderHold()
+    lastCommitX = 0
+    lastCommitY = 0
     lastHoverKey = ''
     activePayload = null
     pressTarget = null

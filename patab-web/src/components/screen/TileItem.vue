@@ -79,7 +79,7 @@ const cellStyle = computed(() => {
 
 <template>
   <div
-    class="relative rounded-2xl transition-all duration-150"
+    class="relative rounded-2xl transition-[background-color,box-shadow,opacity] duration-150"
     :class="[
       zone === 'screen' ? 'screen-tile' : '',
       zone === 'screen' && tile.type === 'widget' ? 'screen-tile--widget' : '',

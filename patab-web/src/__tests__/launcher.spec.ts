@@ -12,7 +12,7 @@ import {
   cellFromPoint,
   firstFreeSlot,
   insertionIndex,
-  insertionIndexFromRects,
+  insertionSlotFromGeometry,
   isAreaFree,
   layoutScreen,
   packOrder,
@@ -187,19 +187,27 @@ describe('grid 紧凑让位工具', () => {
     expect(insertionIndex(order, 1, 0)).toBe(1)
     expect(insertionIndex(order, 2, 0)).toBe(2)
     expect(insertionIndex(order, 5, 0)).toBe(3) // 悬停到空白尾部 → 插到最后
+    // after（悬停格右半）：有效悬停秩 +1，插到该格图标「之后」
+    expect(insertionIndex(order, 2, 0, false)).toBe(2) // 左半 → c 之前
+    expect(insertionIndex(order, 2, 0, true)).toBe(3) // 右半 → c 之后（追加到行尾）
+    expect(insertionIndex(order, 0, 0, true)).toBe(1) // 右半 → a 之后
   })
 
-  it('insertionIndexFromRects：按手机端真实矩形分行计算插入下标', () => {
-    const rects = [
-      { id: 'a', left: 0, top: 0, width: 80, height: 100 },
-      { id: 'b', left: 96, top: 0, width: 80, height: 100 },
-      { id: 'c', left: 0, top: 116, width: 80, height: 100 },
-      { id: 'd', left: 96, top: 116, width: 80, height: 100 },
-    ]
-    expect(insertionIndexFromRects(rects, 10, 10)).toBe(0)
-    expect(insertionIndexFromRects(rects, 120, 10)).toBe(1)
-    expect(insertionIndexFromRects(rects, 10, 130)).toBe(2)
-    expect(insertionIndexFromRects(rects, 999, 999)).toBe(4)
+  it('insertionSlotFromGeometry：手机端流式网格按几何算插入槽位（跟手指、无滞后）', () => {
+    // 4 列，格距 pitchX=90（格宽 74 + 间隙 16），pitchY=128（行高 112 + 间隙 16）
+    // 内容区已扣除 padding，故 relX/relY 直接是相对内容区偏移
+    // 第一行（relY < 128）：col = floor(relX/90)，落格右半再进一位
+    expect(insertionSlotFromGeometry(10, 10, 90, 128, 4)).toBe(0) // col0 左半
+    expect(insertionSlotFromGeometry(130, 10, 90, 128, 4)).toBe(1) // col1 左半
+    expect(insertionSlotFromGeometry(220, 10, 90, 128, 4)).toBe(2) // col2 左半 → 不再滞后
+    expect(insertionSlotFromGeometry(310, 10, 90, 128, 4)).toBe(3) // col3 左半
+    expect(insertionSlotFromGeometry(160, 10, 90, 128, 4)).toBe(2) // col1 右半 → 插到其后
+    // 第二行（relY ≥ 128）：row=1 → 槽位 +cols
+    expect(insertionSlotFromGeometry(10, 152, 90, 128, 4)).toBe(4) // 第二行 col0
+    expect(insertionSlotFromGeometry(130, 152, 90, 128, 4)).toBe(5) // 第二行 col1
+    // 越界夹紧：指针在最右/更下，col 夹到 cols-1
+    expect(insertionSlotFromGeometry(9999, 10, 90, 128, 4)).toBe(4) // col 夹到 3，右半 → 4
+    expect(insertionSlotFromGeometry(-50, 10, 90, 128, 4)).toBe(0) // 左越界 → col0
   })
 })
 

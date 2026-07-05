@@ -223,39 +223,32 @@ export function cellFromPoint(rect: DOMRect, x: number, y: number): { col: numbe
   }
 }
 
-/** 已渲染图块的矩形信息，用于手机端按真实视觉顺序计算插入点 */
-export interface RenderedTileRect {
-  id: string
-  left: number
-  top: number
-  width: number
-  height: number
-}
-
-/** 按图块实际矩形分行，返回指针在手机流式网格中的插入下标 */
-export function insertionIndexFromRects(
-  rects: RenderedTileRect[],
-  x: number,
-  y: number,
+/**
+ * 手机端流式网格：由指针相对网格内容区的像素坐标 + 格距/列数，算出「流式插入槽位」。
+ *
+ * 手机端图标按 `order` 顺序在 cols 列 auto-fill 网格里连续排布，视觉槽位即序列下标，
+ * 因此几何槽位 `row*cols + col`（指针落在格右半再进一位）就是插入下标。
+ *
+ * 纯几何、不读各图块当前矩形：故不受「让位 FLIP 动画中间态」影响，也不会因被拖图标占着
+ * 预览槽位、测量又排除它而形成自我参照反馈（旧实现 insertionIndexFromRects 的空位滞后手指一格、
+ * 疯狂闪烁的根因）。
+ *
+ * @param relX,relY 指针相对网格内容区左上角（已扣除 padding、含滚动）的像素偏移
+ * @param pitchX,pitchY 单元格水平/垂直步距（格宽/高 + 间隙）
+ * @param cols 网格实际渲染列数
+ */
+export function insertionSlotFromGeometry(
+  relX: number,
+  relY: number,
+  pitchX: number,
+  pitchY: number,
+  cols: number,
 ): number {
-  const rows: RenderedTileRect[][] = []
-  const sorted = [...rects].sort((a, b) => a.top - b.top || a.left - b.left)
-  for (const rect of sorted) {
-    const row = rows.find((items) => Math.abs(items[0]!.top - rect.top) < 8)
-    if (row) row.push(rect)
-    else rows.push([rect])
-  }
-
-  let offset = 0
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]!.sort((a, b) => a.left - b.left)
-    const nextTop = rows[i + 1]?.[0]?.top ?? Number.POSITIVE_INFINITY
-    if (y < nextTop) {
-      return offset + row.filter((rect) => x > rect.left + rect.width / 2).length
-    }
-    offset += row.length
-  }
-  return sorted.length
+  const colF = relX / pitchX
+  const col = Math.max(0, Math.min(Math.floor(colF), cols - 1))
+  const row = Math.max(0, Math.floor(relY / pitchY))
+  const after = colF - col > 0.5 // 落在格右半 → 插到该格之后
+  return row * cols + col + (after ? 1 : 0)
 }
 
 /**
@@ -263,9 +256,11 @@ export function insertionIndexFromRects(
  * 规则：悬停格线性秩 rank = row*COLS+col；返回序列中「原点秩 < 悬停秩」的图块数，
  * 即把被拖图块插到该格、令该格及其后的图块整体后移一位（阅读顺序级联让位）。
  * @param order 不含被拖图块的当前行主序序列
+ * @param after 指针落在悬停格的右半：有效悬停秩 +1，即插到该格图标「之后」，
+ *   使「追加到满行末尾 / 落到最后一个图标之后」这一落点在本行内即可达（而非必须拖进下一行）。
  */
-export function insertionIndex(order: Tile[], col: number, row: number): number {
-  const hoverRank = row * COLS + col
+export function insertionIndex(order: Tile[], col: number, row: number, after = false): number {
+  const hoverRank = row * COLS + col + (after ? 1 : 0)
   let index = 0
   for (const tile of order) {
     if (!isPlaced(tile)) continue
