@@ -20,6 +20,7 @@ import type { DragSource, DropTarget, Tile } from '@/types'
 import { useDragStore, dropTargetKey } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
+import { getPressMoveDecision } from '@/utils/dragGesture'
 import { cellFromPoint, insertionIndex, packOrder, rowMajorOrder, tileAt } from '@/utils/grid'
 
 /** 长按触发时长（毫秒） */
@@ -35,6 +36,7 @@ const FOLDER_HOLD_MS = 500
 /** 触摸长按菜单相对手指的偏移，避免菜单挡住后续拖拽起手路径 */
 const TOUCH_MENU_OFFSET_X = 28
 const TOUCH_MENU_OFFSET_Y = 132
+type ScrollAxis = 'x' | 'y'
 
 /** 被拖拽元素需要提供的载荷（图块本体 + 来源位置） */
 export interface DragPayload {
@@ -86,6 +88,21 @@ function isValidTarget(tile: Tile, target: DropTarget | null): DropTarget | null
   return target
 }
 
+/** 查找最近的可滚动祖先，用于图标禁用原生 pan 后保留普通滑动体验 */
+function findScrollableAncestor(el: HTMLElement | null, axis: ScrollAxis): HTMLElement | null {
+  let node = el?.parentElement ?? null
+  while (node) {
+    const style = window.getComputedStyle(node)
+    const overflow = axis === 'x' ? style.overflowX : style.overflowY
+    const canScroll =
+      /(auto|scroll|overlay)/.test(overflow) &&
+      (axis === 'x' ? node.scrollWidth > node.clientWidth : node.scrollHeight > node.clientHeight)
+    if (canScroll) return node
+    node = node.parentElement
+  }
+  return null
+}
+
 export function useLongPressDrag(getPayload: () => DragPayload | null) {
   const dragStore = useDragStore()
   const launcher = useLauncherStore()
@@ -105,8 +122,14 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let startY = 0
   let pointerType = ''
   let pressTarget: EventTarget | null = null
+  let pressElement: HTMLElement | null = null
+  let pointerId: number | null = null
   let touchMenuOpened = false
   let removeNativeMenuBlockTimer: ReturnType<typeof setTimeout> | undefined
+  let scrollElement: HTMLElement | null = null
+  let scrollAxis: ScrollAxis | null = null
+  let lastScrollX = 0
+  let lastScrollY = 0
   /** 来源图块的像素尺寸（长按判定阶段捕获，供幽灵图标等比还原） */
   let srcW = 0
   let srcH = 0
@@ -126,6 +149,8 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     startY = event.clientY
     pointerType = event.pointerType
     pressTarget = event.target
+    pressElement = event.currentTarget as HTMLElement
+    pointerId = event.pointerId
     touchMenuOpened = false
     // 在按下时捕获来源尺寸：此刻元素确定存在、布局稳定
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
@@ -135,19 +160,24 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
       if (pointerType === 'touch') openTouchMenu()
       else beginDrag(startX, startY)
     }, LONG_PRESS_MS)
+    capturePointer()
     window.addEventListener('pointermove', onPrePressMove)
     window.addEventListener('pointerup', cancelPress)
+    window.addEventListener('pointercancel', cancelPress)
   }
 
   /** 长按未触发前移动过大 → 取消（视为点击或滚动） */
   function onPrePressMove(event: PointerEvent) {
-    if (
-      Math.abs(event.clientX - startX) > MOVE_TOLERANCE ||
-      Math.abs(event.clientY - startY) > MOVE_TOLERANCE
-    ) {
-      if (pointerType === 'touch' && touchMenuOpened) beginDrag(event.clientX, event.clientY)
-      else cancelPress()
+    const dx = event.clientX - startX
+    const dy = event.clientY - startY
+    const decision = getPressMoveDecision(dx, dy, MOVE_TOLERANCE, touchMenuOpened)
+    if (decision === 'wait') return
+    if (decision === 'drag') {
+      beginDrag(event.clientX, event.clientY)
+      return
     }
+    if (pointerType === 'touch' && beginManualScroll(event, dx, dy)) return
+    cancelPress()
   }
 
   /** 触摸长按先打开业务菜单；继续拖动时再进入拖拽并自动关闭菜单 */
@@ -172,11 +202,55 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     clearTimeout(pressTimer)
     window.removeEventListener('pointermove', onPrePressMove)
     window.removeEventListener('pointerup', cancelPress)
+    window.removeEventListener('pointercancel', cancelPress)
+    releasePointer()
     if (touchMenuOpened) {
       removeNativeMenuBlockTimer = setTimeout(removeNativeMenuBlock, 600)
     } else {
       removeNativeMenuBlock()
     }
+  }
+
+  /** 长按前移动到可滚动区域时，手动滚动最近容器，避免 touch-action:none 阻断普通滑动 */
+  function beginManualScroll(event: PointerEvent, dx: number, dy: number) {
+    const axis: ScrollAxis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+    const el = findScrollableAncestor(pressElement, axis)
+    if (!el) return false
+    event.preventDefault()
+    scrollElement = el
+    scrollAxis = axis
+    lastScrollX = event.clientX
+    lastScrollY = event.clientY
+    cancelPress()
+    window.addEventListener('pointermove', onManualScrollMove, { passive: false })
+    window.addEventListener('pointerup', endManualScroll)
+    window.addEventListener('pointercancel', endManualScroll)
+    return true
+  }
+
+  /** 跟随手指位移滚动容器；只在长按尚未成立时启用 */
+  function onManualScrollMove(event: PointerEvent) {
+    if (!scrollElement || !scrollAxis) return
+    event.preventDefault()
+    if (scrollAxis === 'x') {
+      scrollElement.scrollLeft += lastScrollX - event.clientX
+    } else {
+      scrollElement.scrollTop += lastScrollY - event.clientY
+    }
+    lastScrollX = event.clientX
+    lastScrollY = event.clientY
+  }
+
+  function endManualScroll() {
+    scrollElement = null
+    scrollAxis = null
+    activePayload = null
+    pressTarget = null
+    pressElement = null
+    pointerId = null
+    window.removeEventListener('pointermove', onManualScrollMove)
+    window.removeEventListener('pointerup', endManualScroll)
+    window.removeEventListener('pointercancel', endManualScroll)
   }
 
   /** 屏蔽触摸长按后浏览器补发的原生 contextmenu，避免覆盖偏移后的业务菜单位置 */
@@ -195,6 +269,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function beginDrag(x: number, y: number) {
     cancelPress()
     if (!activePayload) return
+    capturePointer()
     ui.closeContextMenu()
     dragStore.start(activePayload.tile, activePayload.source, x, y, srcW, srcH)
     window.addEventListener('pointermove', onDragMove)
@@ -341,6 +416,9 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     lastHoverKey = ''
     activePayload = null
     pressTarget = null
+    releasePointer()
+    pressElement = null
+    pointerId = null
     touchMenuOpened = false
     dragStore.end()
     window.removeEventListener('pointermove', onDragMove)
@@ -357,8 +435,28 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     event.preventDefault()
   }
 
+  /** 捕获当前 pointer，避免触摸拖拽中途被浏览器或滚动容器切断 */
+  function capturePointer() {
+    if (pointerId === null || !pressElement) return
+    try {
+      if (!pressElement.hasPointerCapture(pointerId)) pressElement.setPointerCapture(pointerId)
+    } catch {
+      // 某些浏览器在 pointer 已取消时会抛错；此处静默退化为 window 监听。
+    }
+  }
+
+  function releasePointer() {
+    if (pointerId === null || !pressElement) return
+    try {
+      if (pressElement.hasPointerCapture(pointerId)) pressElement.releasePointerCapture(pointerId)
+    } catch {
+      // pointer 已结束时释放失败无副作用。
+    }
+  }
+
   onBeforeUnmount(() => {
     cancelPress()
+    endManualScroll()
     // 注意：这里不能调用 finishDrag() —— 拖拽悬停分页指示点自动切屏时，
     // 来源图块组件会随旧屏幕一起被卸载，但拖拽监听器都挂在 window 上、闭包依然有效，
     // 会话必须保留到 pointerup 才能完成跨屏放置；结束时 finishDrag 会移除全部监听器，不会泄漏

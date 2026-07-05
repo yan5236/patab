@@ -56,9 +56,12 @@ const isHoverCell = computed(
     drag.hoverKey === `cell:folder:${props.containerId}:${props.index}`,
 )
 
+/** 图标由长按拖拽接管触摸；小组件保留纵向滚动能力 */
+const tileTouchAction = computed(() => (props.tile.type === 'widget' ? 'pan-y' : 'none'))
+
 /** 主屏图块的网格定位（坐标 + 占位跨度）；文件夹内走自动流式排列 */
 const cellStyle = computed(() => {
-  if (props.zone !== 'screen') return { touchAction: 'pan-y' } as const
+  if (props.zone !== 'screen') return { touchAction: tileTouchAction.value } as const
   const { w, h } = tileSize(props.tile)
   // 紧凑让位预览生效时按预览坐标渲染，否则用图块自身坐标
   const pos = previewPos.value
@@ -67,7 +70,7 @@ const cellStyle = computed(() => {
   return {
     gridColumn: `${col + 1} / span ${w}`,
     gridRow: `${row + 1} / span ${h}`,
-    touchAction: 'pan-y',
+    touchAction: tileTouchAction.value,
   } as const
 })
 
