@@ -126,7 +126,7 @@ function addCustomWallpaper(src: string, name: string) {
       </button>
     </div>
 
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <button
         v-for="item in allWallpapers"
         :key="item.id"
