@@ -158,6 +158,6 @@ export type ModalState =
   | { type: 'screen-create' }
   /** 编辑屏幕（重命名/改图标） */
   | { type: 'screen-edit'; screenId: string }
-  /** 设置 */
-  | { type: 'settings' }
+  /** 设置，可指定默认高亮的页签 */
+  | { type: 'settings'; tab?: 'general' | 'wallpaper' | 'about' }
   | null

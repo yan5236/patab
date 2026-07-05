@@ -46,7 +46,7 @@ function onBlankMenu(event: MouseEvent) {
   items.push({
     label: '更换壁纸',
     icon: Image,
-    action: () => ui.openModal({ type: 'settings' }),
+    action: () => ui.openModal({ type: 'settings', tab: 'wallpaper' }),
   })
   ui.openContextMenu(event, items)
 }
