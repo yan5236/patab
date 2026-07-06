@@ -601,6 +601,55 @@ describe('持久化', () => {
     ])
   })
 
+  it('初始化会迁移旧搜索设置，缺少搜索引擎列表时补齐默认列表', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        screens: [makeScreen('s1', [])],
+        dock: [],
+        todos: [],
+        settings: {
+          wallpaper: '/custom.jpg',
+          customWallpapers: [],
+          hour12: false,
+          searchEngine: 'google',
+          placementMode: 'compact',
+        },
+      }),
+    )
+
+    const store = useLauncherStore()
+
+    expect(store.settings.searchEngine).toBe('google')
+    expect(store.settings.searchEngines.map((engine) => engine.id)).toContain('metaso')
+  })
+
+  it('初始化保留空搜索引擎列表，并清空当前搜索引擎', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        screens: [makeScreen('s1', [])],
+        dock: [],
+        todos: [],
+        settings: {
+          wallpaper: '/custom.jpg',
+          customWallpapers: [],
+          hour12: false,
+          searchEngine: 'baidu',
+          searchEngines: [],
+          placementMode: 'compact',
+        },
+      }),
+    )
+
+    const store = useLauncherStore()
+
+    expect(store.settings.searchEngines).toEqual([])
+    expect(store.settings.searchEngine).toBe('')
+  })
+
   it('数据变化后防抖写入 localStorage', async () => {
     vi.useFakeTimers()
     const store = setupFixture()

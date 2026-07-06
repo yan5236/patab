@@ -4,11 +4,12 @@
  * 只负责设置页签、草稿状态和统一保存，具体设置项交给子面板组件。
  */
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
-import { ArrowLeft, Clock3, Image, Info } from '@lucide/vue'
+import { ArrowLeft, Clock3, Image, Info, Search } from '@lucide/vue'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import BaseModal from '@/components/common/BaseModal.vue'
 import GeneralSettingsPanel from '@/components/settings/GeneralSettingsPanel.vue'
+import SearchEngineSettingsPanel from '@/components/settings/SearchEngineSettingsPanel.vue'
 import WallpaperSettingsPanel from '@/components/settings/WallpaperSettingsPanel.vue'
 import AboutSettingsPanel from '@/components/settings/AboutSettingsPanel.vue'
 import {
@@ -19,13 +20,14 @@ import {
 } from '@/utils/wallpapers'
 
 interface SettingsTab {
-  id: 'general' | 'wallpaper' | 'about'
+  id: 'general' | 'search' | 'wallpaper' | 'about'
   label: string
   icon: unknown
 }
 
 const SETTINGS_TABS: SettingsTab[] = [
   { id: 'general', label: '通用', icon: Clock3 },
+  { id: 'search', label: '搜索', icon: Search },
   { id: 'wallpaper', label: '壁纸', icon: Image },
   { id: 'about', label: '关于', icon: Info },
 ]
@@ -39,6 +41,8 @@ const selectedTab = computed<SettingsTab['id']>(() => activeTab.value ?? initial
 const selectedTabLabel = computed(() => SETTINGS_TABS.find((tab) => tab.id === selectedTab.value)?.label ?? '设置')
 const wallpaper = ref(launcher.settings.wallpaper)
 const hour12 = ref(launcher.settings.hour12)
+const searchEngine = ref(launcher.settings.searchEngine)
+const searchEngines = ref(launcher.settings.searchEngines.map((engine) => ({ ...engine })))
 // 紧凑排列开关：勾选 = compact（拖动让位），取消 = free（自由摆放留空）
 const compact = ref(launcher.settings.placementMode === 'compact')
 const customWallpapers = ref<WallpaperOption[]>(
@@ -64,6 +68,8 @@ function save() {
     wallpaper: wallpaper.value.trim() || DEFAULT_WALLPAPERS[0]!.src,
     customWallpapers: customWallpapers.value.map(toCustomWallpaper),
     hour12: hour12.value,
+    searchEngine: searchEngine.value,
+    searchEngines: searchEngines.value,
     placementMode: compact.value ? 'compact' : 'free',
   })
   ui.closeModal()
@@ -196,6 +202,11 @@ onBeforeUnmount(() => {
           v-if="selectedTab === 'general'"
           v-model:hour12="hour12"
           v-model:compact="compact"
+        />
+        <SearchEngineSettingsPanel
+          v-else-if="selectedTab === 'search'"
+          v-model:selected-engine="searchEngine"
+          v-model:engines="searchEngines"
         />
         <WallpaperSettingsPanel
           v-else-if="selectedTab === 'wallpaper'"

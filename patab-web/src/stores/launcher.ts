@@ -35,6 +35,11 @@ import {
   rowMajorOrder,
   tileSize,
 } from '@/utils/grid'
+import {
+  DEFAULT_SEARCH_ENGINES,
+  sanitizeSearchEngineId,
+  sanitizeSearchEngines,
+} from '@/utils/searchEngines'
 
 /** localStorage 存储键（含版本号，便于将来迁移） */
 export const STORAGE_KEY = 'patab:v1'
@@ -112,6 +117,7 @@ function buildSeedState(): LauncherState {
       customWallpapers: [],
       hour12: false,
       searchEngine: 'baidu',
+      searchEngines: DEFAULT_SEARCH_ENGINES.map((engine) => ({ ...engine })),
       placementMode: 'compact',
     },
   }
@@ -138,6 +144,11 @@ export const useLauncherStore = defineStore('launcher', () => {
   }
   initial.settings.customWallpapers = sanitizeCustomWallpapers(
     initial.settings.customWallpapers,
+  )
+  initial.settings.searchEngines = sanitizeSearchEngines(initial.settings.searchEngines)
+  initial.settings.searchEngine = sanitizeSearchEngineId(
+    initial.settings.searchEngine,
+    initial.settings.searchEngines,
   )
   // 兼容旧持久化数据：缺少排列模式时默认紧凑
   initial.settings.placementMode ??= 'compact'

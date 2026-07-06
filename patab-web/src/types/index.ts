@@ -62,8 +62,15 @@ export interface TodoItem {
   done: boolean
 }
 
-/** 支持的搜索引擎 */
-export type SearchEngineId = 'baidu' | 'bing' | 'google'
+/** 搜索引擎配置 */
+export interface SearchEngine {
+  /** 唯一标识，用于选中状态和持久化 */
+  id: string
+  /** 展示名称 */
+  name: string
+  /** 搜索地址模板，使用 {q} 表示关键词 */
+  urlTemplate: string
+}
 
 /**
  * 主屏图标排列模式
@@ -90,8 +97,10 @@ export interface Settings {
   customWallpapers: CustomWallpaper[]
   /** 是否 12 小时制 */
   hour12: boolean
-  /** 当前搜索引擎 */
-  searchEngine: SearchEngineId
+  /** 当前搜索引擎 ID；无可用引擎时为空 */
+  searchEngine: string
+  /** 可用搜索引擎列表 */
+  searchEngines: SearchEngine[]
   /** 主屏图标排列模式（默认 compact） */
   placementMode: PlacementMode
 }
@@ -159,7 +168,7 @@ export type ModalState =
   /** 编辑屏幕（重命名/改图标） */
   | { type: 'screen-edit'; screenId: string }
   /** 设置，可指定默认高亮的页签 */
-  | { type: 'settings'; tab?: 'general' | 'wallpaper' | 'about' }
+  | { type: 'settings'; tab?: 'general' | 'search' | 'wallpaper' | 'about' }
   /** 组件商店 */
   | { type: 'component-store' }
   | null

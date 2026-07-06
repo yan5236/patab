@@ -21,7 +21,7 @@ flowchart TD
 - `patab-web/src/stores/drag.ts`：拖拽过程状态。
 - `patab-web/src/composables/`：复杂交互逻辑，例如拖拽、网格翻转、时间刷新。
 - `patab-web/src/types/index.ts`：跨组件共享的数据结构。
-- `patab-web/src/utils/`：URL、图标、网格、ID、壁纸等可复用纯函数。
+- `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
 - `patab-web/src/__tests__/`：单元测试。
 
 ## 依赖方向
@@ -49,7 +49,7 @@ flowchart TD
 
 ## 当前状态
 
-- 已完成：主屏幕、Dock、文件夹、搜索、组件商店、待办小组件、设置弹窗、壁纸、拖拽和 localStorage 持久化。
+- 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、拖拽和 localStorage 持久化。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`launcher.ts`、`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
 
@@ -61,3 +61,4 @@ flowchart TD
 - 新 UI 开发默认先拆成可复用组件，页面层只负责组合和传参。
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
+- 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。

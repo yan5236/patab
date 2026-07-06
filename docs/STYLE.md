@@ -40,6 +40,7 @@
 - 纯函数放在 `utils/`。
 - 跨组件类型放在 `types/index.ts`。
 - 测试放在 `src/__tests__/`。
+- 设置页新增搜索、壁纸等领域面板时，优先放在 `components/settings/`，规则清洗放在对应 `utils/`。
 
 ## 注释规范
 
