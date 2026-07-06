@@ -55,11 +55,28 @@ export interface Screen {
   tiles: Tile[]
 }
 
+/** 待办事项列表 */
+export interface TodoList {
+  id: string
+  name: string
+  order: number
+  /** 系统智能列表，不可删除/重命名 */
+  system?: 'all' | 'today' | 'important'
+}
+
 /** 待办事项条目（待办小组件的数据） */
 export interface TodoItem {
   id: string
   text: string
   done: boolean
+  /** ISO 日期（YYYY-MM-DD），可选 */
+  date?: string
+  /** 是否标记为重要 */
+  important: boolean
+  /** 所属自定义列表 id；智能列表中的 todo 可能为空 */
+  listId?: string
+  /** 全局排序权重，用于自由排序 */
+  order: number
 }
 
 /** 搜索引擎配置 */
@@ -111,6 +128,7 @@ export interface LauncherState {
   screens: Screen[]
   dock: Shortcut[]
   todos: TodoItem[]
+  todoLists: TodoList[]
   settings: Settings
 }
 
@@ -171,4 +189,6 @@ export type ModalState =
   | { type: 'settings'; tab?: 'general' | 'search' | 'wallpaper' | 'about' }
   /** 组件商店 */
   | { type: 'component-store' }
+  /** 待办事项弹窗 */
+  | { type: 'todo' }
   | null

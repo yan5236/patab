@@ -22,9 +22,11 @@ import type {
   ShortcutTarget,
   Tile,
   TodoItem,
+  TodoList,
 } from '@/types'
 import { createId } from '@/utils/id'
 import { colorForName, normalizeUrl } from '@/utils/favicon'
+import { playDing } from '@/utils/sound'
 import {
   COLS,
   ROWS,
@@ -60,6 +62,15 @@ function buildShortcut(data: { name: string; url: string; iconUrl?: string }): S
     iconUrl: data.iconUrl?.trim() || undefined,
     color: colorForName(data.name.trim()),
   }
+}
+
+/** 创建默认待办列表（今天/所有/重要） */
+function buildDefaultTodoLists(): TodoList[] {
+  return [
+    { id: 'all', name: '所有', order: 0, system: 'all' },
+    { id: 'today', name: '今天', order: 1, system: 'today' },
+    { id: 'important', name: '重要', order: 2, system: 'important' },
+  ]
 }
 
 /** 首次使用的种子数据（贴近设计稿示例） */
@@ -109,9 +120,10 @@ function buildSeedState(): LauncherState {
       s({ name: '微博', url: 'weibo.com' }),
     ],
     todos: [
-      { id: createId(), text: '右键空白处试试创建快捷方式', done: false },
-      { id: createId(), text: '长按图标拖动一下', done: false },
+      { id: createId(), text: '右键空白处试试创建快捷方式', done: false, important: false, order: 0 },
+      { id: createId(), text: '长按图标拖动一下', done: false, important: false, order: 1000 },
     ],
+    todoLists: buildDefaultTodoLists(),
     settings: {
       wallpaper: DEFAULT_WALLPAPER,
       customWallpapers: [],
@@ -121,6 +133,43 @@ function buildSeedState(): LauncherState {
       placementMode: 'compact',
     },
   }
+}
+
+/** 清洗待办列表，缺失时创建默认智能列表 */
+function sanitizeTodoLists(value: unknown): TodoList[] {
+  if (!Array.isArray(value) || value.length === 0) return buildDefaultTodoLists()
+  const lists = value.filter(
+    (item): item is TodoList =>
+      typeof item?.id === 'string' &&
+      typeof item?.name === 'string' &&
+      typeof item?.order === 'number' &&
+      item.name.trim().length > 0,
+  )
+  // 保证默认系统列表存在
+  const systemIds = new Set(['all', 'today', 'important'])
+  const existingSystem = new Set(lists.filter((l) => l.system).map((l) => l.id))
+  const defaults = buildDefaultTodoLists().filter((l) => !existingSystem.has(l.id))
+  return [...lists, ...defaults].sort((a, b) => a.order - b.order)
+}
+
+/** 清洗待办条目，补齐新字段 */
+function sanitizeTodos(value: unknown): TodoItem[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .filter(
+      (item): item is TodoItem =>
+        typeof item?.id === 'string' &&
+        typeof item?.text === 'string' &&
+        typeof item?.done === 'boolean',
+    )
+    .map((item, index) => ({
+      ...item,
+      text: item.text.trim(),
+      important: item.important ?? false,
+      order: item.order ?? index * 1000,
+      date: item.date,
+      listId: item.listId,
+    }))
 }
 
 /** 从 localStorage 读取持久化数据，无数据或损坏时返回 null */
@@ -152,19 +201,23 @@ export const useLauncherStore = defineStore('launcher', () => {
   )
   // 兼容旧持久化数据：缺少排列模式时默认紧凑
   initial.settings.placementMode ??= 'compact'
+  // 兼容旧持久化数据：补齐待办字段与默认列表
+  initial.todos = sanitizeTodos(initial.todos)
+  initial.todoLists = sanitizeTodoLists(initial.todoLists)
   // 为主屏幕图块补齐网格坐标：兼容旧紧凑数据（无坐标）与种子数据，幂等不丢块
   initial.screens.forEach(layoutScreen)
 
   const screens = ref<Screen[]>(initial.screens)
   const dock = ref<Shortcut[]>(initial.dock)
   const todos = ref<TodoItem[]>(initial.todos)
+  const todoLists = ref<TodoList[]>(initial.todoLists)
   const settings = ref<Settings>(initial.settings)
 
   /* ---------- 持久化（防抖写入） ---------- */
 
   let saveTimer: ReturnType<typeof setTimeout> | undefined
   watch(
-    [screens, dock, todos, settings],
+    [screens, dock, todos, todoLists, settings],
     () => {
       clearTimeout(saveTimer)
       saveTimer = setTimeout(() => {
@@ -173,6 +226,7 @@ export const useLauncherStore = defineStore('launcher', () => {
           screens: screens.value,
           dock: dock.value,
           todos: todos.value,
+          todoLists: todoLists.value,
           settings: settings.value,
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
@@ -376,19 +430,84 @@ export const useLauncherStore = defineStore('launcher', () => {
 
   /* ---------- 待办 ---------- */
 
-  function addTodo(text: string) {
+  function addTodo(
+    text: string,
+    opts: { date?: string; important?: boolean; listId?: string } = {},
+  ) {
     const trimmed = text.trim()
-    if (trimmed) todos.value.push({ id: createId(), text: trimmed, done: false })
+    if (!trimmed) return
+    const maxOrder = todos.value.reduce((max, t) => Math.max(max, t.order), 0)
+    todos.value.push({
+      id: createId(),
+      text: trimmed,
+      done: false,
+      important: opts.important ?? false,
+      date: opts.date,
+      listId: opts.listId,
+      order: maxOrder + 1000,
+    })
+  }
+
+  function updateTodo(
+    todoId: string,
+    patch: { text?: string; date?: string; important?: boolean },
+  ) {
+    const todo = todos.value.find((t) => t.id === todoId)
+    if (!todo) return
+    if (patch.text !== undefined) todo.text = patch.text.trim()
+    if (patch.date !== undefined) todo.date = patch.date
+    if (patch.important !== undefined) todo.important = patch.important
   }
 
   function toggleTodo(todoId: string) {
     const todo = todos.value.find((t) => t.id === todoId)
-    if (todo) todo.done = !todo.done
+    if (!todo) return
+    todo.done = !todo.done
+    if (todo.done) playDing()
   }
 
   function removeTodo(todoId: string) {
     const index = todos.value.findIndex((t) => t.id === todoId)
     if (index >= 0) todos.value.splice(index, 1)
+  }
+
+  function setTodoOrder(orderedIds: string[]) {
+    todos.value.forEach((todo) => {
+      const index = orderedIds.indexOf(todo.id)
+      if (index >= 0) todo.order = index * 1000
+    })
+  }
+
+  /* ---------- 待办列表 ---------- */
+
+  function addTodoList(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+    const maxOrder = todoLists.value.reduce((max, l) => Math.max(max, l.order), 0)
+    todoLists.value.push({ id: createId(), name: trimmed, order: maxOrder + 1000 })
+  }
+
+  function renameTodoList(listId: string, name: string) {
+    const list = todoLists.value.find((l) => l.id === listId)
+    if (list) list.name = name.trim()
+  }
+
+  function removeTodoList(listId: string) {
+    const index = todoLists.value.findIndex((l) => l.id === listId)
+    if (index < 0) return
+    const list = todoLists.value[index]
+    if (list?.system) return
+    todoLists.value.splice(index, 1)
+    todos.value.forEach((todo) => {
+      if (todo.listId === listId) todo.listId = undefined
+    })
+  }
+
+  function setTodoListOrder(orderedIds: string[]) {
+    todoLists.value.forEach((list) => {
+      const index = orderedIds.indexOf(list.id)
+      if (index >= 0) list.order = index * 1000
+    })
   }
 
   /* ---------- 主屏幕坐标辅助 ---------- */
@@ -601,6 +720,7 @@ export const useLauncherStore = defineStore('launcher', () => {
     screens,
     dock,
     todos,
+    todoLists,
     settings,
     findScreen,
     findFolder,
@@ -619,8 +739,14 @@ export const useLauncherStore = defineStore('launcher', () => {
     removeScreen,
     moveToDock,
     addTodo,
+    updateTodo,
     toggleTodo,
     removeTodo,
+    setTodoOrder,
+    addTodoList,
+    renameTodoList,
+    removeTodoList,
+    setTodoListOrder,
     handleDrop,
     updateSettings,
   }

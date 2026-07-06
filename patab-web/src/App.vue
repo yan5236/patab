@@ -19,6 +19,7 @@ import ShortcutEditModal from '@/components/modals/ShortcutEditModal.vue'
 import ScreenEditModal from '@/components/modals/ScreenEditModal.vue'
 import SettingsModal from '@/components/modals/SettingsModal.vue'
 import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
+import TodoModal from '@/components/modals/TodoModal.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -79,5 +80,6 @@ function onRootContextMenu(event: MouseEvent) {
     />
     <SettingsModal v-if="ui.modal?.type === 'settings'" />
     <ComponentStoreModal v-if="ui.modal?.type === 'component-store'" />
+    <TodoModal v-if="ui.modal?.type === 'todo'" />
   </div>
 </template>

@@ -35,8 +35,13 @@ function onMenu(event: MouseEvent) {
     class="flex h-full w-full flex-col overflow-hidden rounded-3xl"
     @contextmenu="onMenu"
   >
-    <div class="shrink-0 cursor-grab px-4 pb-1 pt-3 text-sm font-semibold text-neutral-700">
-      {{ title }}
+    <div class="flex shrink-0 items-center justify-between px-4 pb-1 pt-3">
+      <span class="cursor-grab text-sm font-semibold text-neutral-700">
+        {{ title }}
+      </span>
+      <div v-if="$slots.actions" class="flex items-center gap-1" data-nodrag>
+        <slot name="actions" />
+      </div>
     </div>
     <div class="min-h-0 flex-1 px-3 pb-3" data-nodrag>
       <slot />
