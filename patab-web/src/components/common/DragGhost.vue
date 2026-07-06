@@ -22,6 +22,7 @@ const style = computed(() => ({
 const widgetStyle = computed(() => ({
   width: `${drag.sourceWidth || 320}px`,
   height: `${drag.sourceHeight || 212}px`,
+  transform: `translate(${-drag.sourceOffsetX}px, ${-drag.sourceOffsetY}px)`,
 }))
 </script>
 
@@ -29,7 +30,8 @@ const widgetStyle = computed(() => ({
   <Teleport to="body">
     <div
       v-if="drag.tile"
-      class="pointer-events-none fixed z-[70] -translate-x-1/2 -translate-y-1/2 opacity-90 drop-shadow-2xl"
+      class="pointer-events-none fixed z-[70] opacity-90 drop-shadow-2xl"
+      :class="drag.tile.type === 'widget' ? '' : '-translate-x-1/2 -translate-y-1/2'"
       :style="style"
     >
       <!-- 快捷方式：真实图标 -->

@@ -152,6 +152,9 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   /** 来源图块的像素尺寸（长按判定阶段捕获，供幽灵图标等比还原） */
   let srcW = 0
   let srcH = 0
+  /** 指针在来源图块内的按下偏移，避免幽灵图块拖拽开始时跳到指针中心 */
+  let srcOffsetX = 0
+  let srcOffsetY = 0
   let activePayload: DragPayload | null = null
 
   /* ---------- 阶段一：长按判定 ---------- */
@@ -176,6 +179,8 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
     srcW = rect.width
     srcH = rect.height
+    srcOffsetX = event.clientX - rect.left
+    srcOffsetY = event.clientY - rect.top
     pressTimer = setTimeout(() => {
       if (pointerType === 'touch') openTouchMenu()
       else mouseDragArmed = true
@@ -291,7 +296,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     if (!activePayload) return
     capturePointer()
     ui.closeContextMenu()
-    dragStore.start(activePayload.tile, activePayload.source, x, y, srcW, srcH)
+    dragStore.start(activePayload.tile, activePayload.source, x, y, srcW, srcH, srcOffsetX, srcOffsetY)
     window.addEventListener('pointermove', onDragMove)
     window.addEventListener('pointerup', onDragUp)
     window.addEventListener('pointercancel', abortDrag)

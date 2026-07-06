@@ -43,6 +43,9 @@ export const useDragStore = defineStore('drag', () => {
   /** 来源图块的实际像素尺寸（供幽灵图标等比还原，尤其是整卡小组件） */
   const sourceWidth = ref(0)
   const sourceHeight = ref(0)
+  /** 指针在来源图块内的按下偏移（供幽灵保持原始抓取点） */
+  const sourceOffsetX = ref(0)
+  const sourceOffsetY = ref(0)
   /** 当前悬停的放置目标 */
   const hoverTarget = shallowRef<DropTarget | null>(null)
 
@@ -65,6 +68,8 @@ export const useDragStore = defineStore('drag', () => {
     y: number,
     width = 0,
     height = 0,
+    offsetX = width / 2,
+    offsetY = height / 2,
   ) {
     tile.value = dragTile
     source.value = dragSource
@@ -72,6 +77,8 @@ export const useDragStore = defineStore('drag', () => {
     pointerY.value = y
     sourceWidth.value = width
     sourceHeight.value = height
+    sourceOffsetX.value = offsetX
+    sourceOffsetY.value = offsetY
     hoverTarget.value = null
   }
 
@@ -106,6 +113,8 @@ export const useDragStore = defineStore('drag', () => {
     source.value = null
     sourceWidth.value = 0
     sourceHeight.value = 0
+    sourceOffsetX.value = 0
+    sourceOffsetY.value = 0
     hoverTarget.value = null
     clearCompactPreview()
   }
@@ -117,6 +126,8 @@ export const useDragStore = defineStore('drag', () => {
     pointerY,
     sourceWidth,
     sourceHeight,
+    sourceOffsetX,
+    sourceOffsetY,
     hoverTarget,
     previewScreenId,
     previewPositions,
