@@ -303,6 +303,8 @@ export const useLauncherStore = defineStore('launcher', () => {
     // 先清脏坐标再逐个落位，避免未定位子项互相干扰寻空位
     children.forEach((child) => clearPos(child))
     children.forEach((child, i) => placeOnScreen(screen, child, i === 0 ? anchor : undefined))
+    // 紧凑模式下整屏重新打包，避免解散后遗留空位
+    recompactScreen(screen)
   }
 
   /* ---------- 小组件 ---------- */
