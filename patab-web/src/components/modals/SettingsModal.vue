@@ -41,6 +41,7 @@ const selectedTab = computed<SettingsTab['id']>(() => activeTab.value ?? initial
 const selectedTabLabel = computed(() => SETTINGS_TABS.find((tab) => tab.id === selectedTab.value)?.label ?? '设置')
 const wallpaper = ref(launcher.settings.wallpaper)
 const hour12 = ref(launcher.settings.hour12)
+const showDate = ref(launcher.settings.showDate)
 const searchEngine = ref(launcher.settings.searchEngine)
 const searchEngines = ref(launcher.settings.searchEngines.map((engine) => ({ ...engine })))
 // 紧凑排列开关：勾选 = compact（拖动让位），取消 = free（自由摆放留空）
@@ -68,6 +69,7 @@ function save() {
     wallpaper: wallpaper.value.trim() || DEFAULT_WALLPAPERS[0]!.src,
     customWallpapers: customWallpapers.value.map(toCustomWallpaper),
     hour12: hour12.value,
+    showDate: showDate.value,
     searchEngine: searchEngine.value,
     searchEngines: searchEngines.value,
     placementMode: compact.value ? 'compact' : 'free',
@@ -201,6 +203,7 @@ onBeforeUnmount(() => {
         <GeneralSettingsPanel
           v-if="selectedTab === 'general'"
           v-model:hour12="hour12"
+          v-model:show-date="showDate"
           v-model:compact="compact"
         />
         <SearchEngineSettingsPanel

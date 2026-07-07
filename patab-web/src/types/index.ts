@@ -114,6 +114,8 @@ export interface Settings {
   customWallpapers: CustomWallpaper[]
   /** 是否 12 小时制 */
   hour12: boolean
+  /** 是否在时钟下方显示日期 */
+  showDate: boolean
   /** 当前搜索引擎 ID；无可用引擎时为空 */
   searchEngine: string
   /** 可用搜索引擎列表 */

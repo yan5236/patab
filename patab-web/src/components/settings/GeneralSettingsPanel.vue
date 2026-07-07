@@ -4,6 +4,7 @@
  * 只负责通用设置项的展示与双向绑定，不直接读取或保存 store。
  */
 const hour12 = defineModel<boolean>('hour12', { required: true })
+const showDate = defineModel<boolean>('showDate', { required: true })
 const compact = defineModel<boolean>('compact', { required: true })
 </script>
 
@@ -13,6 +14,11 @@ const compact = defineModel<boolean>('compact', { required: true })
     <label class="flex cursor-pointer items-center justify-between rounded-xl bg-white/45 px-3 py-3">
       <span class="text-sm text-neutral-700">12 小时制时钟</span>
       <input v-model="hour12" type="checkbox" class="h-4 w-4 cursor-pointer accent-sky-500">
+    </label>
+
+    <label class="flex cursor-pointer items-center justify-between rounded-xl bg-white/45 px-3 py-3">
+      <span class="text-sm text-neutral-700">显示日期</span>
+      <input v-model="showDate" type="checkbox" class="h-4 w-4 cursor-pointer accent-sky-500">
     </label>
 
     <label class="flex cursor-pointer items-center justify-between rounded-xl bg-white/45 px-3 py-3">

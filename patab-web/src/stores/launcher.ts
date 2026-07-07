@@ -128,6 +128,7 @@ function buildSeedState(): LauncherState {
       wallpaper: DEFAULT_WALLPAPER,
       customWallpapers: [],
       hour12: false,
+      showDate: true,
       searchEngine: 'baidu',
       searchEngines: DEFAULT_SEARCH_ENGINES.map((engine) => ({ ...engine })),
       placementMode: 'compact',
@@ -194,6 +195,8 @@ export const useLauncherStore = defineStore('launcher', () => {
   initial.settings.customWallpapers = sanitizeCustomWallpapers(
     initial.settings.customWallpapers,
   )
+  // 兼容旧持久化数据：缺少日期显示开关时默认显示
+  initial.settings.showDate ??= true
   initial.settings.searchEngines = sanitizeSearchEngines(initial.settings.searchEngines)
   initial.settings.searchEngine = sanitizeSearchEngineId(
     initial.settings.searchEngine,

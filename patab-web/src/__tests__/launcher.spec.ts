@@ -570,6 +570,7 @@ describe('持久化', () => {
 
     expect(store.settings.wallpaper).toBe('/scenery1.jpg')
     expect(store.settings.customWallpapers).toEqual([])
+    expect(store.settings.showDate).toBe(true)
   })
 
   it('初始化会清洗自定义壁纸，丢弃空名称或空地址', () => {

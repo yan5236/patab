@@ -23,6 +23,7 @@ function makeState(overrides: Partial<LauncherState> = {}): LauncherState {
       wallpaper: '/scenery1.jpg',
       customWallpapers: [],
       hour12: false,
+      showDate: true,
       searchEngine: 'baidu',
       searchEngines: [],
       placementMode: 'compact',

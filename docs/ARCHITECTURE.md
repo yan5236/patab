@@ -49,7 +49,7 @@ flowchart TD
 
 ## 当前状态
 
-- 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、拖拽和 localStorage 持久化。
+- 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、拖拽和 localStorage 持久化。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`launcher.ts`、`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
 
@@ -61,5 +61,6 @@ flowchart TD
 - 新 UI 开发默认先拆成可复用组件，页面层只负责组合和传参。
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
+- 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。
 - 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。
 - 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。
