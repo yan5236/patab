@@ -44,8 +44,8 @@ const MOVE_TOLERANCE = 8
 const PAGER_HOVER_SWITCH_MS = 500
 /** 从文件夹内拖出、悬停面板外多久后自动关闭文件夹（毫秒） */
 const FOLDER_CLOSE_HOVER_MS = 300
-/** 紧凑模式：拖拽悬停到文件夹图标上，多久内「不让位」以便放入文件夹（毫秒） */
-const FOLDER_HOLD_MS = 500
+/** 紧凑模式：拖拽悬停到文件夹图标上，靠近边缘多少像素内才让文件夹「让位」以便重新排序（像素） */
+const FOLDER_YIELD_MARGIN = 10
 /** 触摸长按菜单相对手指的偏移，避免菜单挡住后续拖拽起手路径 */
 const TOUCH_MENU_OFFSET_X = 28
 const TOUCH_MENU_OFFSET_Y = 132
@@ -126,12 +126,6 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let pressTimer: ReturnType<typeof setTimeout> | undefined
   let pagerTimer: ReturnType<typeof setTimeout> | undefined
   let folderCloseTimer: ReturnType<typeof setTimeout> | undefined
-  /** 紧凑模式「文件夹保持窗口」计时器与状态 */
-  let folderHoldTimer: ReturnType<typeof setTimeout> | undefined
-  /** 当前正处于保持窗口的文件夹 id（null = 未悬停在文件夹上） */
-  let pendingFolderId: string | null = null
-  /** 保持窗口是否已超时（true = 允许该文件夹让位） */
-  let folderYielded = false
   /** 上次让位预览提交时的指针坐标（用于 COMMIT_GATE 距离迟滞） */
   let lastCommitX = 0
   let lastCommitY = 0
@@ -346,7 +340,8 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     const { col, row } = cellFromPoint(rect, x, y)
     const directTarget = isValidTarget(dragTile, resolveTarget(x, y))
 
-    // 悬停到文件夹图标上：短暂保持窗口内「不让位」，让用户可把快捷方式放进文件夹。
+    // 悬停到文件夹图标上：仅在指针真正位于文件夹图块 DOM 上且未靠近边缘时，
+    // 才视为「可放入文件夹」目标并保持文件夹不让位；靠近边缘时允许走下方让位逻辑，文件夹会移开。
     // 桌面端用真实布局格坐标兜底判定（不受让位位移影响）；手机端 8 列格坐标与 4 列视觉网格错位，
     // 会把手指误判到文件夹逻辑格上（触发无谓的 clearCompactPreview → 空位卡回原位），故手机端只信 DOM 命中。
     if (dragTile.type === 'shortcut') {
@@ -357,24 +352,25 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
             ? undefined
             : tileAt(screen.tiles, col, row, dragTile.id)
       if (hovered?.type === 'folder') {
-        // 进入某文件夹：开启保持窗口（超时后才允许让位）
-        if (pendingFolderId !== hovered.id) {
-          pendingFolderId = hovered.id
-          folderYielded = false
-          clearTimeout(folderHoldTimer)
-          folderHoldTimer = setTimeout(onFolderHoldElapsed, FOLDER_HOLD_MS)
+        // 只有 DOM 直接命中文件夹图块时，才按几何边缘判断是否保持「可放入」状态。
+        const folderEl =
+          directTarget?.kind === 'folder-tile'
+            ? document.querySelector<HTMLElement>(`[data-drop="folder-tile"][data-folder="${hovered.id}"]`)
+            : null
+        if (folderEl) {
+          const rect = folderEl.getBoundingClientRect()
+          const nearEdge =
+            x <= rect.left + FOLDER_YIELD_MARGIN ||
+            x >= rect.right - FOLDER_YIELD_MARGIN ||
+            y <= rect.top + FOLDER_YIELD_MARGIN ||
+            y >= rect.bottom - FOLDER_YIELD_MARGIN
+          if (!nearEdge) {
+            dragStore.clearCompactPreview()
+            return { kind: 'folder-tile', folderId: hovered.id }
+          }
         }
-        if (!folderYielded) {
-          // 保持中：所有图块回真实位置（文件夹回到光标下），呈现「放入文件夹」目标
-          dragStore.clearCompactPreview()
-          return { kind: 'folder-tile', folderId: hovered.id }
-        }
-        // 已超时 → 落到下方让位逻辑，文件夹随之让开
-      } else {
-        resetFolderHold()
+        // 在边缘、或仅网格坐标命中但 DOM 未命中 → 落到下方让位逻辑，文件夹随之让开
       }
-    } else {
-      resetFolderHold()
     }
 
     // 排除被拖图块后的当前行主序序列 → 悬停格插入下标
@@ -433,23 +429,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     return Math.min(slot, order.length)
   }
 
-  /** 退出文件夹保持窗口（移开文件夹 / 拖非快捷方式时） */
-  function resetFolderHold() {
-    pendingFolderId = null
-    folderYielded = false
-    clearTimeout(folderHoldTimer)
-  }
 
-  /** 保持窗口超时：允许该文件夹让位，并用最后指针位置立即重算一次（此时无指针移动） */
-  function onFolderHoldElapsed() {
-    folderYielded = true
-    if (!dragStore.tile) return
-    const target = resolveDropTarget(dragStore.pointerX, dragStore.pointerY)
-    dragStore.update(dragStore.pointerX, dragStore.pointerY, target)
-    applyHoverTimers(target)
-  }
-
-  /** 悬停目标变化时重置分页自动切屏 / 文件夹自动关闭两个延时行为 */
   function applyHoverTimers(target: DropTarget | null) {
     const key = dropTargetKey(target)
     if (key === lastHoverKey) return
@@ -495,7 +475,6 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     clearTimeout(pagerTimer)
     clearTimeout(folderCloseTimer)
     removeNativeMenuBlock()
-    resetFolderHold()
     lastCommitX = 0
     lastCommitY = 0
     lastHoverKey = ''
