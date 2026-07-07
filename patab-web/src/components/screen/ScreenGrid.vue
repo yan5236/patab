@@ -48,12 +48,15 @@ const maxRow = computed(() => {
   return m
 })
 
-/** 内容溢出一屏（仅旧数据可能出现）：降级为固定行高 + 纵向滚动 */
+/** 内容溢出一屏：保持首屏 4 行尺寸不变，超出的行通过纵向滚动访问 */
 const isOverflow = computed(() => maxRow.value > ROWS)
 
 const gridStyle = computed(() =>
   isOverflow.value
-    ? { gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`, gridAutoRows: '106px' }
+    ? {
+        gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
+        gridAutoRows: `calc((100% - (${ROWS - 1} * var(--screen-grid-gap))) / ${ROWS})`,
+      }
     : {
         gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
         gridTemplateRows: `repeat(${ROWS}, minmax(0, 1fr))`,
@@ -90,7 +93,7 @@ const emptyCells = computed(() => {
   <div
     ref="gridRef"
     class="screen-grid grid gap-3 p-2"
-    :class="isOverflow ? 'overflow-y-auto' : 'h-full w-full overflow-hidden'"
+    :class="isOverflow ? 'h-full w-full overflow-x-hidden overflow-y-auto' : 'h-full w-full overflow-hidden'"
     :style="gridStyle"
     :data-drop="isCompact ? 'grid' : undefined"
     :data-screen="isCompact ? screen.id : undefined"
@@ -135,9 +138,14 @@ const emptyCells = computed(() => {
 </template>
 
 <style scoped>
+.screen-grid {
+  --screen-grid-gap: 0.75rem;
+}
+
 /* 手机端主屏改为纵向流式网格，保留桌面端固定坐标网格。 */
 @media (max-width: 640px) {
   .screen-grid {
+    --screen-grid-gap: 1rem;
     grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)) !important;
     grid-template-rows: none !important;
     grid-auto-rows: 112px !important;
