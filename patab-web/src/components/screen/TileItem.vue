@@ -9,9 +9,11 @@
  * 主屏网格（自由摆放）与文件夹展开层（紧凑）复用同一个组件（zone 区分）。
  */
 import { computed } from 'vue'
-import type { DragSource, Tile } from '@/types'
+import { Trash2 } from '@lucide/vue'
+import type { DragSource, MenuItem, Tile } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
+import { useUiStore } from '@/stores/ui'
 import { useLongPressDrag } from '@/composables/useLongPressDrag'
 import { COLS, tileSize } from '@/utils/grid'
 import ShortcutTile from './ShortcutTile.vue'
@@ -27,6 +29,7 @@ const props = defineProps<{
 
 const drag = useDragStore()
 const launcher = useLauncherStore()
+const ui = useUiStore()
 
 /** 本图块处于紧凑模式的主屏（整格由容器接管放置、拖拽走让位重排） */
 const isCompactScreen = computed(
@@ -56,6 +59,11 @@ const isHoverCell = computed(
     drag.hoverKey === `cell:folder:${props.containerId}:${props.index}`,
 )
 
+/** 主屏管理模式下本图块是否可被批量选择 */
+const isManageable = computed(() => props.zone === 'screen' && ui.managementMode)
+/** 本图块是否已被管理模式选中 */
+const isSelected = computed(() => ui.selectedTileIdSet.has(props.tile.id))
+
 /** 图标由长按拖拽接管触摸；小组件保留纵向滚动能力 */
 const tileTouchAction = computed(() => (props.tile.type === 'widget' ? 'pan-y' : 'none'))
 
@@ -74,6 +82,35 @@ const cellStyle = computed(() => {
     touchAction: tileTouchAction.value,
   } as const
 })
+
+/** 管理模式点击只切换选中态，阻止快捷方式跳转或文件夹展开 */
+function onManagedClick(event: MouseEvent) {
+  if (!isManageable.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  ui.toggleManagedTile(props.tile.id)
+}
+
+/** 管理模式右键打开批量操作菜单；未选中当前图块时先纳入选择 */
+function onManagedMenu(event: MouseEvent) {
+  if (!isManageable.value) return
+  event.preventDefault()
+  event.stopPropagation()
+  ui.ensureManagedTile(props.tile.id)
+  const selected = [...ui.selectedTileIds]
+  const items: MenuItem[] = [
+    {
+      label: `删除 ${selected.length} 项`,
+      icon: Trash2,
+      danger: true,
+      action: () => {
+        launcher.removeTiles(selected)
+        ui.cleanupManagedSelection()
+      },
+    },
+  ]
+  ui.openContextMenu(event, items)
+}
 
 </script>
 
@@ -98,7 +135,20 @@ const cellStyle = computed(() => {
     :data-col="zone === 'screen' && !isCompactScreen ? tile.col : undefined"
     :data-row="zone === 'screen' && !isCompactScreen ? tile.row : undefined"
     @pointerdown="onPointerdown"
+    @click.capture="onManagedClick"
+    @contextmenu.capture="onManagedMenu"
   >
+    <span
+      v-if="isManageable"
+      class="pointer-events-none absolute right-1 top-1 z-20 flex h-5 w-5 items-center justify-center rounded-full border text-[13px] font-bold leading-none shadow-sm"
+      :class="
+        isSelected
+          ? 'border-sky-200 bg-sky-500 text-white'
+          : 'border-white/80 bg-black/20 text-transparent backdrop-blur'
+      "
+    >
+      ✓
+    </span>
     <ShortcutTile v-if="tile.type === 'shortcut'" :shortcut="tile" :in-folder="zone === 'folder'" />
     <FolderTile v-else-if="tile.type === 'folder'" :folder="tile" />
     <TodoWidget v-else :tile-id="tile.id" />

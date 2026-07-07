@@ -330,6 +330,20 @@ export const useLauncherStore = defineStore('launcher', () => {
     if (index >= 0) container.splice(index, 1)
   }
 
+  /** 批量删除任意图块，返回实际删除成功的 id，供管理模式清理选中态 */
+  function removeTiles(tileIds: string[]): string[] {
+    const removed: string[] = []
+    for (const tileId of tileIds) {
+      const container = findContainerOf(tileId)
+      if (!container) continue
+      const index = container.findIndex((t) => t.id === tileId)
+      if (index < 0) continue
+      container.splice(index, 1)
+      removed.push(tileId)
+    }
+    return removed
+  }
+
   /* ---------- 文件夹 ---------- */
 
   function addFolder(screenId: string, name: string): Folder {
@@ -555,6 +569,49 @@ export const useLauncherStore = defineStore('launcher', () => {
     return container.splice(index, 1)[0]
   }
 
+  /** 按当前数据反查图块来源，批量拖拽时每个图块都要用自己的真实来源 */
+  function findDragSource(tileId: string): DragSource | undefined {
+    for (const screen of screens.value) {
+      const screenIndex = screen.tiles.findIndex((t) => t.id === tileId)
+      if (screenIndex >= 0) return { kind: 'screen', screenId: screen.id, index: screenIndex }
+      for (const tile of screen.tiles) {
+        if (tile.type !== 'folder') continue
+        const childIndex = tile.children.findIndex((c) => c.id === tileId)
+        if (childIndex >= 0) return { kind: 'folder', folderId: tile.id, index: childIndex }
+      }
+    }
+    const dockIndex = dock.value.findIndex((t) => t.id === tileId)
+    return dockIndex >= 0 ? { kind: 'dock', index: dockIndex } : undefined
+  }
+
+  /** 把图块追加到指定屏幕的可用位置，用作批量拖拽中非锚点图块的落位 */
+  function appendToScreen(tileId: string, screenId: string) {
+    const source = findDragSource(tileId)
+    const screen = findScreen(screenId)
+    if (!source || !screen) return
+    const sourceScreen = findScreenOf(tileId)
+    const container =
+      source.kind === 'screen'
+        ? findScreen(source.screenId)?.tiles
+        : source.kind === 'folder'
+          ? findFolder(source.folderId)?.children
+          : dock.value
+    const tile = container?.find((t) => t.id === tileId)
+    if (!tile) return
+    if (tile.type === 'widget' && sourceScreen?.id !== screen.id && hasTodoWidget(screen.id)) return
+    const moved = takeFromSource(tileId, source)
+    if (!moved) return
+    screen.tiles.push(moved)
+    placeOnScreen(screen, moved)
+    if (settings.value.placementMode === 'compact') {
+      if (source.kind === 'screen') {
+        const origin = findScreen(source.screenId)
+        if (origin && origin.id !== screen.id) recompactScreen(origin)
+      }
+      recompactScreen(screen)
+    }
+  }
+
   /**
    * 拖拽释放：把图块从来源移动到目标位置
    * 全部合法性校验集中在这里，非法落点直接忽略（图块留在原位）
@@ -694,6 +751,44 @@ export const useLauncherStore = defineStore('launcher', () => {
     }
   }
 
+  /**
+   * 批量拖拽释放：锚点图块沿用真实落点，其余图块追加到目标屏幕或文件夹。
+   * 文件夹只接收快捷方式；文件夹/小组件会被自然跳过，避免破坏“不嵌套文件夹”规则。
+   */
+  function handleBatchDrop(
+    tileIds: string[],
+    anchorId: string,
+    source: DragSource,
+    target: DropTarget,
+  ) {
+    const selected = new Set(tileIds)
+    selected.add(anchorId)
+    const visualOrder = screens.value.flatMap((screen) => rowMajorOrder(screen.tiles).map((tile) => tile.id))
+    const orderOf = (id: string) => {
+      const index = visualOrder.indexOf(id)
+      return index >= 0 ? index : Number.MAX_SAFE_INTEGER
+    }
+    const ids = [
+      anchorId,
+      ...[...selected].filter((id) => id !== anchorId).sort((a, b) => orderOf(a) - orderOf(b)),
+    ]
+    const targetScreenId =
+      target.kind === 'slot' || target.kind === 'grid' || target.kind === 'pager'
+        ? target.screenId
+        : undefined
+
+    for (const [index, tileId] of ids.entries()) {
+      const currentSource = findDragSource(tileId)
+      if (!currentSource) continue
+      if (target.kind === 'folder-tile') {
+        handleDrop(tileId, currentSource, target)
+        continue
+      }
+      if (index === 0) handleDrop(tileId, source, target)
+      else if (targetScreenId) appendToScreen(tileId, targetScreenId)
+    }
+  }
+
   /* ---------- 设置 ---------- */
 
   /** 清洗自定义壁纸列表，兼容旧数据并避免空名称、空地址进入运行态 */
@@ -732,6 +827,7 @@ export const useLauncherStore = defineStore('launcher', () => {
     addShortcut,
     updateShortcut,
     removeTile,
+    removeTiles,
     addFolder,
     renameFolder,
     disbandFolder,
@@ -751,6 +847,7 @@ export const useLauncherStore = defineStore('launcher', () => {
     removeTodoList,
     setTodoListOrder,
     handleDrop,
+    handleBatchDrop,
     updateSettings,
   }
 })

@@ -5,7 +5,7 @@
  * - 空白处右键：新建快捷方式 / 新建文件夹 / 更换壁纸
  */
 import { computed } from 'vue'
-import { FolderPlus, Image, SquarePlus } from '@lucide/vue'
+import { FolderPlus, Image, SquareCheckBig, SquarePlus, X } from '@lucide/vue'
 import type { MenuItem } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -23,7 +23,18 @@ const transitionName = computed(() =>
 function onBlankMenu(event: MouseEvent) {
   const screen = ui.currentScreen
   if (!screen) return
+  if (ui.managementMode) {
+    ui.openContextMenu(event, [
+      { label: '退出管理', icon: X, action: () => ui.exitManagementMode() },
+    ])
+    return
+  }
   const items: MenuItem[] = [
+    {
+      label: '管理',
+      icon: SquareCheckBig,
+      action: () => ui.enterManagementMode(),
+    },
     {
       label: '新建快捷方式',
       icon: SquarePlus,

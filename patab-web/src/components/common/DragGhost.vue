@@ -8,10 +8,12 @@
 import { computed } from 'vue'
 import { Folder as FolderIcon } from '@lucide/vue'
 import { useDragStore } from '@/stores/drag'
+import { useUiStore } from '@/stores/ui'
 import AppIcon from './AppIcon.vue'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
 
 const drag = useDragStore()
+const ui = useUiStore()
 
 const style = computed(() => ({
   left: `${drag.pointerX}px`,
@@ -24,6 +26,13 @@ const widgetStyle = computed(() => ({
   height: `${drag.sourceHeight || 212}px`,
   transform: `translate(${-drag.sourceOffsetX}px, ${-drag.sourceOffsetY}px)`,
 }))
+
+/** 管理模式拖拽组选中数量；非组选中拖拽不显示角标 */
+const batchCount = computed(() =>
+  drag.tile && ui.managementMode && ui.selectedTileIds.includes(drag.tile.id)
+    ? ui.selectedTileIds.length
+    : 1,
+)
 </script>
 
 <template>
@@ -54,6 +63,12 @@ const widgetStyle = computed(() => ({
       >
         <FolderIcon class="h-8 w-8 text-neutral-500" />
       </div>
+      <span
+        v-if="batchCount > 1"
+        class="absolute -right-2 -top-2 rounded-full bg-sky-500 px-1.5 py-0.5 text-xs font-bold text-white ring-2 ring-white"
+      >
+        {{ batchCount }}
+      </span>
     </div>
   </Teleport>
 </template>

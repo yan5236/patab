@@ -243,6 +243,13 @@ describe('增删改', () => {
     expect(store.dock).toHaveLength(0)
   })
 
+  it('removeTiles 批量删除图块并返回实际删除的 id', () => {
+    const store = setupFixture()
+    const removed = store.removeTiles(['a', 'w1', 'missing'])
+    expect(removed).toEqual(['a', 'w1'])
+    expect(idsOf(store, 's1')).toEqual(['b', 'f1'])
+  })
+
   it('addTodoWidget 同一屏幕重复添加时只保留一个待办组件', () => {
     const store = setupFixture()
     store.addTodoWidget('s2')
@@ -364,6 +371,33 @@ describe('拖拽移动 handleDrop', () => {
     expect({ col: byId('b').col, row: byId('b').row }).toEqual({ col: 0, row: 0 })
     expect({ col: byId('f1').col, row: byId('f1').row }).toEqual({ col: 1, row: 0 })
     expect({ col: byId('w1').col, row: byId('w1').row }).toEqual({ col: 2, row: 0 })
+  })
+
+  it('批量拖入文件夹只移动快捷方式，文件夹和小组件留在原屏', () => {
+    const store = setupFixture()
+    store.handleBatchDrop(
+      ['a', 'f1', 'w1'],
+      'a',
+      { kind: 'screen', screenId: 's1', index: 0 },
+      { kind: 'folder-tile', folderId: 'f1' },
+    )
+    expect(store.findFolder('f1')!.children.map((c) => c.id)).toEqual(['c', 'a'])
+    expect(idsOf(store, 's1')).toContain('f1')
+    expect(idsOf(store, 's1')).toContain('w1')
+    expect(idsOf(store, 's1')).not.toContain('a')
+  })
+
+  it('批量拖到分页器可跨屏追加多个图块', () => {
+    const store = setupFixture()
+    store.handleBatchDrop(
+      ['a', 'b'],
+      'a',
+      { kind: 'screen', screenId: 's1', index: 0 },
+      { kind: 'pager', screenId: 's2' },
+    )
+    expect(idsOf(store, 's1')).not.toContain('a')
+    expect(idsOf(store, 's1')).not.toContain('b')
+    expect(idsOf(store, 's2')).toEqual(['d', 'a', 'b'])
   })
 
   it('快捷方式拖入文件夹图块并清除主屏坐标；文件夹自身不能入文件夹', () => {

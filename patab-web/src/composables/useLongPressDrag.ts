@@ -472,7 +472,12 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     const source = dragStore.source
     const target = resolveDropTarget(event.clientX, event.clientY)
     if (tile && source && target) {
-      launcher.handleDrop(tile.id, source, target)
+      const selected = ui.managementMode && ui.selectedTileIds.includes(tile.id)
+        ? [...ui.selectedTileIds]
+        : [tile.id]
+      if (selected.length > 1) launcher.handleBatchDrop(selected, tile.id, source, target)
+      else launcher.handleDrop(tile.id, source, target)
+      ui.cleanupManagedSelection()
     }
     finishDrag()
   }
