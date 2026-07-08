@@ -6,6 +6,7 @@
  */
 import { computed } from 'vue'
 import { FolderPlus, Image, SquareCheckBig, SquarePlus, X } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { MenuItem } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -13,6 +14,7 @@ import ScreenGrid from './ScreenGrid.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 /** 过渡名随切换方向变化：向右切换 = 新屏幕从右侧滑入 */
 const transitionName = computed(() =>
@@ -25,30 +27,30 @@ function onBlankMenu(event: MouseEvent) {
   if (!screen) return
   if (ui.managementMode) {
     ui.openContextMenu(event, [
-      { label: '退出管理', icon: X, action: () => ui.exitManagementMode() },
+      { label: t('screen.menu.exitManage'), icon: X, action: () => ui.exitManagementMode() },
     ])
     return
   }
   const items: MenuItem[] = [
     {
-      label: '管理',
+      label: t('screen.menu.manage'),
       icon: SquareCheckBig,
       action: () => ui.enterManagementMode(),
     },
     {
-      label: '新建快捷方式',
+      label: t('screen.menu.newShortcut'),
       icon: SquarePlus,
       action: () =>
         ui.openModal({ type: 'shortcut-create', target: { kind: 'screen', screenId: screen.id } }),
     },
     {
-      label: '新建文件夹',
+      label: t('screen.menu.newFolder'),
       icon: FolderPlus,
-      action: () => launcher.addFolder(screen.id, '新建文件夹'),
+      action: () => launcher.addFolder(screen.id, t('screen.menu.newFolder')),
     },
   ]
   items.push({
-    label: '更换壁纸',
+    label: t('screen.menu.changeWallpaper'),
     icon: Image,
     action: () => ui.openModal({ type: 'settings', tab: 'wallpaper' }),
   })

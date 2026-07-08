@@ -5,6 +5,7 @@
  * 容器自身是放置目标（拖到空白 = 追加到 Dock 末尾）
  */
 import { Plus, Settings, Store } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import GlassPanel from '@/components/common/GlassPanel.vue'
@@ -12,6 +13,7 @@ import DockItem from './DockItem.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 /** 快速添加：在当前屏幕新建快捷方式 */
 function quickAdd() {
@@ -36,7 +38,7 @@ function quickAdd() {
 
       <!-- Dock 为空时的占位提示 -->
       <span v-if="launcher.dock.length === 0" class="shrink-0 px-2 text-xs text-neutral-500">
-        把常用的快捷方式拖到这里
+        {{ t('dock.empty') }}
       </span>
 
       <!-- 分隔线 + 固定功能按钮 -->
@@ -44,7 +46,7 @@ function quickAdd() {
 
       <button
         class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
-        title="设置"
+        :title="t('dock.settings')"
         @click="ui.openModal({ type: 'settings' })"
       >
         <Settings class="h-6 w-6" />
@@ -52,7 +54,7 @@ function quickAdd() {
 
       <button
         class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
-        title="新建快捷方式"
+        :title="t('dock.newShortcut')"
         @click="quickAdd"
       >
         <Plus class="h-6 w-6" />
@@ -60,7 +62,7 @@ function quickAdd() {
 
       <button
         class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
-        title="组件商店"
+        :title="t('dock.componentStore')"
         @click="ui.openModal({ type: 'component-store' })"
       >
         <Store class="h-6 w-6" />

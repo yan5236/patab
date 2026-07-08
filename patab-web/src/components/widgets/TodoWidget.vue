@@ -7,6 +7,7 @@
  */
 import { computed, nextTick, ref } from 'vue'
 import { Maximize2, Plus, Star, Trash2, X } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { useTodoDrag } from '@/composables/useTodoDrag'
@@ -17,6 +18,7 @@ const props = defineProps<{ tileId: string }>()
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 const draft = ref('')
 const showCompleted = ref(false)
 const listRef = ref<HTMLElement | null>(null)
@@ -92,11 +94,11 @@ function formatDate(date?: string): string {
 </script>
 
 <template>
-  <WidgetShell :tile-id="tileId" title="待办事项">
+  <WidgetShell :tile-id="tileId" :title="t('todo.title')">
     <template #actions>
       <button
         class="cursor-pointer rounded p-1 text-neutral-500 transition-colors hover:bg-white/40 hover:text-neutral-700"
-        title="展开"
+        :title="t('widgets.expand')"
         @click="openModal"
       >
         <Maximize2 class="h-3.5 w-3.5" />
@@ -152,14 +154,14 @@ function formatDate(date?: string): string {
           <button
             class="mobile-action-btn shrink-0 rounded p-0.5 transition-colors"
             :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'text-neutral-400 opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
-            title="重要"
+            :title="t('todo.important')"
             @click="toggleImportant(todo)"
           >
             <Star class="h-3.5 w-3.5" :class="todo.important ? 'fill-current' : ''" />
           </button>
           <button
             class="mobile-action-btn shrink-0 cursor-pointer rounded p-0.5 text-neutral-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
-            title="删除"
+            :title="t('common.delete')"
             @click="deleteTodo(todo)"
           >
             <Trash2 class="h-3.5 w-3.5" />
@@ -175,7 +177,7 @@ function formatDate(date?: string): string {
           >
             <X v-if="showCompleted" class="h-3 w-3" />
             <Plus v-else class="h-3 w-3" />
-            已完成 ({{ completedTodos.length }})
+            {{ t('todo.completed', { count: completedTodos.length }) }}
           </button>
 
           <div v-if="showCompleted" class="mt-1 space-y-1">
@@ -198,7 +200,7 @@ function formatDate(date?: string): string {
               </span>
               <button
                 class="shrink-0 cursor-pointer rounded p-0.5 text-neutral-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100"
-                title="删除"
+                :title="t('common.delete')"
                 @click="deleteTodo(todo)"
               >
                 <Trash2 class="h-3.5 w-3.5" />
@@ -211,7 +213,7 @@ function formatDate(date?: string): string {
           v-if="launcher.todos.length === 0"
           class="flex h-full items-center justify-center text-xs text-neutral-500"
         >
-          暂无待办，输入后回车添加
+          {{ t('todo.emptyWidget') }}
         </div>
 
         <div
@@ -226,13 +228,13 @@ function formatDate(date?: string): string {
         <input
           v-model="draft"
           type="text"
-          placeholder="添加待办…"
+          :placeholder="t('todo.addTodo')"
           class="h-6 min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-500"
           @keydown.enter="submit"
         >
         <button
           class="shrink-0 cursor-pointer rounded p-0.5 text-neutral-500 hover:text-neutral-700"
-          title="添加"
+          :title="t('todo.add')"
           @click="submit"
         >
           <Plus class="h-4 w-4" />

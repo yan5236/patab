@@ -5,8 +5,11 @@
  */
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { ArrowLeft, Clock3, Image, Info, Search } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
+import { setLocale } from '@/i18n'
+import type { LocaleCode } from '@/i18n/language'
 import BaseModal from '@/components/common/BaseModal.vue'
 import GeneralSettingsPanel from '@/components/settings/GeneralSettingsPanel.vue'
 import SearchEngineSettingsPanel from '@/components/settings/SearchEngineSettingsPanel.vue'
@@ -21,24 +24,25 @@ import {
 
 interface SettingsTab {
   id: 'general' | 'search' | 'wallpaper' | 'about'
-  label: string
   icon: unknown
 }
 
 const SETTINGS_TABS: SettingsTab[] = [
-  { id: 'general', label: '通用', icon: Clock3 },
-  { id: 'search', label: '搜索', icon: Search },
-  { id: 'wallpaper', label: '壁纸', icon: Image },
-  { id: 'about', label: '关于', icon: Info },
+  { id: 'general', icon: Clock3 },
+  { id: 'search', icon: Search },
+  { id: 'wallpaper', icon: Image },
+  { id: 'about', icon: Info },
 ]
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 const initialTab = ui.modal?.type === 'settings' ? ui.modal.tab ?? 'general' : 'general'
 const activeTab = ref<SettingsTab['id'] | null>(null)
 const selectedTab = computed<SettingsTab['id']>(() => activeTab.value ?? initialTab)
-const selectedTabLabel = computed(() => SETTINGS_TABS.find((tab) => tab.id === selectedTab.value)?.label ?? '设置')
+const selectedTabLabel = computed(() => t(`settings.tabs.${selectedTab.value}`))
+const language = ref<LocaleCode>(launcher.settings.language)
 const wallpaper = ref(launcher.settings.wallpaper)
 const hour12 = ref(launcher.settings.hour12)
 const showDate = ref(launcher.settings.showDate)
@@ -47,7 +51,11 @@ const searchEngines = ref(launcher.settings.searchEngines.map((engine) => ({ ...
 // 紧凑排列开关：勾选 = compact（拖动让位），取消 = free（自由摆放留空）
 const compact = ref(launcher.settings.placementMode === 'compact')
 const customWallpapers = ref<WallpaperOption[]>(
-  buildInitialWallpaperOptions(launcher.settings.wallpaper, launcher.settings.customWallpapers),
+  buildInitialWallpaperOptions(
+    launcher.settings.wallpaper,
+    launcher.settings.customWallpapers,
+    t('settings.wallpaper.customName'),
+  ),
 )
 const contentRef = ref<HTMLElement | null>(null)
 const mobileBackPinned = ref(false)
@@ -66,6 +74,7 @@ const settingsPanelClass = computed(() =>
 /** 保存设置草稿，并把未选择壁纸时回退到第一张默认壁纸 */
 function save() {
   launcher.updateSettings({
+    language: language.value,
     wallpaper: wallpaper.value.trim() || DEFAULT_WALLPAPERS[0]!.src,
     customWallpapers: customWallpapers.value.map(toCustomWallpaper),
     hour12: hour12.value,
@@ -74,6 +83,7 @@ function save() {
     searchEngines: searchEngines.value,
     placementMode: compact.value ? 'compact' : 'free',
   })
+  setLocale(language.value)
   ui.closeModal()
 }
 
@@ -126,7 +136,7 @@ onBeforeUnmount(() => {
 
 <template>
   <BaseModal
-    title="设置"
+    :title="t('settings.title')"
     :panel-class="settingsPanelClass"
     @close="ui.closeModal()"
   >
@@ -141,7 +151,7 @@ onBeforeUnmount(() => {
         @click="backToMobileMenu"
       >
         <ArrowLeft class="h-4 w-4" />
-        返回
+        {{ t('common.back') }}
       </button>
       <span
         v-if="mobileTitlePinned"
@@ -166,7 +176,7 @@ onBeforeUnmount(() => {
           @click="selectTab(tab.id)"
         >
           <component :is="tab.icon" class="h-4 w-4" />
-          <span>{{ tab.label }}</span>
+          <span>{{ t(`settings.tabs.${tab.id}`) }}</span>
         </button>
       </aside>
 
@@ -180,7 +190,7 @@ onBeforeUnmount(() => {
         >
           <span class="flex items-center gap-2">
             <component :is="tab.icon" class="h-4 w-4" />
-            <span>{{ tab.label }}</span>
+            <span>{{ t(`settings.tabs.${tab.id}`) }}</span>
           </span>
           <span class="text-neutral-400">›</span>
         </button>
@@ -198,10 +208,11 @@ onBeforeUnmount(() => {
           @click="backToMobileMenu"
         >
           <ArrowLeft class="h-4 w-4" />
-          返回
+          {{ t('common.back') }}
         </button>
         <GeneralSettingsPanel
           v-if="selectedTab === 'general'"
+          v-model:language="language"
           v-model:hour12="hour12"
           v-model:show-date="showDate"
           v-model:compact="compact"
@@ -225,13 +236,13 @@ onBeforeUnmount(() => {
         class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
         @click="ui.closeModal()"
       >
-        取消
+        {{ t('common.cancel') }}
       </button>
       <button
         class="cursor-pointer rounded-xl bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600"
         @click="save"
       >
-        保存
+        {{ t('common.save') }}
       </button>
     </template>
   </BaseModal>

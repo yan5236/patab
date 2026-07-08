@@ -10,6 +10,7 @@
  */
 import { computed } from 'vue'
 import { Trash2 } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { DragSource, MenuItem, Tile } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
@@ -30,6 +31,7 @@ const props = defineProps<{
 const drag = useDragStore()
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 /** 本图块处于紧凑模式的主屏（整格由容器接管放置、拖拽走让位重排） */
 const isCompactScreen = computed(
@@ -100,7 +102,7 @@ function onManagedMenu(event: MouseEvent) {
   const selected = [...ui.selectedTileIds]
   const items: MenuItem[] = [
     {
-      label: `删除 ${selected.length} 项`,
+      label: t('screen.menu.deleteItems', { count: selected.length }),
       icon: Trash2,
       danger: true,
       action: () => {

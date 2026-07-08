@@ -1,0 +1,18 @@
+{
+  "title": "Todos",
+  "lists": {
+    "all": "All",
+    "today": "Today",
+    "important": "Important"
+  },
+  "newList": "New list",
+  "listName": "List name",
+  "deleteList": "Delete list",
+  "date": "Date",
+  "addTodo": "Add todo...",
+  "add": "Add",
+  "empty": "No todos",
+  "emptyWidget": "No todos. Type and press Enter to add one.",
+  "important": "Important",
+  "completed": "Completed ({count})"
+}

@@ -5,6 +5,7 @@
  * 创建成功后自动切换到新屏幕
  */
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import BaseModal from '@/components/common/BaseModal.vue'
@@ -13,6 +14,7 @@ const props = defineProps<{ screenId?: string }>()
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 /** 预设屏幕图标（分类场景常用的 emoji） */
 const PRESET_ICONS = ['🤖', '📚', '🎬', '🎮', '💼', '🛒', '🎵', '🖥️', '📰', '⚽', '✈️', '🎨']
@@ -39,21 +41,21 @@ function save() {
 </script>
 
 <template>
-  <BaseModal :title="isEdit ? '编辑应用屏幕' : '新建应用屏幕'" @close="ui.closeModal()">
+  <BaseModal :title="isEdit ? t('modals.screen.editTitle') : t('modals.screen.createTitle')" @close="ui.closeModal()">
     <div class="space-y-4">
       <label class="block">
-        <span class="mb-1 block text-xs text-neutral-600">屏幕名称（按用途分类，如：学习、视频）</span>
+        <span class="mb-1 block text-xs text-neutral-600">{{ t('modals.screen.nameLabel') }}</span>
         <input
           v-model="name"
           type="text"
-          placeholder="例如：学习"
+          :placeholder="t('modals.screen.namePlaceholder')"
           class="w-full rounded-xl border border-black/10 bg-white/70 px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
           @keydown.enter="save"
         >
       </label>
 
       <div>
-        <span class="mb-1.5 block text-xs text-neutral-600">屏幕图标</span>
+        <span class="mb-1.5 block text-xs text-neutral-600">{{ t('modals.screen.iconLabel') }}</span>
         <div class="grid grid-cols-6 gap-1.5">
           <button
             v-for="preset in PRESET_ICONS"
@@ -73,14 +75,14 @@ function save() {
         class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
         @click="ui.closeModal()"
       >
-        取消
+        {{ t('common.cancel') }}
       </button>
       <button
         class="cursor-pointer rounded-xl bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-40"
         :disabled="!canSave"
         @click="save"
       >
-        {{ isEdit ? '保存' : '创建' }}
+        {{ isEdit ? t('common.save') : t('common.create') }}
       </button>
     </template>
   </BaseModal>

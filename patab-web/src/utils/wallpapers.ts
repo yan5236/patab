@@ -28,11 +28,12 @@ export const MAX_LOCAL_WALLPAPER_SIZE = 2 * 1024 * 1024
 export function buildInitialWallpaperOptions(
   current: string,
   customWallpapers: CustomWallpaper[],
+  currentCustomName = '自定义壁纸',
 ): WallpaperOption[] {
   const saved = customWallpapers.map((item) => ({ ...item, custom: true }))
   if (!current || DEFAULT_WALLPAPERS.some((item) => item.src === current)) return saved
   if (saved.some((item) => item.src === current)) return saved
-  return [...saved, { id: 'current-custom', name: '自定义壁纸', src: current, custom: true }]
+  return [...saved, { id: 'current-custom', name: currentCustomName, src: current, custom: true }]
 }
 
 /** 转成 settings 持久化需要的纯自定义壁纸结构 */

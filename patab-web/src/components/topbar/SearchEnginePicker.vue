@@ -5,6 +5,7 @@
  */
 import { onBeforeUnmount, ref } from 'vue'
 import { Check } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { SearchEngine } from '@/types'
 import { colorForName } from '@/utils/favicon'
 import { siteFromSearchTemplate } from '@/utils/searchEngines'
@@ -20,6 +21,7 @@ const emit = defineEmits<{
   select: [id: string]
 }>()
 
+const { t } = useI18n()
 const open = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
 
@@ -62,14 +64,14 @@ onBeforeUnmount(() => {
       type="button"
       class="inline-flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full align-middle transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:scale-100"
       :disabled="disabled"
-      :title="selectedEngine() ? `当前引擎：${selectedEngine()?.name}` : '请至少添加一个搜索引擎'"
+      :title="selectedEngine() ? t('topbar.currentEngine', { name: selectedEngine()?.name }) : t('topbar.noSearchEngine')"
       @click="togglePicker"
       @keydown.escape="open = false"
     >
       <AppIcon
-        :name="selectedEngine()?.name ?? '搜索'"
+        :name="selectedEngine()?.name ?? t('topbar.search')"
         :url="selectedEngine() ? siteFromSearchTemplate(selectedEngine()!.urlTemplate) : ''"
-        :color="colorForName(selectedEngine()?.name ?? '搜索')"
+        :color="colorForName(selectedEngine()?.name ?? t('topbar.search'))"
       />
     </button>
 

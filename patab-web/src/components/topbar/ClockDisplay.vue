@@ -4,16 +4,23 @@
  * 时间制式（12/24 小时）与日期显示跟随设置；等宽数字避免跳动
  */
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useNow } from '@/composables/useNow'
 import { useLauncherStore } from '@/stores/launcher'
 
 const now = useNow()
 const launcher = useLauncherStore()
+const { t, tm } = useI18n()
 
-/** 格式化中文年月日与星期，避免依赖浏览器 locale 输出细节 */
+/** 按当前界面语言格式化日期，避免依赖浏览器 locale 输出细节 */
 function formatDateText(date: Date): string {
-  const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${weekdays[date.getDay()]}`
+  const weekdays = tm('topbar.weekdays') as string[]
+  return t('topbar.date', {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    weekday: weekdays[date.getDay()],
+  })
 }
 
 const timeText = computed(() => {
@@ -28,7 +35,7 @@ const timeText = computed(() => {
 /** 12 小时制时显示上/下午角标 */
 const meridiem = computed(() => {
   if (!launcher.settings.hour12) return ''
-  return now.value.getHours() < 12 ? '上午' : '下午'
+  return now.value.getHours() < 12 ? t('topbar.am') : t('topbar.pm')
 })
 
 const dateText = computed(() => formatDateText(now.value))

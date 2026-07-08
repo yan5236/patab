@@ -19,6 +19,7 @@ import {
   sanitizeSearchEngineId,
   sanitizeSearchEngines,
 } from '@/utils/searchEngines'
+import { normalizeLocale } from '@/i18n/language'
 
 /** localStorage 存储键（含版本号，便于将来迁移） */
 export const STORAGE_KEY = 'patab:v1'
@@ -102,6 +103,7 @@ function buildSeedState(): LauncherState {
     ],
     todoLists: buildDefaultTodoLists(),
     settings: {
+      language: 'zh-CN',
       wallpaper: DEFAULT_WALLPAPER,
       customWallpapers: [],
       hour12: false,
@@ -188,6 +190,7 @@ export function createInitialLauncherState(): LauncherState {
     initial.settings.wallpaper = DEFAULT_WALLPAPER
   }
   initial.settings.customWallpapers = sanitizeCustomWallpapers(initial.settings.customWallpapers)
+  initial.settings.language = normalizeLocale(initial.settings.language)
   initial.settings.showDate ??= true
   initial.settings.searchEngines = sanitizeSearchEngines(initial.settings.searchEngines)
   initial.settings.searchEngine = sanitizeSearchEngineId(

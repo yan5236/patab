@@ -1,0 +1,25 @@
+{
+  "shortcut": {
+    "createTitle": "New shortcut",
+    "editTitle": "Edit shortcut",
+    "iconUrl": "Icon URL (optional, auto-fetch when empty)",
+    "namePlaceholder": "Example: ChatGPT",
+    "urlPlaceholder": "Example: chatgpt.com"
+  },
+  "screen": {
+    "createTitle": "New screen",
+    "editTitle": "Edit screen",
+    "nameLabel": "Screen name (group by use, e.g. Study or Video)",
+    "namePlaceholder": "Example: Study",
+    "iconLabel": "Screen icon"
+  },
+  "componentStore": {
+    "title": "Component store",
+    "searchPlaceholder": "Search components",
+    "empty": "No matching components",
+    "todoTitle": "Todos",
+    "todoDescription": "Track what you need to do today",
+    "added": "Added",
+    "addToScreen": "Add to screen"
+  }
+}

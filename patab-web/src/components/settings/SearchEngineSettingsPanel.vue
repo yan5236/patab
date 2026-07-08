@@ -5,6 +5,7 @@
  */
 import { computed, ref } from 'vue'
 import { Check, Pencil, Plus, Trash2 } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { SearchEngine } from '@/types'
 import {
   createSearchEngineId,
@@ -18,6 +19,7 @@ import SearchEngineDialog from '@/components/settings/SearchEngineDialog.vue'
 
 const selectedEngine = defineModel<string>('selectedEngine', { required: true })
 const engines = defineModel<SearchEngine[]>('engines', { required: true })
+const { t } = useI18n()
 
 const editingId = ref('')
 const engineName = ref('')
@@ -83,11 +85,11 @@ function saveEngine() {
   const name = engineName.value.trim()
   const template = normalizeSearchTemplate(urlTemplate.value)
   if (!name) {
-    error.value = '请填写搜索引擎名称。'
+    error.value = t('settings.search.nameRequired')
     return
   }
   if (!isSearchTemplateValid(template)) {
-    error.value = '搜索地址必须包含 {q} 或 %s，例如 https://example.com/search?q={q}'
+    error.value = t('settings.search.invalidTemplate')
     return
   }
 
@@ -108,8 +110,8 @@ function saveEngine() {
   <div class="space-y-4">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h3 class="text-base font-semibold text-neutral-800">搜索</h3>
-        <p class="mt-0.5 text-xs text-neutral-500">管理搜索栏可选的搜索引擎。</p>
+        <h3 class="text-base font-semibold text-neutral-800">{{ t('settings.tabs.search') }}</h3>
+        <p class="mt-0.5 text-xs text-neutral-500">{{ t('settings.search.description') }}</p>
       </div>
       <button
         type="button"
@@ -117,7 +119,7 @@ function saveEngine() {
         @click="openAddDialog"
       >
         <Plus class="h-4 w-4" />
-        添加搜索引擎
+        {{ t('settings.search.addEngine') }}
       </button>
     </div>
 
@@ -125,7 +127,7 @@ function saveEngine() {
       v-if="!engines.length"
       class="rounded-xl border border-dashed border-white/70 bg-white/35 px-3 py-4 text-sm text-neutral-500"
     >
-      请至少添加一个搜索引擎。
+      {{ t('settings.search.empty') }}
     </div>
 
     <div v-else class="space-y-2">
@@ -155,7 +157,7 @@ function saveEngine() {
         <button
           type="button"
           class="cursor-pointer rounded-lg p-1.5 text-neutral-500 transition-colors hover:bg-white/70 hover:text-neutral-800"
-          title="修改搜索引擎"
+          :title="t('settings.search.editEngine')"
           @click="editEngine(engine)"
         >
           <Pencil class="h-4 w-4" />
@@ -163,7 +165,7 @@ function saveEngine() {
         <button
           type="button"
           class="cursor-pointer rounded-lg p-1.5 text-red-500 transition-colors hover:bg-red-50"
-          title="删除搜索引擎"
+          :title="t('settings.search.deleteEngine')"
           @click="deleteEngine(engine.id)"
         >
           <Trash2 class="h-4 w-4" />

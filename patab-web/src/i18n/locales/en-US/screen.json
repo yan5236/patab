@@ -1,0 +1,23 @@
+{
+  "emptyScreen": "This screen is empty. Right-click blank space to create a shortcut.",
+  "emptyFolder": "This folder is empty. Right-click here to create a shortcut, or drag icons in.",
+  "renameFolder": "Click to rename",
+  "menu": {
+    "manage": "Manage",
+    "exitManage": "Exit management",
+    "newShortcut": "New shortcut",
+    "newFolder": "New folder",
+    "changeWallpaper": "Change wallpaper",
+    "addToDock": "Add to Dock",
+    "open": "Open",
+    "disbandFolder": "Disband folder",
+    "deleteItems": "Delete {count} items",
+    "editScreen": "Edit screen",
+    "deleteScreen": "Delete screen"
+  },
+  "pager": {
+    "prev": "Previous screen",
+    "next": "Next screen",
+    "newScreen": "New screen"
+  }
+}

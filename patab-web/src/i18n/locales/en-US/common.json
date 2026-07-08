@@ -1,0 +1,16 @@
+{
+  "cancel": "Cancel",
+  "save": "Save",
+  "create": "Create",
+  "add": "Add",
+  "close": "Close",
+  "back": "Back",
+  "delete": "Delete",
+  "edit": "Edit",
+  "clear": "Clear",
+  "name": "Name",
+  "url": "URL",
+  "preview": "Preview",
+  "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "yearMonth": "{month}/{year}"
+}

@@ -5,6 +5,7 @@
  * 内容区由默认插槽提供，插槽内容应自带 data-nodrag（避免与长按拖动冲突）
  */
 import { Trash2 } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import GlassPanel from '@/components/common/GlassPanel.vue'
@@ -17,11 +18,12 @@ const props = defineProps<{
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
     {
-      label: '移除小组件',
+      label: t('widgets.remove'),
       icon: Trash2,
       danger: true,
       action: () => launcher.removeTile(props.tileId),

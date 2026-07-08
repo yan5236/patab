@@ -6,6 +6,7 @@
  * 右侧内容区（按列表过滤、日期选择器创建 todo、编辑/重要/删除、已完成折叠、长按拖拽排序）
  */
 import { computed, nextTick, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   Check,
   ChevronDown,
@@ -24,6 +25,7 @@ import type { TodoItem, TodoList } from '@/types'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 const selectedListId = ref('all')
 const draftText = ref('')
@@ -150,7 +152,7 @@ function onListContextMenu(event: MouseEvent, list: TodoList) {
   if (list.system) return
   ui.openContextMenu(event, [
     {
-      label: '删除列表',
+      label: t('todo.deleteList'),
       icon: Trash2,
       danger: true,
       action: () => launcher.removeTodoList(list.id),
@@ -189,11 +191,17 @@ function formatDate(date?: string): string {
   const [, m, d] = date.split('-')
   return `${m}-${d}`
 }
+
+/** 系统智能列表名称跟随语言，自定义列表保留用户命名 */
+function listName(list?: TodoList): string {
+  if (!list) return t('todo.lists.all')
+  return list.system ? t(`todo.lists.${list.system}`) : list.name
+}
 </script>
 
 <template>
   <BaseModal
-    title="待办事项"
+    :title="t('todo.title')"
     panel-class="todo-modal-card flex flex-col !h-[600px] !w-[800px] max-h-[92vh] max-w-[94vw] overflow-hidden !p-4 sm:!p-6"
     @close="ui.closeModal()"
   >
@@ -221,7 +229,7 @@ function formatDate(date?: string): string {
           @contextmenu.prevent="(e) => onListContextMenu(e, list)"
           @keydown.enter="selectedListId = list.id"
         >
-          <span class="truncate">{{ list.name }}</span>
+          <span class="truncate">{{ listName(list) }}</span>
           <span class="ml-2 shrink-0 text-xs text-neutral-400">{{ listCount(list) }}</span>
         </div>
 
@@ -239,7 +247,7 @@ function formatDate(date?: string): string {
             @click="startAddList"
           >
             <Plus class="h-4 w-4" />
-            新建列表
+            {{ t('todo.newList') }}
           </button>
           <div
             v-else
@@ -249,7 +257,7 @@ function formatDate(date?: string): string {
               ref="newListInputRef"
               v-model="newListName"
               type="text"
-              placeholder="列表名称"
+              :placeholder="t('todo.listName')"
               class="min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400"
               @keydown.enter="createList"
               @keydown.esc="cancelAddList"
@@ -270,25 +278,25 @@ function formatDate(date?: string): string {
       <section class="flex min-w-0 flex-1 flex-col">
         <div class="hidden shrink-0 border-b border-white/40 px-5 py-3 sm:block">
           <h3 class="text-base font-semibold text-neutral-800">
-            {{ selectedList?.name ?? '所有' }}
+            {{ listName(selectedList) }}
           </h3>
         </div>
 
         <div class="flex min-h-0 flex-1 flex-col px-3 py-2 sm:px-5 sm:py-3">
           <!-- 创建输入框 -->
           <div class="mb-3 flex shrink-0 items-center gap-2 rounded-xl bg-white/60 px-3 py-2">
-            <DatePicker v-model="draftDate" placeholder="日期" />
+            <DatePicker v-model="draftDate" :placeholder="t('todo.date')" />
             <input
               v-model="draftText"
               type="text"
-              placeholder="添加待办…"
+              :placeholder="t('todo.addTodo')"
               class="h-8 min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-500"
               @keydown.enter="submitTodo"
             >
             <button
               class="shrink-0 cursor-pointer rounded-lg bg-sky-500 p-1.5 text-white transition-colors hover:bg-sky-600"
               type="button"
-              title="添加"
+              :title="t('todo.add')"
               @click="submitTodo"
             >
               <Plus class="h-4 w-4" />
@@ -301,7 +309,7 @@ function formatDate(date?: string): string {
             class="relative min-h-0 flex-1 overflow-y-auto"
           >
             <div v-if="visibleTodos.length === 0" class="flex h-full items-center justify-center text-sm text-neutral-500">
-              暂无待办
+              {{ t('todo.empty') }}
             </div>
 
             <div v-else class="space-y-1">
@@ -352,14 +360,14 @@ function formatDate(date?: string): string {
                 <button
                   class="mobile-action-btn shrink-0 rounded p-1 transition-colors"
                   :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'text-neutral-400 opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
-                  title="重要"
+                  :title="t('todo.important')"
                   @click="toggleImportant(todo)"
                 >
                   <Star class="h-4 w-4" :class="todo.important ? 'fill-current' : ''" />
                 </button>
                 <button
                   class="mobile-action-btn shrink-0 rounded p-1 text-neutral-400 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
-                  title="删除"
+                  :title="t('common.delete')"
                   @click="deleteTodo(todo)"
                 >
                   <Trash2 class="h-4 w-4" />
@@ -375,7 +383,7 @@ function formatDate(date?: string): string {
                 >
                   <ChevronRight v-if="!showCompleted" class="h-3.5 w-3.5" />
                   <ChevronDown v-else class="h-3.5 w-3.5" />
-                  已完成 ({{ completedTodos.length }})
+                  {{ t('todo.completed', { count: completedTodos.length }) }}
                 </button>
 
                 <div v-if="showCompleted" class="mt-1 space-y-1">
@@ -403,7 +411,7 @@ function formatDate(date?: string): string {
                     </div>
                     <button
                       class="mobile-action-btn shrink-0 rounded p-1 text-neutral-400 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
-                      title="删除"
+                      :title="t('common.delete')"
                       @click="deleteTodo(todo)"
                     >
                       <Trash2 class="h-4 w-4" />
@@ -428,7 +436,7 @@ function formatDate(date?: string): string {
         class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
         @click="ui.closeModal()"
       >
-        关闭
+        {{ t('common.close') }}
       </button>
     </template>
   </BaseModal>

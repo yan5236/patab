@@ -4,6 +4,7 @@
  * 上方展示组件预览，下方展示名称、简介和添加按钮；点击行为交给父组件处理。
  */
 import type { Component } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps<{
   title: string
@@ -13,6 +14,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{ add: [] }>()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -38,7 +40,7 @@ const emit = defineEmits<{ add: [] }>()
         :disabled="added"
         @click="emit('add')"
       >
-        {{ added ? '已添加' : '添加到屏幕' }}
+        {{ added ? t('modals.componentStore.added') : t('modals.componentStore.addToScreen') }}
       </button>
     </div>
   </article>

@@ -1,0 +1,59 @@
+{
+  "title": "设置",
+  "tabs": {
+    "general": "通用",
+    "search": "搜索",
+    "wallpaper": "壁纸",
+    "about": "关于"
+  },
+  "general": {
+    "language": "语言",
+    "hour12": "12 小时制时钟",
+    "showDate": "显示日期",
+    "compact": "紧凑排列（拖动图标自动让位）",
+    "compactHint": "取消则为自由摆放，可在任意空格留空"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  },
+  "wallpaper": {
+    "description": "选择后保存，即可作为新标签页背景。",
+    "add": "添加壁纸",
+    "name": "壁纸名称",
+    "imageUrl": "图片链接",
+    "addByLink": "通过链接添加",
+    "addFromFile": "从本地文件选择",
+    "namePlaceholder": "例如：周末海岸",
+    "tooLarge": "本地壁纸不能超过 2MB，请选择更小的图片。",
+    "readFailed": "读取图片失败，请换一张图片再试。",
+    "localName": "本地壁纸",
+    "customName": "自定义壁纸",
+    "names": {
+      "scenery": "山谷晨光",
+      "aurora": "极光夜幕",
+      "paper-lake": "纸感湖畔",
+      "sunrise-grid": "晨曦网格",
+      "snow-mountain-aurora": "雪山极光夜幕"
+    }
+  },
+  "search": {
+    "description": "管理搜索栏可选的搜索引擎。",
+    "addEngine": "添加搜索引擎",
+    "empty": "请至少添加一个搜索引擎。",
+    "editEngine": "修改搜索引擎",
+    "deleteEngine": "删除搜索引擎",
+    "engineName": "搜索引擎名称",
+    "address": "搜索地址",
+    "namePlaceholder": "例如：秘塔 AI 搜索",
+    "nameRequired": "请填写搜索引擎名称。",
+    "invalidTemplate": "搜索地址必须包含 {q} 或 %s，例如 https://example.com/search?q={q}"
+  },
+  "about": {
+    "description1": "本地新标签页启动器。",
+    "description2": "快捷方式、待办与设置会保存在浏览器本地。",
+    "privacy": "隐私政策",
+    "terms": "用户协议",
+    "changelog": "更新日志"
+  }
+}

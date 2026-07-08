@@ -6,6 +6,7 @@
  */
 import { computed } from 'vue'
 import { Pencil, SquareArrowUp, Trash2 } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { Shortcut } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -18,6 +19,7 @@ const props = defineProps<{ item: Shortcut; index: number }>()
 const launcher = useLauncherStore()
 const ui = useUiStore()
 const drag = useDragStore()
+const { t } = useI18n()
 
 const { onPointerdown } = useLongPressDrag(() => ({
   tile: props.item,
@@ -49,14 +51,14 @@ function moveOut() {
 
 function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
-    { label: '移出 Dock', icon: SquareArrowUp, action: moveOut },
+    { label: t('dock.moveOut'), icon: SquareArrowUp, action: moveOut },
     {
-      label: '编辑',
+      label: t('common.edit'),
       icon: Pencil,
       action: () => ui.openModal({ type: 'shortcut-edit', shortcutId: props.item.id }),
     },
     {
-      label: '删除',
+      label: t('common.delete'),
       icon: Trash2,
       danger: true,
       action: () => launcher.removeTile(props.item.id),

@@ -7,6 +7,7 @@
  */
 import { computed, nextTick, ref, watch } from 'vue'
 import { ChevronLeft, ChevronRight, Calendar } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   modelValue?: string
@@ -17,6 +18,7 @@ const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
 
+const { t, tm } = useI18n()
 const open = ref(false)
 const viewDate = ref(new Date())
 const triggerRef = ref<HTMLButtonElement | null>(null)
@@ -53,13 +55,16 @@ watch(
 )
 
 const displayValue = computed(() => {
-  if (!props.modelValue) return props.placeholder ?? '选择日期'
+  if (!props.modelValue) return props.placeholder ?? t('todo.date')
   const [, m, d] = props.modelValue.split('-')
   return `${m}-${d}`
 })
 
 const yearMonthLabel = computed(() => {
-  return `${viewDate.value.getFullYear()}年 ${viewDate.value.getMonth() + 1}月`
+  return t('common.yearMonth', {
+    year: viewDate.value.getFullYear(),
+    month: viewDate.value.getMonth() + 1,
+  })
 })
 
 const days = computed(() => {
@@ -83,6 +88,8 @@ const days = computed(() => {
   }
   return result
 })
+
+const weekdays = computed(() => tm('common.weekdaysShort') as string[])
 
 /** 本地日期 → YYYY-MM-DD（避免 toISOString 的 UTC 偏移） */
 function toLocalIso(date: Date): string {
@@ -160,13 +167,7 @@ function onBackdropClick(event: MouseEvent) {
         </div>
 
         <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] text-neutral-400">
-          <span>日</span>
-          <span>一</span>
-          <span>二</span>
-          <span>三</span>
-          <span>四</span>
-          <span>五</span>
-          <span>六</span>
+          <span v-for="day in weekdays" :key="day">{{ day }}</span>
         </div>
 
         <div class="mt-1 grid grid-cols-7 gap-0.5">
@@ -192,7 +193,7 @@ function onBackdropClick(event: MouseEvent) {
             class="text-xs text-neutral-500 hover:text-neutral-700"
             @click.stop="clear"
           >
-            清除
+            {{ t('common.clear') }}
           </button>
         </div>
       </div>

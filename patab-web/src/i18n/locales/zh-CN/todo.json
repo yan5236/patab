@@ -1,0 +1,18 @@
+{
+  "title": "待办事项",
+  "lists": {
+    "all": "所有",
+    "today": "今天",
+    "important": "重要"
+  },
+  "newList": "新建列表",
+  "listName": "列表名称",
+  "deleteList": "删除列表",
+  "date": "日期",
+  "addTodo": "添加待办…",
+  "add": "添加",
+  "empty": "暂无待办",
+  "emptyWidget": "暂无待办，输入后回车添加",
+  "important": "重要",
+  "completed": "已完成 ({count})"
+}

@@ -5,6 +5,7 @@
  */
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { Search } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { buildSearchUrl } from '@/utils/searchEngines'
 import { fetchBingSuggestions } from '@/utils/searchSuggestions'
@@ -13,6 +14,7 @@ import SearchEnginePicker from '@/components/topbar/SearchEnginePicker.vue'
 import SearchSuggestions from '@/components/topbar/SearchSuggestions.vue'
 
 const launcher = useLauncherStore()
+const { t } = useI18n()
 const keyword = ref('')
 const suggestions = ref<string[]>([])
 const suggestionsOpen = ref(false)
@@ -91,7 +93,7 @@ onBeforeUnmount(() => clearTimeout(suggestTimer))
       v-model="keyword"
       type="text"
       :disabled="isSearchDisabled"
-      :placeholder="engine ? `在 ${engine.name} 中搜索` : '请至少添加一个搜索引擎'"
+      :placeholder="engine ? t('topbar.searchIn', { name: engine.name }) : t('topbar.noSearchEngine')"
       class="h-full min-w-0 flex-1 bg-transparent text-[15px] text-neutral-800 outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:text-neutral-400"
       @focus="scheduleSuggestions(keyword)"
       @blur="suggestionsOpen = false"
@@ -101,7 +103,7 @@ onBeforeUnmount(() => clearTimeout(suggestTimer))
     <button
       class="shrink-0 cursor-pointer rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-neutral-400 disabled:hover:bg-transparent"
       :disabled="isSearchDisabled"
-      title="搜索"
+      :title="t('topbar.search')"
       @click="submit()"
     >
       <Search class="h-5 w-5" />

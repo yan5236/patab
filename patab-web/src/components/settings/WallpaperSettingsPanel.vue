@@ -5,6 +5,7 @@
  */
 import { computed, ref } from 'vue'
 import { Check, Plus } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import AddWallpaperDialog, { type AddWallpaperMode } from '@/components/settings/AddWallpaperDialog.vue'
 import {
   DEFAULT_WALLPAPERS,
@@ -15,6 +16,7 @@ import { resolveAssetPath } from '@/utils/assetPath'
 
 const wallpaper = defineModel<string>('wallpaper', { required: true })
 const customWallpapers = defineModel<WallpaperOption[]>('customWallpapers', { required: true })
+const { t } = useI18n()
 
 const addWallpaperMode = ref<AddWallpaperMode>('closed')
 const wallpaperName = ref('')
@@ -24,6 +26,12 @@ const wallpaperError = ref('')
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const allWallpapers = computed(() => [...DEFAULT_WALLPAPERS, ...customWallpapers.value])
+
+/** 内置壁纸名称跟随语言，自定义壁纸保留用户输入 */
+function wallpaperLabel(item: WallpaperOption): string {
+  if (item.custom) return item.name
+  return t(`settings.wallpaper.names.${item.id}`)
+}
 
 /** 选中某张壁纸预览，保存前只更新草稿值 */
 function selectWallpaper(src: string) {
@@ -64,7 +72,7 @@ function onFileSelected(event: Event) {
   const file = input.files?.[0]
   if (!file) return
   if (file.size > MAX_LOCAL_WALLPAPER_SIZE) {
-    wallpaperError.value = '本地壁纸不能超过 2MB，请选择更小的图片。'
+    wallpaperError.value = t('settings.wallpaper.tooLarge')
     return
   }
 
@@ -72,12 +80,12 @@ function onFileSelected(event: Event) {
   reader.onload = () => {
     if (typeof reader.result !== 'string') return
     pendingFileWallpaper.value = reader.result
-    wallpaperName.value = file.name.replace(/\.[^.]+$/, '') || '本地壁纸'
+    wallpaperName.value = file.name.replace(/\.[^.]+$/, '') || t('settings.wallpaper.localName')
     addWallpaperMode.value = 'file'
     wallpaperError.value = ''
   }
   reader.onerror = () => {
-    wallpaperError.value = '读取图片失败，请换一张图片再试。'
+    wallpaperError.value = t('settings.wallpaper.readFailed')
   }
   reader.readAsDataURL(file)
 }
@@ -114,8 +122,8 @@ function addCustomWallpaper(src: string, name: string) {
   <div class="space-y-4">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h3 class="text-base font-semibold text-neutral-800">壁纸</h3>
-        <p class="mt-0.5 text-xs text-neutral-500">选择后保存，即可作为新标签页背景。</p>
+        <h3 class="text-base font-semibold text-neutral-800">{{ t('settings.tabs.wallpaper') }}</h3>
+        <p class="mt-0.5 text-xs text-neutral-500">{{ t('settings.wallpaper.description') }}</p>
       </div>
       <button
         type="button"
@@ -123,7 +131,7 @@ function addCustomWallpaper(src: string, name: string) {
         @click="openAddWallpaper"
       >
         <Plus class="h-4 w-4" />
-        添加壁纸
+        {{ t('settings.wallpaper.add') }}
       </button>
     </div>
 
@@ -141,7 +149,7 @@ function addCustomWallpaper(src: string, name: string) {
           :style="{ backgroundImage: `url(${resolveAssetPath(item.src)})` }"
         />
         <span class="absolute inset-x-0 bottom-0 flex items-center justify-between rounded-b-xl bg-black/40 px-2.5 py-2 text-xs text-white backdrop-blur-sm">
-          <span class="truncate">{{ item.name }}</span>
+          <span class="truncate">{{ wallpaperLabel(item) }}</span>
           <Check v-if="wallpaper === item.src" class="h-4 w-4 shrink-0" />
         </span>
       </button>

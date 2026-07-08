@@ -20,6 +20,7 @@ function makeState(overrides: Partial<LauncherState> = {}): LauncherState {
       { id: 'important', name: '重要', order: 2, system: 'important' },
     ],
     settings: {
+      language: 'zh-CN',
       wallpaper: '/scenery1.jpg',
       customWallpapers: [],
       hour12: false,

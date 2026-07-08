@@ -5,6 +5,7 @@
  */
 import { computed, ref } from 'vue'
 import { ListTodo } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/common/BaseModal.vue'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -13,22 +14,23 @@ import ComponentStoreItem from './ComponentStoreItem.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 const query = ref('')
 
-const components = [
+const components = computed(() => [
   {
     id: 'todo',
-    title: '待办事项',
-    description: '记录今天要做的事',
+    title: t('modals.componentStore.todoTitle'),
+    description: t('modals.componentStore.todoDescription'),
     icon: ListTodo,
   },
-] as const
+])
 
 /** 按名称和简介搜索组件，保持商店结果简单可预期 */
 const filteredComponents = computed(() => {
   const keyword = query.value.trim().toLowerCase()
-  if (!keyword) return components
-  return components.filter((item) =>
+  if (!keyword) return components.value
+  return components.value.filter((item) =>
     `${item.title} ${item.description}`.toLowerCase().includes(keyword),
   )
 })
@@ -49,12 +51,12 @@ function addComponent(id: string) {
 </script>
 
 <template>
-  <BaseModal title="组件商店" panel-class="w-[720px] max-h-[86vh] overflow-y-auto" @close="ui.closeModal()">
+  <BaseModal :title="t('modals.componentStore.title')" panel-class="w-[720px] max-h-[86vh] overflow-y-auto" @close="ui.closeModal()">
     <div class="space-y-5">
       <input
         v-model="query"
         type="search"
-        placeholder="搜索组件"
+        :placeholder="t('modals.componentStore.searchPlaceholder')"
         class="h-11 w-full rounded-2xl bg-white/65 px-4 text-sm text-neutral-700 outline-none ring-1 ring-white/60 placeholder:text-neutral-500 focus:ring-sky-300"
       >
 
@@ -78,7 +80,7 @@ function addComponent(id: string) {
           v-if="filteredComponents.length === 0"
           class="rounded-[1.75rem] bg-white/45 px-4 py-14 text-center text-sm text-neutral-500 sm:col-span-2"
         >
-          没找到相关组件
+          {{ t('modals.componentStore.empty') }}
         </div>
       </div>
     </div>

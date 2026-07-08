@@ -9,6 +9,7 @@
  */
 import { computed, onBeforeUnmount, onMounted } from 'vue'
 import { SquarePlus } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { useDragStore } from '@/stores/drag'
@@ -18,6 +19,7 @@ import TileItem from './TileItem.vue'
 const launcher = useLauncherStore()
 const ui = useUiStore()
 const drag = useDragStore()
+const { t } = useI18n()
 
 /** 当前展开的文件夹（被删除/解散后自动关闭） */
 const folder = computed(() =>
@@ -40,7 +42,7 @@ function onBlankMenu(event: MouseEvent) {
   const folderId = folder.value.id
   ui.openContextMenu(event, [
     {
-      label: '新建快捷方式',
+      label: t('screen.menu.newShortcut'),
       icon: SquarePlus,
       action: () => ui.openModal({ type: 'shortcut-create', target: { kind: 'folder', folderId } }),
     },
@@ -75,7 +77,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
           <input
             :value="folder.name"
             class="mx-auto mb-3 w-64 shrink-0 rounded-lg bg-transparent text-center text-lg font-semibold text-neutral-800 outline-none transition-colors hover:bg-white/40 focus:bg-white/60"
-            title="点击重命名"
+            :title="t('screen.renameFolder')"
             @change="onRename"
             @keydown.enter="($event.target as HTMLInputElement).blur()"
           >
@@ -102,7 +104,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
               v-if="folder.children.length === 0"
               class="col-span-full flex h-32 items-center justify-center text-sm text-neutral-500"
             >
-              文件夹是空的，右键这里创建快捷方式，或把图标拖进来
+              {{ t('screen.emptyFolder') }}
             </div>
           </div>
         </GlassPanel>

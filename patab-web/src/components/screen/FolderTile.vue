@@ -7,6 +7,7 @@
  */
 import { computed } from 'vue'
 import { FolderOpen, Ungroup } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { Folder } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -18,6 +19,7 @@ const props = defineProps<{ folder: Folder }>()
 const launcher = useLauncherStore()
 const ui = useUiStore()
 const drag = useDragStore()
+const { t } = useI18n()
 
 const preview = computed(() => props.folder.children.slice(0, 9))
 
@@ -26,8 +28,8 @@ const isHovered = computed(() => drag.hoverKey === `folder-tile:${props.folder.i
 
 function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
-    { label: '打开', icon: FolderOpen, action: () => ui.openFolder(props.folder.id) },
-    { label: '解散文件夹', icon: Ungroup, action: () => launcher.disbandFolder(props.folder.id) },
+    { label: t('screen.menu.open'), icon: FolderOpen, action: () => ui.openFolder(props.folder.id) },
+    { label: t('screen.menu.disbandFolder'), icon: Ungroup, action: () => launcher.disbandFolder(props.folder.id) },
   ])
 }
 </script>

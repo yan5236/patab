@@ -7,6 +7,7 @@
  * - 旧数据溢出一屏时降级为可滚动（罕见），保证不丢图块
  */
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Screen } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
@@ -18,6 +19,7 @@ const props = defineProps<{ screen: Screen }>()
 
 const drag = useDragStore()
 const launcher = useLauncherStore()
+const { t } = useI18n()
 
 /** 紧凑模式：整格网格作为放置面板 + 手机式让位；自由模式沿用空格 slot 放置层 */
 const isCompact = computed(() => launcher.settings.placementMode === 'compact')
@@ -132,7 +134,7 @@ const emptyCells = computed(() => {
       class="flex items-center justify-center text-sm text-white/70"
       style="grid-column: 1 / -1; grid-row: 1 / -1"
     >
-      屏幕还是空的，右键空白处创建快捷方式吧
+      {{ t('screen.emptyScreen') }}
     </div>
   </div>
 </template>

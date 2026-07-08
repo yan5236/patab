@@ -1,0 +1,59 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "general": "General",
+    "search": "Search",
+    "wallpaper": "Wallpaper",
+    "about": "About"
+  },
+  "general": {
+    "language": "Language",
+    "hour12": "12-hour clock",
+    "showDate": "Show date",
+    "compact": "Compact layout (icons make room while dragging)",
+    "compactHint": "Turn off for free placement with empty grid spaces"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  },
+  "wallpaper": {
+    "description": "Save after selecting to use it as the new tab background.",
+    "add": "Add wallpaper",
+    "name": "Wallpaper name",
+    "imageUrl": "Image link",
+    "addByLink": "Add by link",
+    "addFromFile": "Choose local file",
+    "namePlaceholder": "Example: Weekend coast",
+    "tooLarge": "Local wallpaper must be under 2 MB. Choose a smaller image.",
+    "readFailed": "Failed to read the image. Try another one.",
+    "localName": "Local wallpaper",
+    "customName": "Custom wallpaper",
+    "names": {
+      "scenery": "Valley Sunrise",
+      "aurora": "Aurora Night",
+      "paper-lake": "Paper Lake",
+      "sunrise-grid": "Sunrise Grid",
+      "snow-mountain-aurora": "Snow Mountain Aurora"
+    }
+  },
+  "search": {
+    "description": "Manage search engines available in the search bar.",
+    "addEngine": "Add search engine",
+    "empty": "Add at least one search engine.",
+    "editEngine": "Edit search engine",
+    "deleteEngine": "Delete search engine",
+    "engineName": "Search engine name",
+    "address": "Search URL",
+    "namePlaceholder": "Example: Metaso AI Search",
+    "nameRequired": "Enter a search engine name.",
+    "invalidTemplate": "Search URL must include {q} or %s, for example https://example.com/search?q={q}"
+  },
+  "about": {
+    "description1": "A local new tab launcher.",
+    "description2": "Shortcuts, todos, and settings are saved in this browser.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "changelog": "Changelog"
+  }
+}

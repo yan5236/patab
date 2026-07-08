@@ -5,6 +5,7 @@
  */
 import { computed } from 'vue'
 import { Check, Plus, X } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps<{
   editing: boolean
@@ -19,6 +20,7 @@ const emit = defineEmits<{
   save: []
 }>()
 
+const { t } = useI18n()
 const canSave = computed(() => !!name.value.trim() && !!urlTemplate.value.trim())
 
 /** 提交当前输入，父组件负责校验模板和保存草稿 */
@@ -36,7 +38,7 @@ function submit() {
     <div class="search-engine-dialog-card w-[380px] max-w-full rounded-2xl border border-white/55 bg-white/90 p-5 shadow-2xl">
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-base font-semibold text-neutral-800">
-          {{ editing ? '修改搜索引擎' : '添加搜索引擎' }}
+          {{ editing ? t('settings.search.editEngine') : t('settings.search.addEngine') }}
         </h3>
         <button
           type="button"
@@ -49,17 +51,17 @@ function submit() {
 
       <div class="space-y-3">
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">搜索引擎名称</span>
+          <span class="mb-1 block text-xs text-neutral-600">{{ t('settings.search.engineName') }}</span>
           <input
             v-model="name"
             type="text"
-            placeholder="例如：秘塔 AI 搜索"
+            :placeholder="t('settings.search.namePlaceholder')"
             class="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
             @keydown.enter="submit"
           >
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">搜索地址</span>
+          <span class="mb-1 block text-xs text-neutral-600">{{ t('settings.search.address') }}</span>
           <input
             v-model="urlTemplate"
             type="text"
@@ -80,7 +82,7 @@ function submit() {
           class="cursor-pointer rounded-xl px-3 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
           @click="emit('close')"
         >
-          取消
+          {{ t('common.cancel') }}
         </button>
         <button
           type="button"
@@ -90,7 +92,7 @@ function submit() {
         >
           <Check v-if="editing" class="h-4 w-4" />
           <Plus v-else class="h-4 w-4" />
-          {{ editing ? '保存' : '添加' }}
+          {{ editing ? t('common.save') : t('common.add') }}
         </button>
       </div>
     </div>

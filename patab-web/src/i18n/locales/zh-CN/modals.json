@@ -1,0 +1,25 @@
+{
+  "shortcut": {
+    "createTitle": "新建快捷方式",
+    "editTitle": "编辑快捷方式",
+    "iconUrl": "图标 URL（可选，留空自动抓取）",
+    "namePlaceholder": "例如：ChatGPT",
+    "urlPlaceholder": "例如：chatgpt.com"
+  },
+  "screen": {
+    "createTitle": "新建应用屏幕",
+    "editTitle": "编辑应用屏幕",
+    "nameLabel": "屏幕名称（按用途分类，如：学习、视频）",
+    "namePlaceholder": "例如：学习",
+    "iconLabel": "屏幕图标"
+  },
+  "componentStore": {
+    "title": "组件商店",
+    "searchPlaceholder": "搜索组件",
+    "empty": "没找到相关组件",
+    "todoTitle": "待办事项",
+    "todoDescription": "记录今天要做的事",
+    "added": "已添加",
+    "addToScreen": "添加到屏幕"
+  }
+}

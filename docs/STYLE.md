@@ -6,6 +6,8 @@
 - 模块单一职责，避免上帝对象。
 - `launcher.ts` 只保留状态创建、稳定 action 组装和持久化编排；查询、图块、待办、拖拽、设置、默认数据、迁移、坐标等规则优先拆到同目录领域模块。
 - 前端 UI 默认组件化开发，能复用的界面、样式和交互都抽象为 Vue 组件。
+- 用户可见文案必须放进 `patab-web/src/i18n/locales/{zh-CN,en-US}/` 对应模块 JSON，组件内通过 `vue-i18n` 使用，不新增硬编码界面文案。
+- 单选下拉优先使用 `components/common/AppDropdown.vue`，不要用原生 `select` 破坏设置弹窗的统一视觉。
 - 单文件原则上不超过 500 行；超过时优先拆分，但不为小改动做无关重构。
 - 优先复用现有 helper、类型和组件。
 - 函数级注释使用中文，说明职责、输入边界或关键副作用。
@@ -15,6 +17,7 @@
 
 - 页面级组件只做布局编排，不堆积具体 UI 细节。
 - 可复用 UI 放到 `components/common/`，领域组件放到对应业务子目录。
+- 语言、模式等通用单选控件复用 `AppDropdown`；只有浏览器原生能力明显更合适时才例外。
 - 重复出现两次的结构、样式或交互，优先抽成组件或 composable。
 - 组件对外接口保持小而明确：props 输入、emit 输出、slot 扩展。
 - 不为尚未出现的场景预留复杂抽象，先满足当前复用需求。
@@ -43,6 +46,7 @@
 - 跨组件类型放在 `types/index.ts`。
 - 测试放在 `src/__tests__/`。
 - 设置页新增搜索、壁纸等领域面板时，优先放在 `components/settings/`，规则清洗放在对应 `utils/`。
+- 新增翻译模块时保持中英文 JSON key 集合一致，并在 `src/i18n/messages.ts` 聚合。
 - launcher 领域模块按职责命名为 `launcherQueries.ts`、`launcherTiles.ts`、`launcherTodos.ts`、`launcherDrop.ts`、`launcherSettings.ts` 等；不要把无关业务合回 `launcher.ts`。
 
 ## 注释规范
@@ -61,6 +65,7 @@
 
 - 非平凡逻辑需要最小可运行测试。
 - 新增持久化字段、拖拽规则、网格算法或 URL 处理时必须补测试。
+- 新增或修改翻译资源时必须覆盖 key 集合一致性，避免某语言缺文案。
 - 优先测试 `utils/` 和 store 行为，少测样式细节。
 
 ## 提交前检查

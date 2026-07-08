@@ -5,6 +5,7 @@
  */
 import { computed } from 'vue'
 import { Link, Upload, X } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 
 export type AddWallpaperMode = 'closed' | 'chooser' | 'link' | 'file'
 
@@ -26,6 +27,7 @@ const emit = defineEmits<{
   updateMode: [mode: AddWallpaperMode]
 }>()
 
+const { t } = useI18n()
 const canAddLink = computed(() => !!wallpaperName.value.trim() && !!linkWallpaper.value.trim())
 const canAddFile = computed(() => !!wallpaperName.value.trim() && !!props.pendingFileWallpaper)
 
@@ -53,7 +55,7 @@ function submitFileWallpaper() {
   >
     <div class="add-wallpaper-card w-[360px] max-w-full rounded-2xl border border-white/55 bg-white/90 p-5 shadow-2xl">
       <div class="mb-4 flex items-center justify-between">
-        <h3 class="text-base font-semibold text-neutral-800">添加壁纸</h3>
+        <h3 class="text-base font-semibold text-neutral-800">{{ t('settings.wallpaper.add') }}</h3>
         <button
           type="button"
           class="rounded-full p-1 text-neutral-500 transition-colors hover:bg-black/5 hover:text-neutral-800"
@@ -70,7 +72,7 @@ function submitFileWallpaper() {
           @click="emit('updateMode', 'link')"
         >
           <Link class="h-4 w-4 text-sky-500" />
-          通过链接添加
+          {{ t('settings.wallpaper.addByLink') }}
         </button>
         <button
           type="button"
@@ -78,23 +80,23 @@ function submitFileWallpaper() {
           @click="emit('chooseFile')"
         >
           <Upload class="h-4 w-4 text-sky-500" />
-          从本地文件选择
+          {{ t('settings.wallpaper.addFromFile') }}
         </button>
       </div>
 
       <div v-else-if="mode === 'link'" class="space-y-3">
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">壁纸名称</span>
+          <span class="mb-1 block text-xs text-neutral-600">{{ t('settings.wallpaper.name') }}</span>
           <input
             v-model="wallpaperName"
             type="text"
-            placeholder="例如：周末海岸"
+            :placeholder="t('settings.wallpaper.namePlaceholder')"
             class="w-full rounded-xl border border-black/10 bg-white px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
             @keydown.enter="submitLinkWallpaper"
           >
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">图片链接</span>
+          <span class="mb-1 block text-xs text-neutral-600">{{ t('settings.wallpaper.imageUrl') }}</span>
           <input
             v-model="linkWallpaper"
             type="text"
@@ -109,7 +111,7 @@ function submitFileWallpaper() {
             class="cursor-pointer rounded-xl px-3 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
             @click="emit('back')"
           >
-            返回
+            {{ t('common.back') }}
           </button>
           <button
             type="button"
@@ -117,7 +119,7 @@ function submitFileWallpaper() {
             :disabled="!canAddLink"
             @click="submitLinkWallpaper"
           >
-            添加
+            {{ t('common.add') }}
           </button>
         </div>
       </div>
@@ -128,7 +130,7 @@ function submitFileWallpaper() {
           :style="{ backgroundImage: `url(${pendingFileWallpaper})` }"
         />
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">壁纸名称</span>
+          <span class="mb-1 block text-xs text-neutral-600">{{ t('settings.wallpaper.name') }}</span>
           <input
             v-model="wallpaperName"
             type="text"
@@ -142,7 +144,7 @@ function submitFileWallpaper() {
             class="cursor-pointer rounded-xl px-3 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
             @click="emit('back')"
           >
-            返回
+            {{ t('common.back') }}
           </button>
           <button
             type="button"
@@ -150,7 +152,7 @@ function submitFileWallpaper() {
             :disabled="!canAddFile"
             @click="submitFileWallpaper"
           >
-            添加
+            {{ t('common.add') }}
           </button>
         </div>
       </div>

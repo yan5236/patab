@@ -2,6 +2,7 @@
  * PaTab 全局共享类型定义
  * 所有跨组件/跨 store 的数据结构都集中在这里，保证单一来源
  */
+import type { LocaleCode } from '@/i18n/language'
 
 /**
  * 主屏幕网格坐标（列 col / 行 row，均从 0 起）
@@ -108,6 +109,8 @@ export interface CustomWallpaper {
 
 /** 用户偏好设置 */
 export interface Settings {
+  /** 当前界面语言 */
+  language: LocaleCode
   /** 壁纸地址（默认使用内置壁纸） */
   wallpaper: string
   /** 用户自定义添加的壁纸列表 */

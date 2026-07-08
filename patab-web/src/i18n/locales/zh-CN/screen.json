@@ -1,0 +1,23 @@
+{
+  "emptyScreen": "屏幕还是空的，右键空白处创建快捷方式吧",
+  "emptyFolder": "文件夹是空的，右键这里创建快捷方式，或把图标拖进来",
+  "renameFolder": "点击重命名",
+  "menu": {
+    "manage": "管理",
+    "exitManage": "退出管理",
+    "newShortcut": "新建快捷方式",
+    "newFolder": "新建文件夹",
+    "changeWallpaper": "更换壁纸",
+    "addToDock": "添加到 Dock",
+    "open": "打开",
+    "disbandFolder": "解散文件夹",
+    "deleteItems": "删除 {count} 项",
+    "editScreen": "编辑屏幕",
+    "deleteScreen": "删除屏幕"
+  },
+  "pager": {
+    "prev": "上一屏",
+    "next": "下一屏",
+    "newScreen": "新建应用屏幕"
+  }
+}

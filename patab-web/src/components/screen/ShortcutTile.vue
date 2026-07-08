@@ -4,6 +4,7 @@
  * 点击打开网址；右键：编辑 / 添加到 Dock / 删除
  */
 import { Pencil, SquareArrowDown, Trash2 } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import type { Shortcut } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -17,6 +18,7 @@ const props = defineProps<{
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 
 function open() {
   window.location.href = props.shortcut.url
@@ -25,17 +27,17 @@ function open() {
 function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
     {
-      label: '编辑',
+      label: t('common.edit'),
       icon: Pencil,
       action: () => ui.openModal({ type: 'shortcut-edit', shortcutId: props.shortcut.id }),
     },
     {
-      label: '添加到 Dock',
+      label: t('screen.menu.addToDock'),
       icon: SquareArrowDown,
       action: () => launcher.moveToDock(props.shortcut.id),
     },
     {
-      label: '删除',
+      label: t('common.delete'),
       icon: Trash2,
       danger: true,
       action: () => launcher.removeTile(props.shortcut.id),
