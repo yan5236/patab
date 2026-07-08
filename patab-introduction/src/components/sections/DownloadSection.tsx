@@ -110,9 +110,11 @@ export default function DownloadSection() {
             </p>
             <div className="mt-5 flex w-full flex-col gap-2">
               <CtaButton href={LINKS.chromeStore} variant="glass" className="w-full py-2.5!">
+                <img src="/chrome.png" alt="" className="size-5" />
                 Chrome 应用商店
               </CtaButton>
               <CtaButton href={LINKS.edgeStore} variant="glass" className="w-full py-2.5!">
+                <img src="/edge.png" alt="" className="size-5" />
                 Edge 外接程序
               </CtaButton>
             </div>

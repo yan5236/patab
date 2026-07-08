@@ -188,7 +188,7 @@ export default function HeroSection() {
             打开网页版
           </CtaButton>
           <CtaButton
-            href={LINKS.chromeStore}
+            href="#download"
             variant="glass"
             className="w-full max-w-xs md:w-auto"
           >
