@@ -36,10 +36,14 @@ function open() {
 function moveOut() {
   const screen = ui.currentScreen
   if (!screen) return
+  const target =
+    launcher.settings.placementMode === 'compact'
+      ? { kind: 'grid' as const, screenId: screen.id, index: screen.tiles.length }
+      : { kind: 'pager' as const, screenId: screen.id }
   launcher.handleDrop(
     props.item.id,
     { kind: 'dock', index: props.index },
-    { kind: 'cell', zone: 'screen', containerId: screen.id, index: screen.tiles.length },
+    target,
   )
 }
 
