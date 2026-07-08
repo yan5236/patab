@@ -109,10 +109,10 @@ export default function MobileSection() {
     >
       <div
         data-mobile-pin
-        className="flex flex-col items-center gap-10 md:flex-row md:justify-center md:gap-20"
+        className="flex flex-col items-center gap-16 md:flex-row md:justify-center md:gap-20"
       >
         {/* 手机 Mockup */}
-        <div data-mobile-phone className="w-56 shrink-0 md:w-64">
+        <div data-mobile-phone className="mb-6 w-52 shrink-0 md:mb-0 md:w-64">
           <PhoneMockup>
             <img
               src="/mobile-version-introduction-image.png"

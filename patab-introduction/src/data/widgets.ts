@@ -26,7 +26,7 @@ export const WIDGETS: WidgetItem[] = [
   {
     icon: ListTodo,
     title: "待办事项",
-    description: "随手记下要做的事，勾选即完成",
+    description: "随手记下要做的事",
     status: "live",
   },
   {

@@ -3,12 +3,13 @@
  */
 import { LINKS } from "../../data/links";
 
-/** 页脚链接（均为占位） */
+/** 页脚站内链接 */
 const FOOTER_LINKS = [
-  { label: "功能介绍", href: "#features" },
-  { label: "更新日志", href: LINKS.changelog },
+  { label: "首页", href: "/" },
+  { label: "安装教程", href: "/install" },
+  { label: "隐私政策", href: "/privacy" },
+  { label: "文档", href: "/docs" },
   { label: "反馈建议", href: LINKS.feedback },
-  { label: "开源仓库", href: LINKS.repository },
 ];
 
 export default function Footer() {

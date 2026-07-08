@@ -1,8 +1,8 @@
 /**
- * 技术亮点区（TechSection）数据
+ * 体验细节区（TechSection）数据
  */
 export interface TechHighlight {
-  /** 等宽字体的技术标签 */
+  /** 小卡片顶部标签 */
   tag: string;
   title: string;
   description: string;
@@ -10,39 +10,39 @@ export interface TechHighlight {
 
 export const TECH_HIGHLIGHTS: TechHighlight[] = [
   {
-    tag: "Pointer Events",
-    title: "自研拖拽引擎",
+    tag: "拖拽手感",
+    title: "轻松整理桌面",
     description:
-      "长按检测 + 移动容差，精确区分点击、滚动、长按与拖拽，不依赖任何第三方拖拽库。",
+      "长按后直接拖动磁贴，点击、滚动和整理互不打架，小屏幕上也能放心调整。",
   },
   {
-    tag: "FLIP",
-    title: "丝滑让位动画",
+    tag: "动效反馈",
+    title: "位置变化看得清",
     description:
-      "磁贴位置变化通过前后位置差与 transform 过渡，180ms 内平滑完成让位与归位。",
+      "磁贴移动时会自然让位，整理完成后位置一眼明白，不需要反复找入口。",
   },
   {
-    tag: "Web Audio",
-    title: "零文件合成音效",
+    tag: "待办提醒",
+    title: "完成任务有反馈",
     description:
-      "待办完成提示音由振荡器实时合成谐波，无需加载任何音频文件。",
+      "勾掉待办时有轻量提示，让临时任务从记录到完成都有清楚的确认感。",
   },
   {
-    tag: "Favicon Fallback",
-    title: "四级图标回退链",
+    tag: "图标兜底",
+    title: "网站入口不空缺",
     description:
-      "自定义图标 → 图标服务 → 网站 favicon → 首字母彩色占位，图标永不缺席。",
+      "没有自定义图标时也会自动补上网站图标或首字母占位，桌面保持整齐。",
   },
   {
-    tag: "JSONP",
-    title: "实时搜索建议",
+    tag: "搜索建议",
+    title: "输入更快一步",
     description:
-      "巧用 JSONP 获取必应搜索建议，配合防抖、请求取消与超时处理，输入流畅不卡顿。",
+      "搜索框会给出联想建议，常见问题和关键词不用完整敲完就能打开。",
   },
   {
-    tag: "localStorage",
-    title: "版本化数据迁移",
+    tag: "本地保存",
+    title: "隐私留在浏览器",
     description:
-      "数据持久化带版本号管理，旧数据自动清洗、迁移、回填，升级无感知。",
+      "快捷方式、待办和设置都保存在本机浏览器里，日常使用不用注册账号。",
   },
 ];

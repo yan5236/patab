@@ -30,6 +30,7 @@ flowchart TD
 - `patab-web/src/types/index.ts`：跨组件共享的数据结构。
 - `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
 - `patab-web/src/__tests__/`：单元测试。
+- `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策和文档等公开说明页。
 
 ## 依赖方向
 
@@ -57,6 +58,7 @@ flowchart TD
 ## 当前状态
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、拖拽和 localStorage 持久化。
+- 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策和文档二级页。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
 

@@ -12,9 +12,12 @@ import WidgetsSection from "./components/sections/WidgetsSection";
 import MobileSection from "./components/sections/MobileSection";
 import TechSection from "./components/sections/TechSection";
 import DownloadSection from "./components/sections/DownloadSection";
+import InfoPage from "./components/sections/InfoPage";
+import { INFO_PAGES } from "./data/pages";
 
 export default function App() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const page = INFO_PAGES[window.location.pathname];
 
   // 大图（首屏 PC 截图）加载完成后重新计算各 ScrollTrigger 位置，防止触发点漂移
   useGSAP(
@@ -29,15 +32,19 @@ export default function App() {
   return (
     <div ref={rootRef}>
       <Navbar />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <ShowcaseSection />
-        <WidgetsSection />
-        <MobileSection />
-        <TechSection />
-        <DownloadSection />
-      </main>
+      {page ? (
+        <InfoPage page={page} />
+      ) : (
+        <main>
+          <HeroSection />
+          <FeaturesSection />
+          <ShowcaseSection />
+          <WidgetsSection />
+          <MobileSection />
+          <TechSection />
+          <DownloadSection />
+        </main>
+      )}
       <Footer />
     </div>
   );

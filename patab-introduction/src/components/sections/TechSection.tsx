@@ -1,6 +1,6 @@
 /**
- * 技术亮点区：深墨蓝玻璃带，与整页浅色形成节奏对比。
- * 6 张深色玻璃小卡，每卡带等宽字体技术标签。
+ * 体验细节区：深墨蓝玻璃带，与整页浅色形成节奏对比。
+ * 6 张深色玻璃小卡，展示用户能感知的体验收益。
  */
 import { useRef } from "react";
 import { gsap, useGSAP } from "../../lib/gsap";
@@ -64,8 +64,8 @@ export default function TechSection() {
       ref={sectionRef}
       id="tech"
       dark
-      title="工程师较真出来的细节"
-      subtitle="流畅体验的背后，是一处处不肯将就的实现。"
+      title="日常使用更省心"
+      subtitle="把常用网站、搜索和待办放在顺手的位置，打开浏览器就能继续做事。"
       className="relative overflow-hidden bg-ink-900"
     >
       {/* 深色区背景色斑 */}
