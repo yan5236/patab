@@ -1,113 +1,74 @@
 @import "tailwindcss";
 
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+/**
+ * PaTab 介绍页全局样式
+ * 主题：「晨光湖畔 × 玻璃白」—— 配色取自产品截图中的晨昏山湖壁纸
+ */
+@theme {
+  /* 晨光橙：渐变起点 / 强调色 */
+  --color-dawn-300: #f6c990;
+  --color-dawn-500: #e8985a;
+  /* 湖蓝：渐变终点 / 辅助色 */
+  --color-lake-300: #a8c8dc;
+  --color-lake-500: #5e8fae;
+  /* 松绿：点缀色 */
+  --color-pine-500: #6f8f6d;
+  /* 深墨蓝：标题字 / 技术区背景 */
+  --color-ink-900: #16222e;
+  --color-ink-600: #47586a;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  /* 中文优先字体栈 */
+  --font-sans:
+    "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", system-ui,
+    "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Consolas, monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  /* 毛玻璃通用阴影与模糊强度 */
+  --shadow-glass: 0 8px 32px rgb(22 34 46 / 0.12);
+  --blur-glass: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* 浅色毛玻璃面板（页面主体使用） */
+@utility glass {
+  background: rgb(255 255 255 / 0.55);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: 1px solid rgb(255 255 255 / 0.6);
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+/* 深色毛玻璃面板（技术亮点深色区使用） */
+@utility glass-dark {
+  background: rgb(255 255 255 / 0.07);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: 1px solid rgb(255 255 255 / 0.12);
+}
+
+html {
+  /* 锚点平滑滚动；预留固定顶栏高度，避免落点被遮挡 */
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  /* 整页固定浅色主题，避免系统暗色模式下表单控件混色 */
+  color-scheme: light;
 }
 
 body {
   margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink-900);
+  background-color: #f7f5f1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+::selection {
+  background: var(--color-dawn-300);
+  color: var(--color-ink-900);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* 键盘聚焦可见性 */
+:focus-visible {
+  outline: 2px solid var(--color-lake-500);
+  outline-offset: 2px;
 }
