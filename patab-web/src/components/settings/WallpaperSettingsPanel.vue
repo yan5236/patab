@@ -11,6 +11,7 @@ import {
   MAX_LOCAL_WALLPAPER_SIZE,
   type WallpaperOption,
 } from '@/utils/wallpapers'
+import { resolveAssetPath } from '@/utils/assetPath'
 
 const wallpaper = defineModel<string>('wallpaper', { required: true })
 const customWallpapers = defineModel<WallpaperOption[]>('customWallpapers', { required: true })
@@ -137,7 +138,7 @@ function addCustomWallpaper(src: string, name: string) {
       >
         <span
           class="absolute inset-0 rounded-xl bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-          :style="{ backgroundImage: `url(${item.src})` }"
+          :style="{ backgroundImage: `url(${resolveAssetPath(item.src)})` }"
         />
         <span class="absolute inset-x-0 bottom-0 flex items-center justify-between rounded-b-xl bg-black/40 px-2.5 py-2 text-xs text-white backdrop-blur-sm">
           <span class="truncate">{{ item.name }}</span>

@@ -33,10 +33,18 @@
 - 更新依赖后至少运行 `pnpm build` 和 `pnpm test:unit`。
 - 出现安全公告时优先升级直接相关依赖。
 
+## 浏览器扩展
+
+- Chrome/Edge 扩展版使用 Manifest V3，只声明新标签页覆盖和当前必需的 `https://api.bing.com/*` host 权限。
+- 扩展页禁止加载远程脚本；搜索联想在扩展环境使用 `fetch` 获取 JSONP 文本并本地解析。
+- 不新增后台 service worker、content script、tabs 等权限，除非真实功能已经需要。
+- 扩展版与网页版共享业务源码，但各自运行在独立 origin，`localStorage` 数据天然隔离。
+
 ## 检查清单
 
 - 是否新增了未校验的用户输入？
 - 是否新增了直接读写 `localStorage` 的路径？
 - 是否新增了外链、图片 URL 或 Data URL 处理？
 - 是否新增了依赖或构建插件？
+- 是否新增了扩展权限或远程脚本加载路径？
 - 是否有错误状态会导致白屏或数据丢失？

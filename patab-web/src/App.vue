@@ -20,12 +20,13 @@ import ScreenEditModal from '@/components/modals/ScreenEditModal.vue'
 import SettingsModal from '@/components/modals/SettingsModal.vue'
 import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
 import TodoModal from '@/components/modals/TodoModal.vue'
+import { resolveAssetPath } from '@/utils/assetPath'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
 
 const wallpaperStyle = computed(() => ({
-  backgroundImage: `url(${launcher.settings.wallpaper})`,
+  backgroundImage: `url(${resolveAssetPath(launcher.settings.wallpaper)})`,
 }))
 
 /**

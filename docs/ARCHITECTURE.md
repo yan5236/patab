@@ -10,6 +10,8 @@ flowchart TD
   Stores --> Types["types 全局类型"]
   Stores --> Utils["utils 纯工具"]
   Stores --> Storage["localStorage: patab:v1"]
+  Build["Vite 双构建"] --> Web["网页版 dist"]
+  Build --> Extension["Chrome/Edge MV3 dist-extension"]
 ```
 
 ## 模块职责
@@ -29,7 +31,10 @@ flowchart TD
 - `patab-web/src/composables/`：复杂交互逻辑，例如拖拽、网格翻转、时间刷新。
 - `patab-web/src/types/index.ts`：跨组件共享的数据结构。
 - `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
+- `patab-web/src/utils/runtimeEnvironment.ts`：识别当前运行在网页版还是 Chrome/Edge 扩展页。
+- `patab-web/src/utils/assetPath.ts`：统一解析 public 静态资源路径，扩展版通过 `chrome.runtime.getURL` 访问内置资源。
 - `patab-web/src/__tests__/`：单元测试。
+- `patab-web/extension/manifest.json`：Chrome/Edge Manifest V3 新标签页扩展清单，只在扩展构建时复制到 `dist-extension/`。
 - `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策和文档等公开说明页。
 
 ## 依赖方向
@@ -38,6 +43,7 @@ flowchart TD
 - store 可以依赖 type 和 utils，不依赖组件。
 - utils 保持纯函数优先，不依赖 Vue 组件或 Pinia store。
 - type 不依赖业务实现。
+- 扩展版只允许通过极薄运行环境工具适配资源和浏览器限制，不复制 Vue 业务代码。
 
 ## 组件化边界
 
@@ -58,6 +64,7 @@ flowchart TD
 ## 当前状态
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、拖拽和 localStorage 持久化。
+- 已完成：Chrome/Edge Manifest V3 新标签页扩展构建，扩展版与网页版共享同一套 Vue 源码。
 - 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策和文档二级页。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
@@ -73,5 +80,6 @@ flowchart TD
 - `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。
 - 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。
 - 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。
-- 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。
+- 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；扩展版 fetch JSONP 文本后从必应实际包装中解析 payload；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。
 - 主屏批量管理模式只保存在 `stores/ui.ts` 的瞬时状态中；`TileItem.vue` 负责选择圆点、点击拦截和批量右键菜单，`launcherTiles.ts` 处理批量删除，`launcherDrop.ts` 处理批量拖放规则。
+- 扩展功能优先放在 Vite 构建脚本、`extension/manifest.json` 和 `utils/runtimeEnvironment.ts` / `utils/assetPath.ts` 这类薄适配层；不得为扩展版复制 App、store 或组件。

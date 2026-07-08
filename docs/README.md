@@ -42,6 +42,7 @@ cd patab-web
 pnpm install
 pnpm dev
 pnpm build
+pnpm build:extension
 pnpm test:unit
 ```
 

@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "PaTab",
+  "description": "将 PaTab 设置为 Chrome/Edge 新标签页。",
+  "version": "0.0.0",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "host_permissions": [
+    "https://api.bing.com/*"
+  ],
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  }
+}

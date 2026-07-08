@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "build:extension": "run-p type-check build-extension-only",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
+    "build-extension-only": "vite build --mode extension --base=./ --outDir dist-extension",
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
