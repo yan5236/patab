@@ -53,7 +53,7 @@ export default function Navbar() {
       <nav className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8">
         {/* Logo 字标 */}
         <a href="/" className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="" className="size-7" />
+          <img src="/logo.png" alt="" className="size-7" />
           <span className="text-lg font-bold tracking-tight text-ink-900">
             PaTab
           </span>
