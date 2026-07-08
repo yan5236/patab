@@ -29,20 +29,6 @@ export const INFO_PAGES: Record<string, InfoPage> = {
       },
     ],
   },
-  "/privacy": {
-    title: "隐私政策",
-    subtitle: "PaTab 默认把数据保存在你的浏览器本地，不上传到服务器。",
-    sections: [
-      {
-        title: "本地存储",
-        items: ["快捷方式、待办、壁纸与设置保存在当前浏览器。", "清理浏览器站点数据会同步清除 PaTab 数据。"],
-      },
-      {
-        title: "网络访问",
-        items: ["搜索时会跳转到你选择的搜索引擎。", "网站图标可能来自目标网站 favicon 或图标服务。"],
-      },
-    ],
-  },
   "/docs": {
     title: "文档",
     subtitle: "这里整理 PaTab 的核心用法，方便快速上手。",
