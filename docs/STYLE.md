@@ -4,6 +4,7 @@
 
 - 最小改动，只改与任务直接相关的文件。
 - 模块单一职责，避免上帝对象。
+- `launcher.ts` 只保留状态创建、稳定 action 组装和持久化编排；查询、图块、待办、拖拽、设置、默认数据、迁移、坐标等规则优先拆到同目录领域模块。
 - 前端 UI 默认组件化开发，能复用的界面、样式和交互都抽象为 Vue 组件。
 - 单文件原则上不超过 500 行；超过时优先拆分，但不为小改动做无关重构。
 - 优先复用现有 helper、类型和组件。
@@ -42,6 +43,7 @@
 - 跨组件类型放在 `types/index.ts`。
 - 测试放在 `src/__tests__/`。
 - 设置页新增搜索、壁纸等领域面板时，优先放在 `components/settings/`，规则清洗放在对应 `utils/`。
+- launcher 领域模块按职责命名为 `launcherQueries.ts`、`launcherTiles.ts`、`launcherTodos.ts`、`launcherDrop.ts`、`launcherSettings.ts` 等；不要把无关业务合回 `launcher.ts`。
 
 ## 注释规范
 

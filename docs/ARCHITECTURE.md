@@ -16,7 +16,14 @@ flowchart TD
 
 - `patab-web/src/App.vue`：根组件，负责壁纸、主布局和全局弹层挂载。
 - `patab-web/src/components/`：界面组件，按 common、dock、modals、screen、settings、topbar、widgets 拆分。
-- `patab-web/src/stores/launcher.ts`：业务数据中枢，管理屏幕、Dock、待办、设置和持久化。
+- `patab-web/src/stores/launcher.ts`：持久业务状态门面，创建状态、组装领域 action，并保留组件调用的稳定 API。
+- `patab-web/src/stores/launcherState.ts`：launcher 默认数据、localStorage 读取和旧数据兼容清洗。
+- `patab-web/src/stores/launcherPlacement.ts`：launcher 主屏坐标落位、清坐标和紧凑回填辅助。
+- `patab-web/src/stores/launcherQueries.ts`：launcher 屏幕、文件夹、快捷方式和容器的只读查询。
+- `patab-web/src/stores/launcherTiles.ts`：launcher 快捷方式、文件夹、小组件、屏幕和 Dock 的业务动作。
+- `patab-web/src/stores/launcherTodos.ts`：launcher 待办条目和待办列表的业务动作。
+- `patab-web/src/stores/launcherDrop.ts`：launcher 拖拽落点、批量拖拽和跨容器移动规则。
+- `patab-web/src/stores/launcherSettings.ts`：launcher 设置补丁写入入口。
 - `patab-web/src/stores/ui.ts`：全局 UI 状态，管理弹窗、菜单等临时界面状态。
 - `patab-web/src/stores/drag.ts`：拖拽过程状态。
 - `patab-web/src/composables/`：复杂交互逻辑，例如拖拽、网格翻转、时间刷新。
@@ -51,7 +58,7 @@ flowchart TD
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、拖拽和 localStorage 持久化。
 - 进行中：持续完善交互细节和可维护性。
-- 待关注：`launcher.ts`、`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
+- 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
 
 ## 新增功能规则
 
@@ -61,7 +68,8 @@ flowchart TD
 - 新 UI 开发默认先拆成可复用组件，页面层只负责组合和传参。
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
+- `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。
 - 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。
 - 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。
 - 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。
-- 主屏批量管理模式只保存在 `stores/ui.ts` 的瞬时状态中；`TileItem.vue` 负责选择圆点、点击拦截和批量右键菜单，`launcher.ts` 继续集中处理批量删除与批量拖放规则。
+- 主屏批量管理模式只保存在 `stores/ui.ts` 的瞬时状态中；`TileItem.vue` 负责选择圆点、点击拦截和批量右键菜单，`launcherTiles.ts` 处理批量删除，`launcherDrop.ts` 处理批量拖放规则。
