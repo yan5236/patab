@@ -92,14 +92,18 @@ export default function HeroSection() {
             });
 
             // 滚出首屏时的轻视差：mockup 上移、色斑反向
-            gsap.to("[data-hero-mockup]", {
+            // 注意：视差作用于内层 [data-hero-parallax]，与入场时间线控制的
+            // 外层 [data-hero-mockup] 分离，避免两条动画争夺同一 y 值——
+            // 否则滚动第一帧 scrub 会把外层瞬间拉回 progress:0 的位置，产生突兀下沉。
+            // scrub 给 0.6 秒缓冲，位移带阻尼跟随而非硬贴滚动条。
+            gsap.to("[data-hero-parallax]", {
               y: -60,
               ease: "none",
               scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top top",
                 end: "bottom top",
-                scrub: true,
+                scrub: 0.6,
               },
             });
             gsap.to("[data-hero-blob]", {
@@ -208,16 +212,19 @@ export default function HeroSection() {
               <Icon className="size-6" />
             </div>
           ))}
+          {/* 外层承载入场动画，内层承载滚动视差，两者互不干扰 */}
           <div data-hero-mockup>
-            <BrowserMockup>
-              <img
-                src="/pc-version-introduction-image.png"
-                alt="PaTab 桌面端界面：大字时钟、搜索框、快捷方式网格、待办挂件与 Dock 栏"
-                className="aspect-[1680/957] w-full object-cover"
-                fetchPriority="high"
-                decoding="async"
-              />
-            </BrowserMockup>
+            <div data-hero-parallax>
+              <BrowserMockup>
+                <img
+                  src="/pc-version-introduction-image.png"
+                  alt="PaTab 桌面端界面：大字时钟、搜索框、快捷方式网格、待办挂件与 Dock 栏"
+                  className="aspect-[1680/957] w-full object-cover"
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </BrowserMockup>
+            </div>
           </div>
         </div>
 

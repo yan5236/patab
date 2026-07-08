@@ -23,7 +23,7 @@ export const SHOWCASE_ITEMS: ShowcaseItem[] = [
     points: [
       "HH:MM:SS 大字时钟，12/24 小时制随心切换",
       "百度、必应、谷歌等 7+ 引擎一键换用",
-      "必应实时搜索建议，少打字、快直达",
+      "实时搜索建议，少打字、快直达",
     ],
     objectPosition: "50% 0%",
     zoom: 1.7,

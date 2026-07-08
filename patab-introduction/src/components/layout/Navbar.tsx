@@ -11,6 +11,7 @@ import { LINKS } from "../../data/links";
 const NAV_ITEMS = [
   { label: "特性", href: "#features" },
   { label: "界面", href: "#showcase" },
+  { label: "组件", href: "#widgets" },
   { label: "移动端", href: "#mobile" },
   { label: "技术", href: "#tech" },
   { label: "下载", href: "#download" },
