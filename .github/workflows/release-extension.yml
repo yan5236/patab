@@ -1,0 +1,97 @@
+name: Release Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: patab-web/pnpm-lock.yaml
+
+      - name: 安装依赖
+        working-directory: patab-web
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建浏览器扩展
+        working-directory: patab-web
+        run: pnpm build:extension
+
+      - name: 打包扩展为 zip
+        working-directory: patab-web
+        run: |
+          cd dist-extension
+          zip -r ../patab-extension.zip .
+
+      # 从 changelog 中提取当前版本对应的更新日志段落
+      # 如果找不到匹配版本，release_body 为空
+      - name: 提取版本更新日志
+        id: changelog
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          # 去掉 v 前缀（如果有），用于匹配 ## v0.0.0 格式
+          # 同时保留原始标签名用于匹配（因为 changelog 标题可能带 v）
+          CHANGELOG_FILE="patab-introduction/public/changelog.md"
+
+          # 用 awk 提取当前版本对应的段落：从匹配 ## 标签名 的行开始，
+          # 到下一个 ## 行或文件末尾结束
+          # 使用 $2 == tag 精确匹配版本号，避免 v0.0.0 错误匹配 v0.0.1
+          RELEASE_BODY=$(awk -v tag="$TAG_NAME" '
+            BEGIN { found=0; output="" }
+            # 精确匹配第二个字段（版本号），如 ## v0.0.1 - 2026-07-09
+            /^## / && $2 == tag {
+              found=1
+              output=$0 "\n"
+              next
+            }
+            # 如果后续遇到另一个 ## 标题，停止
+            found && /^## / { exit }
+            # 在找到目标版本后，收集中间的行
+            found { output=output $0 "\n" }
+            END {
+              if (found) {
+                # 去除末尾多余空行
+                gsub(/\n+$/, "", output)
+                print output
+              }
+            }
+          ' "$CHANGELOG_FILE")
+
+          # 将提取的日志写入 GITHUB_OUTPUT（多行内容）
+          {
+            echo "release_body<<EOF"
+            echo "$RELEASE_BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          if [ -n "$RELEASE_BODY" ]; then
+            echo "✓ 在 changelog 中找到 $TAG_NAME 的更新日志"
+          else
+            echo "⚠ 未在 changelog 中找到 $TAG_NAME，发布时将不含更新日志"
+          fi
+
+      - name: 上传到 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: patab-web/patab-extension.zip
+          body: ${{ steps.changelog.outputs.release_body }}
+          fail_on_unmatched_files: true
+          generate_release_notes: false
