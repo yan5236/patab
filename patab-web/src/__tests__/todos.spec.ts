@@ -21,6 +21,7 @@ function makeState(overrides: Partial<LauncherState> = {}): LauncherState {
     ],
     settings: {
       language: 'zh-CN',
+      themeMode: 'system',
       wallpaper: '/scenery1.jpg',
       customWallpapers: [],
       hour12: false,

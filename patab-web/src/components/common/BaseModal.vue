@@ -26,12 +26,12 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
     <Transition name="modal" appear>
       <div class="fixed inset-0 z-50 flex items-center justify-center" @contextmenu.prevent>
         <!-- 遮罩：点击关闭 -->
-        <div class="modal-mask absolute inset-0 bg-black/30 backdrop-blur-sm" @click="emit('close')" />
+        <div class="modal-mask theme-modal-mask absolute inset-0 backdrop-blur-sm" @click="emit('close')" />
         <GlassPanel
           strong
           :class="['modal-card relative w-[420px] max-w-[92vw] rounded-3xl p-6', panelClass]"
         >
-          <h2 class="mb-4 text-lg font-semibold text-neutral-800">{{ title }}</h2>
+          <h2 class="theme-heading mb-4 text-lg font-semibold">{{ title }}</h2>
           <slot />
           <div v-if="$slots.footer" class="mt-5 flex justify-end gap-2">
             <slot name="footer" />

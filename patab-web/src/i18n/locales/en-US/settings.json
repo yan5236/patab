@@ -8,6 +8,7 @@
   },
   "general": {
     "language": "Language",
+    "theme": "Appearance",
     "hour12": "12-hour clock",
     "showDate": "Show date",
     "compact": "Compact layout (icons make room while dragging)",
@@ -16,6 +17,11 @@
   "language": {
     "zhCN": "中文",
     "enUS": "English"
+  },
+  "theme": {
+    "system": "Follow system",
+    "light": "Light mode",
+    "dark": "Dark mode"
   },
   "wallpaper": {
     "description": "Save after selecting to use it as the new tab background.",

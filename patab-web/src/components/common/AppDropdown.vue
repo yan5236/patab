@@ -66,14 +66,14 @@ onBeforeUnmount(close)
   <div ref="rootRef" class="relative">
     <button
       type="button"
-      class="flex min-h-10 w-full cursor-pointer items-center justify-between gap-3 rounded-xl bg-white/55 px-3 py-2 text-left text-sm text-neutral-700 transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-50"
+      class="theme-dropdown-button flex min-h-10 w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
       :disabled="disabled"
       @click="toggle"
       @keydown.escape="close"
     >
       <span class="truncate">{{ selected?.label }}</span>
       <ChevronDown
-        class="h-4 w-4 shrink-0 text-neutral-400 transition-transform"
+        class="theme-muted h-4 w-4 shrink-0 transition-transform"
         :class="open ? 'rotate-180' : ''"
       />
     </button>
@@ -81,13 +81,13 @@ onBeforeUnmount(close)
     <Transition name="dropdown">
       <div
         v-if="open"
-        class="absolute left-0 top-11 z-[80] w-full min-w-44 rounded-2xl border border-white/55 bg-white/90 p-1.5 shadow-2xl backdrop-blur-xl"
+        class="theme-dropdown-menu absolute left-0 top-11 z-[80] w-full min-w-44 rounded-2xl p-1.5 shadow-2xl backdrop-blur-xl"
       >
         <button
           v-for="option in options"
           :key="option.value"
           type="button"
-          class="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm text-neutral-700 transition-colors hover:bg-sky-50"
+          class="theme-dropdown-item flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition-colors"
           @click="choose(option.value)"
         >
           <span class="min-w-0 flex-1 truncate">{{ option.label }}</span>

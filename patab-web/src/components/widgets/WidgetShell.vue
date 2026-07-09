@@ -38,7 +38,7 @@ function onMenu(event: MouseEvent) {
     @contextmenu="onMenu"
   >
     <div class="flex shrink-0 items-center justify-between px-4 pb-1 pt-3">
-      <span class="cursor-grab text-sm font-semibold text-neutral-700">
+      <span class="theme-heading cursor-grab text-sm font-semibold">
         {{ title }}
       </span>
       <div v-if="$slots.actions" class="flex items-center gap-1" data-nodrag>

@@ -97,7 +97,7 @@ function formatDate(date?: string): string {
   <WidgetShell :tile-id="tileId" :title="t('todo.title')">
     <template #actions>
       <button
-        class="cursor-pointer rounded p-1 text-neutral-500 transition-colors hover:bg-white/40 hover:text-neutral-700"
+        class="theme-subtle-button cursor-pointer rounded p-1 transition-colors"
         :title="t('widgets.expand')"
         @click="openModal"
       >
@@ -115,7 +115,7 @@ function formatDate(date?: string): string {
           v-for="todo in activeTodos"
           :key="todo.id"
           :data-reorder-id="todo.id"
-          class="group flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors hover:bg-white/40"
+          class="theme-surface-hover group flex items-center gap-2 rounded-lg px-1.5 py-1 transition-colors"
           :class="draggingId === todo.id ? 'opacity-30' : 'opacity-100'"
           @pointerdown="(e) => onPointerDown(e, todo.id)"
         >
@@ -132,7 +132,7 @@ function formatDate(date?: string): string {
                 ref="editInputRef"
                 v-model="editingText"
                 type="text"
-                class="h-5 w-full rounded bg-white/70 px-1 text-xs text-neutral-700 outline-none"
+                class="theme-input h-5 w-full rounded px-1 text-xs outline-none"
                 @keydown.enter="commitEdit"
                 @keydown.esc="cancelEdit"
                 @blur="commitEdit"
@@ -140,12 +140,12 @@ function formatDate(date?: string): string {
             </div>
             <template v-else>
               <span
-                class="block cursor-text truncate text-sm text-neutral-700"
+                class="theme-text block cursor-text truncate text-sm"
                 @click="startEdit(todo)"
               >
                 {{ todo.text }}
               </span>
-              <span v-if="todo.date" class="mt-0.5 inline-block rounded-md bg-sky-100 px-1 py-0.5 text-[9px] font-medium text-sky-600">
+              <span v-if="todo.date" class="theme-date-chip mt-0.5 inline-block rounded-md px-1 py-0.5 text-[9px] font-medium">
                 {{ formatDate(todo.date) }}
               </span>
             </template>
@@ -153,14 +153,14 @@ function formatDate(date?: string): string {
 
           <button
             class="mobile-action-btn shrink-0 rounded p-0.5 transition-colors"
-            :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'text-neutral-400 opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
+            :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'theme-faint opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
             :title="t('todo.important')"
             @click="toggleImportant(todo)"
           >
             <Star class="h-3.5 w-3.5" :class="todo.important ? 'fill-current' : ''" />
           </button>
           <button
-            class="mobile-action-btn shrink-0 cursor-pointer rounded p-0.5 text-neutral-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
+            class="theme-faint mobile-action-btn shrink-0 cursor-pointer rounded p-0.5 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
             :title="t('common.delete')"
             @click="deleteTodo(todo)"
           >
@@ -171,7 +171,7 @@ function formatDate(date?: string): string {
         <!-- 已完成折叠 -->
         <div v-if="completedTodos.length > 0" class="pt-1">
           <button
-            class="flex w-full cursor-pointer items-center gap-1 rounded-lg px-1.5 py-1 text-left text-[10px] font-medium text-neutral-500 transition-colors hover:bg-white/40"
+            class="theme-muted theme-surface-hover flex w-full cursor-pointer items-center gap-1 rounded-lg px-1.5 py-1 text-left text-[10px] font-medium transition-colors"
             type="button"
             @click="showCompleted = !showCompleted"
           >
@@ -195,11 +195,11 @@ function formatDate(date?: string): string {
                 class="h-4 w-4 shrink-0 cursor-pointer accent-sky-500"
                 @change="launcher.toggleTodo(todo.id)"
               >
-              <span class="min-w-0 flex-1 truncate text-sm text-neutral-400 line-through">
+              <span class="theme-faint min-w-0 flex-1 truncate text-sm line-through">
                 {{ todo.text }}
               </span>
               <button
-                class="shrink-0 cursor-pointer rounded p-0.5 text-neutral-400 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100"
+                class="theme-faint shrink-0 cursor-pointer rounded p-0.5 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100"
                 :title="t('common.delete')"
                 @click="deleteTodo(todo)"
               >
@@ -211,7 +211,7 @@ function formatDate(date?: string): string {
 
         <div
           v-if="launcher.todos.length === 0"
-          class="flex h-full items-center justify-center text-xs text-neutral-500"
+          class="theme-muted flex h-full items-center justify-center text-xs"
         >
           {{ t('todo.emptyWidget') }}
         </div>
@@ -224,16 +224,16 @@ function formatDate(date?: string): string {
       </div>
 
       <!-- 新增输入框 -->
-      <div class="flex shrink-0 items-center gap-1.5 rounded-xl bg-white/50 px-2 py-1">
+      <div class="theme-control flex shrink-0 items-center gap-1.5 rounded-xl px-2 py-1">
         <input
           v-model="draft"
           type="text"
           :placeholder="t('todo.addTodo')"
-          class="h-6 min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-500"
+          class="h-6 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--theme-muted)]"
           @keydown.enter="submit"
         >
         <button
-          class="shrink-0 cursor-pointer rounded p-0.5 text-neutral-500 hover:text-neutral-700"
+          class="theme-subtle-button shrink-0 cursor-pointer rounded p-0.5"
           :title="t('todo.add')"
           @click="submit"
         >

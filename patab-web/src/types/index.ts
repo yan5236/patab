@@ -97,6 +97,14 @@ export interface SearchEngine {
  */
 export type PlacementMode = 'compact' | 'free'
 
+/**
+ * 界面主题模式
+ * - system：跟随系统深浅色
+ * - light：固定浅色
+ * - dark：固定深色
+ */
+export type ThemeMode = 'system' | 'light' | 'dark'
+
 /** 用户添加的壁纸条目 */
 export interface CustomWallpaper {
   /** 唯一标识，用于列表渲染与后续去重 */
@@ -111,6 +119,8 @@ export interface CustomWallpaper {
 export interface Settings {
   /** 当前界面语言 */
   language: LocaleCode
+  /** 界面主题模式 */
+  themeMode: ThemeMode
   /** 壁纸地址（默认使用内置壁纸） */
   wallpaper: string
   /** 用户自定义添加的壁纸列表 */

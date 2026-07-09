@@ -8,6 +8,7 @@
   },
   "general": {
     "language": "语言",
+    "theme": "外观",
     "hour12": "12 小时制时钟",
     "showDate": "显示日期",
     "compact": "紧凑排列（拖动图标自动让位）",
@@ -16,6 +17,11 @@
   "language": {
     "zhCN": "中文",
     "enUS": "English"
+  },
+  "theme": {
+    "system": "跟随系统",
+    "light": "浅色模式",
+    "dark": "深色模式"
   },
   "wallpaper": {
     "description": "选择后保存，即可作为新标签页背景。",

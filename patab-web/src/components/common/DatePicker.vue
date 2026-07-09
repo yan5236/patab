@@ -133,40 +133,40 @@ function onBackdropClick(event: MouseEvent) {
     <button
       ref="triggerRef"
       type="button"
-      class="flex h-8 items-center gap-1.5 rounded-lg bg-white/50 px-2.5 text-sm text-neutral-700 transition-colors hover:bg-white/70"
-      :class="!modelValue ? 'text-neutral-500' : ''"
+      class="theme-control flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-sm transition-colors"
+      :class="!modelValue ? 'theme-muted' : ''"
       @click="open = !open"
     >
-      <Calendar class="h-4 w-4 text-neutral-400" />
+      <Calendar class="theme-faint h-4 w-4" />
       <span>{{ displayValue }}</span>
     </button>
 
     <Transition name="picker">
       <div
         v-if="open"
-        class="fixed z-[100] w-64 rounded-2xl border border-white/50 bg-white/90 p-3 shadow-lg backdrop-blur-md"
+        class="theme-dropdown-menu fixed z-[100] w-64 rounded-2xl p-3 shadow-lg backdrop-blur-md"
         :style="popoverStyle"
         @click="onBackdropClick"
       >
         <div class="mb-2 flex items-center justify-between">
           <button
             type="button"
-            class="rounded p-1 text-neutral-500 hover:bg-black/5"
+            class="theme-subtle-button rounded p-1 transition-colors"
             @click.stop="prevMonth"
           >
             <ChevronLeft class="h-4 w-4" />
           </button>
-          <span class="text-sm font-medium text-neutral-800">{{ yearMonthLabel }}</span>
+          <span class="theme-heading text-sm font-medium">{{ yearMonthLabel }}</span>
           <button
             type="button"
-            class="rounded p-1 text-neutral-500 hover:bg-black/5"
+            class="theme-subtle-button rounded p-1 transition-colors"
             @click.stop="nextMonth"
           >
             <ChevronRight class="h-4 w-4" />
           </button>
         </div>
 
-        <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] text-neutral-400">
+        <div class="theme-faint grid grid-cols-7 gap-0.5 text-center text-[10px]">
           <span v-for="day in weekdays" :key="day">{{ day }}</span>
         </div>
 
@@ -177,7 +177,7 @@ function onBackdropClick(event: MouseEvent) {
             type="button"
             class="relative aspect-square rounded-lg text-xs transition-colors"
             :class="[
-              !day.current ? 'text-neutral-300' : 'text-neutral-700 hover:bg-sky-100',
+              !day.current ? 'theme-faint opacity-60' : 'theme-text hover:bg-[var(--theme-menu-hover-bg)]',
               day.selected ? 'bg-sky-500 text-white hover:bg-sky-600' : '',
               day.today && !day.selected ? 'font-semibold text-sky-600 ring-1 ring-sky-400/60' : '',
             ]"
@@ -190,7 +190,7 @@ function onBackdropClick(event: MouseEvent) {
         <div class="mt-2 flex justify-end">
           <button
             type="button"
-            class="text-xs text-neutral-500 hover:text-neutral-700"
+            class="theme-subtle-button text-xs"
             @click.stop="clear"
           >
             {{ t('common.clear') }}

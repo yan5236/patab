@@ -82,6 +82,7 @@ flowchart TD
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
 - `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。
+- 主题设置通过 `settings.themeMode` 持久化，通用设置面板使用 `AppDropdown` 切换 `system` / `light` / `dark`；根组件通过主题工具把最终深浅色写入 `documentElement`，组件可读颜色优先走 `index.css` 的 `theme-*` 公共类。
 - 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。
 - 语言设置通过 `settings.language` 持久化，通用设置面板使用 `AppDropdown` 切换 `zh-CN` / `en-US`；新增可见文案必须进入对应模块 JSON，不要直接写死在组件模板里。
 - 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。

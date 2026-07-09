@@ -110,8 +110,8 @@ function saveEngine() {
   <div class="space-y-4">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h3 class="text-base font-semibold text-neutral-800">{{ t('settings.tabs.search') }}</h3>
-        <p class="mt-0.5 text-xs text-neutral-500">{{ t('settings.search.description') }}</p>
+        <h3 class="theme-heading text-base font-semibold">{{ t('settings.tabs.search') }}</h3>
+        <p class="theme-muted mt-0.5 text-xs">{{ t('settings.search.description') }}</p>
       </div>
       <button
         type="button"
@@ -125,7 +125,7 @@ function saveEngine() {
 
     <div
       v-if="!engines.length"
-      class="rounded-xl border border-dashed border-white/70 bg-white/35 px-3 py-4 text-sm text-neutral-500"
+      class="theme-muted theme-border rounded-xl border border-dashed px-3 py-4 text-sm"
     >
       {{ t('settings.search.empty') }}
     </div>
@@ -134,7 +134,7 @@ function saveEngine() {
       <div
         v-for="engine in engines"
         :key="engine.id"
-        class="flex items-center gap-3 rounded-xl bg-white/45 px-3 py-2.5"
+        class="theme-surface flex items-center gap-3 rounded-xl px-3 py-2.5"
       >
         <span class="h-8 w-8 shrink-0 overflow-hidden rounded-full">
           <AppIcon
@@ -148,15 +148,15 @@ function saveEngine() {
           class="min-w-0 flex-1 cursor-pointer text-left"
           @click="selectEngine(engine.id)"
         >
-          <span class="flex items-center gap-1.5 text-sm font-medium text-neutral-800">
+          <span class="theme-heading flex items-center gap-1.5 text-sm font-medium">
             <Check v-if="selectedEngine === engine.id" class="h-4 w-4 text-sky-500" />
             <span class="truncate">{{ engine.name }}</span>
           </span>
-          <span class="block truncate text-xs text-neutral-500">{{ engine.urlTemplate }}</span>
+          <span class="theme-muted block truncate text-xs">{{ engine.urlTemplate }}</span>
         </button>
         <button
           type="button"
-          class="cursor-pointer rounded-lg p-1.5 text-neutral-500 transition-colors hover:bg-white/70 hover:text-neutral-800"
+          class="theme-subtle-button cursor-pointer rounded-lg p-1.5 transition-colors"
           :title="t('settings.search.editEngine')"
           @click="editEngine(engine)"
         >

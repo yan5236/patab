@@ -606,6 +606,7 @@ describe('持久化', () => {
     expect(store.settings.customWallpapers).toEqual([])
     expect(store.settings.language).toBe('zh-CN')
     expect(store.settings.showDate).toBe(true)
+    expect(store.settings.themeMode).toBe('system')
   })
 
   it('初始化会清洗语言设置，只保留受支持语言', () => {
@@ -630,6 +631,31 @@ describe('持久化', () => {
     const store = useLauncherStore()
 
     expect(store.settings.language).toBe('zh-CN')
+  })
+
+  it('初始化会清洗主题模式，只保留受支持模式', () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        screens: [makeScreen('s1', [])],
+        dock: [],
+        todos: [],
+        settings: {
+          language: 'zh-CN',
+          themeMode: 'night',
+          wallpaper: '/custom.jpg',
+          customWallpapers: [],
+          hour12: false,
+          searchEngine: 'baidu',
+          placementMode: 'compact',
+        },
+      }),
+    )
+
+    const store = useLauncherStore()
+
+    expect(store.settings.themeMode).toBe('system')
   })
 
   it('初始化会清洗自定义壁纸，丢弃空名称或空地址', () => {

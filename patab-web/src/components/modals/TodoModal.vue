@@ -205,11 +205,11 @@ function listName(list?: TodoList): string {
     panel-class="todo-modal-card flex flex-col !h-[600px] !w-[800px] max-h-[92vh] max-w-[94vw] overflow-hidden !p-4 sm:!p-6"
     @close="ui.closeModal()"
   >
-    <div class="todo-body flex flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/45 bg-white/25">
+    <div class="todo-body theme-setting-shell flex flex-1 min-h-0 overflow-hidden rounded-2xl">
       <!-- 左侧列表栏 -->
       <aside
         ref="listContainerRef"
-        class="relative w-40 shrink-0 overflow-y-auto border-r border-white/50 bg-white/35 p-2"
+        class="theme-setting-tabs relative w-40 shrink-0 overflow-y-auto p-2"
       >
         <div
           v-for="list in sortedLists"
@@ -220,8 +220,8 @@ function listName(list?: TodoList): string {
           class="mb-1 flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition-colors select-none"
           :class="[
             selectedListId === list.id
-              ? 'bg-white text-neutral-900 shadow-sm'
-              : 'text-neutral-600 hover:bg-white/55 hover:text-neutral-900',
+              ? 'theme-tab-active shadow-sm'
+              : 'theme-tab-idle',
             draggingListId === list.id ? 'opacity-30' : 'opacity-100',
           ]"
           @pointerdown="(e) => onListPointerDown(e, list.id)"
@@ -230,7 +230,7 @@ function listName(list?: TodoList): string {
           @keydown.enter="selectedListId = list.id"
         >
           <span class="truncate">{{ listName(list) }}</span>
-          <span class="ml-2 shrink-0 text-xs text-neutral-400">{{ listCount(list) }}</span>
+          <span class="theme-faint ml-2 shrink-0 text-xs">{{ listCount(list) }}</span>
         </div>
 
         <div
@@ -239,10 +239,10 @@ function listName(list?: TodoList): string {
           :style="{ ...listIndicatorStyle, position: 'absolute' }"
         />
 
-        <div class="mt-2 border-t border-white/40 pt-2">
+        <div class="theme-divider mt-2 border-t pt-2">
           <button
             v-if="!isAddingList"
-            class="flex w-full cursor-pointer items-center gap-1.5 rounded-xl px-3 py-2 text-left text-sm text-neutral-500 transition-colors hover:bg-white/55 hover:text-neutral-700"
+            class="theme-subtle-button flex w-full cursor-pointer items-center gap-1.5 rounded-xl px-3 py-2 text-left text-sm transition-colors"
             type="button"
             @click="startAddList"
           >
@@ -251,20 +251,20 @@ function listName(list?: TodoList): string {
           </button>
           <div
             v-else
-            class="flex items-center gap-1 rounded-xl bg-white/70 px-2 py-1.5"
+            class="theme-control flex items-center gap-1 rounded-xl px-2 py-1.5"
           >
             <input
               ref="newListInputRef"
               v-model="newListName"
               type="text"
               :placeholder="t('todo.listName')"
-              class="min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-400"
+              class="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--theme-muted)]"
               @keydown.enter="createList"
               @keydown.esc="cancelAddList"
               @blur="createList"
             >
             <button
-              class="shrink-0 rounded p-1 text-neutral-500 hover:text-neutral-700"
+              class="theme-subtle-button shrink-0 rounded p-1"
               type="button"
               @click="cancelAddList"
             >
@@ -276,21 +276,21 @@ function listName(list?: TodoList): string {
 
       <!-- 右侧内容区 -->
       <section class="flex min-w-0 flex-1 flex-col">
-        <div class="hidden shrink-0 border-b border-white/40 px-5 py-3 sm:block">
-          <h3 class="text-base font-semibold text-neutral-800">
+        <div class="theme-divider hidden shrink-0 border-b px-5 py-3 sm:block">
+          <h3 class="theme-heading text-base font-semibold">
             {{ listName(selectedList) }}
           </h3>
         </div>
 
         <div class="flex min-h-0 flex-1 flex-col px-3 py-2 sm:px-5 sm:py-3">
           <!-- 创建输入框 -->
-          <div class="mb-3 flex shrink-0 items-center gap-2 rounded-xl bg-white/60 px-3 py-2">
+          <div class="theme-control mb-3 flex shrink-0 items-center gap-2 rounded-xl px-3 py-2">
             <DatePicker v-model="draftDate" :placeholder="t('todo.date')" />
             <input
               v-model="draftText"
               type="text"
               :placeholder="t('todo.addTodo')"
-              class="h-8 min-w-0 flex-1 bg-transparent text-sm text-neutral-700 outline-none placeholder:text-neutral-500"
+              class="h-8 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--theme-muted)]"
               @keydown.enter="submitTodo"
             >
             <button
@@ -308,7 +308,7 @@ function listName(list?: TodoList): string {
             ref="todoContainerRef"
             class="relative min-h-0 flex-1 overflow-y-auto"
           >
-            <div v-if="visibleTodos.length === 0" class="flex h-full items-center justify-center text-sm text-neutral-500">
+            <div v-if="visibleTodos.length === 0" class="theme-muted flex h-full items-center justify-center text-sm">
               {{ t('todo.empty') }}
             </div>
 
@@ -318,7 +318,7 @@ function listName(list?: TodoList): string {
                 v-for="todo in activeTodos"
                 :key="todo.id"
                 :data-reorder-id="todo.id"
-                class="group flex items-center gap-2 rounded-xl bg-white/40 px-2.5 py-2 transition-colors hover:bg-white/60"
+                class="theme-surface group flex items-center gap-2 rounded-xl px-2.5 py-2 transition-colors"
                 :class="draggingTodoId === todo.id ? 'opacity-30' : 'opacity-100'"
                 @pointerdown="(e) => onTodoPointerDown(e, todo.id)"
               >
@@ -335,7 +335,7 @@ function listName(list?: TodoList): string {
                       ref="editInputRef"
                       v-model="editingText"
                       type="text"
-                      class="h-7 w-full rounded-lg bg-white/70 px-2 text-sm text-neutral-700 outline-none"
+                      class="theme-input h-7 w-full rounded-lg px-2 text-sm outline-none"
                       @keydown.enter="commitEdit"
                       @keydown.esc="cancelEdit"
                       @blur="commitEdit"
@@ -346,12 +346,12 @@ function listName(list?: TodoList): string {
                   </div>
                   <div v-else>
                     <p
-                      class="cursor-text text-sm text-neutral-700"
+                      class="theme-text cursor-text text-sm"
                       @click="startEdit(todo)"
                     >
                       {{ todo.text }}
                     </p>
-                    <span v-if="todo.date" class="mt-1 inline-block rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-medium text-sky-600">
+                    <span v-if="todo.date" class="theme-date-chip mt-1 inline-block rounded-md px-1.5 py-0.5 text-[10px] font-medium">
                       {{ formatDate(todo.date) }}
                     </span>
                   </div>
@@ -359,14 +359,14 @@ function listName(list?: TodoList): string {
 
                 <button
                   class="mobile-action-btn shrink-0 rounded p-1 transition-colors"
-                  :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'text-neutral-400 opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
+                  :class="todo.important ? 'text-amber-400 hover:text-amber-500' : 'theme-faint opacity-0 hover:text-amber-400 group-hover:opacity-100 max-sm:opacity-100'"
                   :title="t('todo.important')"
                   @click="toggleImportant(todo)"
                 >
                   <Star class="h-4 w-4" :class="todo.important ? 'fill-current' : ''" />
                 </button>
                 <button
-                  class="mobile-action-btn shrink-0 rounded p-1 text-neutral-400 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
+                  class="theme-faint mobile-action-btn shrink-0 rounded p-1 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
                   :title="t('common.delete')"
                   @click="deleteTodo(todo)"
                 >
@@ -377,7 +377,7 @@ function listName(list?: TodoList): string {
               <!-- 已完成折叠区 -->
               <div v-if="completedTodos.length > 0" class="pt-2">
                 <button
-                  class="flex w-full cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-left text-xs font-medium text-neutral-500 transition-colors hover:bg-white/40"
+                  class="theme-muted theme-surface-hover flex w-full cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-left text-xs font-medium transition-colors"
                   type="button"
                   @click="showCompleted = !showCompleted"
                 >
@@ -391,7 +391,7 @@ function listName(list?: TodoList): string {
                     v-for="todo in completedTodos"
                     :key="todo.id"
                     :data-reorder-id="todo.id"
-                    class="group flex items-center gap-2 rounded-xl bg-white/30 px-2.5 py-2"
+                    class="theme-surface group flex items-center gap-2 rounded-xl px-2.5 py-2"
                     :class="draggingTodoId === todo.id ? 'opacity-30' : 'opacity-100'"
                     @pointerdown="(e) => onTodoPointerDown(e, todo.id)"
                   >
@@ -402,15 +402,15 @@ function listName(list?: TodoList): string {
                       @change="launcher.toggleTodo(todo.id)"
                     >
                     <div class="min-w-0 flex-1">
-                      <p class="text-sm text-neutral-400 line-through">
+                      <p class="theme-faint text-sm line-through">
                         {{ todo.text }}
                       </p>
-                      <span v-if="todo.date" class="mt-1 inline-block rounded-md bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-500">
+                      <span v-if="todo.date" class="theme-date-chip mt-1 inline-block rounded-md px-1.5 py-0.5 text-[10px] font-medium">
                         {{ formatDate(todo.date) }}
                       </span>
                     </div>
                     <button
-                      class="mobile-action-btn shrink-0 rounded p-1 text-neutral-400 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
+                      class="theme-faint mobile-action-btn shrink-0 rounded p-1 opacity-0 transition-colors hover:text-red-500 group-hover:opacity-100 max-sm:opacity-100"
                       :title="t('common.delete')"
                       @click="deleteTodo(todo)"
                     >
@@ -433,7 +433,7 @@ function listName(list?: TodoList): string {
 
     <template #footer>
       <button
-        class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
+        class="theme-subtle-button cursor-pointer rounded-xl px-4 py-2 text-sm transition-colors"
         @click="ui.closeModal()"
       >
         {{ t('common.close') }}
@@ -459,7 +459,7 @@ function listName(list?: TodoList): string {
     width: 100%;
     max-height: 34%;
     border-right: none;
-    border-bottom: 1px solid rgb(255 255 255 / 0.5);
+    border-bottom: 1px solid var(--theme-panel-border);
   }
 }
 </style>

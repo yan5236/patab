@@ -10,6 +10,7 @@ import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { setLocale } from '@/i18n'
 import type { LocaleCode } from '@/i18n/language'
+import type { ThemeMode } from '@/types'
 import BaseModal from '@/components/common/BaseModal.vue'
 import GeneralSettingsPanel from '@/components/settings/GeneralSettingsPanel.vue'
 import SearchEngineSettingsPanel from '@/components/settings/SearchEngineSettingsPanel.vue'
@@ -43,6 +44,7 @@ const activeTab = ref<SettingsTab['id'] | null>(null)
 const selectedTab = computed<SettingsTab['id']>(() => activeTab.value ?? initialTab)
 const selectedTabLabel = computed(() => t(`settings.tabs.${selectedTab.value}`))
 const language = ref<LocaleCode>(launcher.settings.language)
+const themeMode = ref<ThemeMode>(launcher.settings.themeMode)
 const wallpaper = ref(launcher.settings.wallpaper)
 const hour12 = ref(launcher.settings.hour12)
 const showDate = ref(launcher.settings.showDate)
@@ -75,6 +77,7 @@ const settingsPanelClass = computed(() =>
 function save() {
   launcher.updateSettings({
     language: language.value,
+    themeMode: themeMode.value,
     wallpaper: wallpaper.value.trim() || DEFAULT_WALLPAPERS[0]!.src,
     customWallpapers: customWallpapers.value.map(toCustomWallpaper),
     hour12: hour12.value,
@@ -161,16 +164,16 @@ onBeforeUnmount(() => {
       </span>
     </div>
 
-    <div class="settings-body flex h-[408px] min-h-0 overflow-hidden rounded-2xl border border-white/45 bg-white/25">
-      <aside class="settings-tabs w-36 shrink-0 border-r border-white/50 bg-white/35 p-2">
+    <div class="settings-body theme-setting-shell flex h-[408px] min-h-0 overflow-hidden rounded-2xl">
+      <aside class="settings-tabs theme-setting-tabs w-36 shrink-0 p-2">
         <button
           v-for="tab in SETTINGS_TABS"
           :key="tab.id"
           class="mb-1 flex w-full cursor-pointer items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm transition-colors"
           :class="
             selectedTab === tab.id
-              ? 'bg-white text-neutral-900 shadow-sm'
-              : 'text-neutral-600 hover:bg-white/55 hover:text-neutral-900'
+              ? 'theme-tab-active shadow-sm'
+              : 'theme-tab-idle'
           "
           type="button"
           @click="selectTab(tab.id)"
@@ -184,7 +187,7 @@ onBeforeUnmount(() => {
         <button
           v-for="tab in SETTINGS_TABS"
           :key="tab.id"
-          class="mb-2 flex w-full cursor-pointer items-center justify-between rounded-2xl bg-white/55 px-4 py-3 text-left text-sm font-medium text-neutral-800 shadow-sm transition active:scale-[0.98]"
+          class="theme-setting-row mb-2 flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-3 text-left text-sm font-medium shadow-sm transition active:scale-[0.98]"
           type="button"
           @click="selectTab(tab.id)"
         >
@@ -192,7 +195,7 @@ onBeforeUnmount(() => {
             <component :is="tab.icon" class="h-4 w-4" />
             <span>{{ t(`settings.tabs.${tab.id}`) }}</span>
           </span>
-          <span class="text-neutral-400">›</span>
+          <span class="theme-faint">›</span>
         </button>
       </div>
 
@@ -203,7 +206,7 @@ onBeforeUnmount(() => {
         @scroll="syncMobileHeader"
       >
         <button
-          class="settings-back-button mb-3 cursor-pointer items-center gap-1.5 rounded-xl px-2 py-1.5 text-sm text-neutral-600 transition-colors hover:bg-white/55"
+          class="settings-back-button theme-subtle-button mb-3 cursor-pointer items-center gap-1.5 rounded-xl px-2 py-1.5 text-sm transition-colors"
           type="button"
           @click="backToMobileMenu"
         >
@@ -213,6 +216,7 @@ onBeforeUnmount(() => {
         <GeneralSettingsPanel
           v-if="selectedTab === 'general'"
           v-model:language="language"
+          v-model:theme-mode="themeMode"
           v-model:hour12="hour12"
           v-model:show-date="showDate"
           v-model:compact="compact"
@@ -233,7 +237,7 @@ onBeforeUnmount(() => {
 
     <template #footer>
       <button
-        class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
+        class="theme-subtle-button cursor-pointer rounded-xl px-4 py-2 text-sm transition-colors"
         @click="ui.closeModal()"
       >
         {{ t('common.cancel') }}
@@ -296,7 +300,7 @@ onBeforeUnmount(() => {
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
     line-height: 1.25rem;
-    color: rgb(82 82 82);
+    color: var(--theme-muted);
     transition: background-color 0.18s ease, transform 0.18s ease;
   }
 
@@ -305,7 +309,7 @@ onBeforeUnmount(() => {
   }
 
   .settings-mobile-toolbar-back:hover {
-    background: rgb(255 255 255 / 0.55);
+    background: var(--theme-control-hover-bg);
   }
 
   .settings-mobile-toolbar-title {
@@ -314,7 +318,7 @@ onBeforeUnmount(() => {
     white-space: nowrap;
     font-size: 1rem;
     font-weight: 600;
-    color: rgb(38 38 38);
+    color: var(--theme-heading);
   }
 
   .settings-tabs {

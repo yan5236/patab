@@ -8,6 +8,7 @@
 - 前端 UI 默认组件化开发，能复用的界面、样式和交互都抽象为 Vue 组件。
 - 用户可见文案必须放进 `patab-web/src/i18n/locales/{zh-CN,en-US}/` 对应模块 JSON，组件内通过 `vue-i18n` 使用，不新增硬编码界面文案。
 - 单选下拉优先使用 `components/common/AppDropdown.vue`，不要用原生 `select` 破坏设置弹窗的统一视觉。
+- 深浅色主题优先通过 `index.css` 的 `--theme-*` 变量和 `theme-*` 公共类维护，不为单个页面复制一套颜色分支。
 - 单文件原则上不超过 500 行；超过时优先拆分，但不为小改动做无关重构。
 - 优先复用现有 helper、类型和组件。
 - 函数级注释使用中文，说明职责、输入边界或关键副作用。
@@ -46,6 +47,7 @@
 - 跨组件类型放在 `types/index.ts`。
 - 测试放在 `src/__tests__/`。
 - 设置页新增搜索、壁纸等领域面板时，优先放在 `components/settings/`，规则清洗放在对应 `utils/`。
+- 主题模式规则放在 `utils/theme.ts`，运行时 DOM 同步放在 `composables/useThemeMode.ts`，设置入口仍归通用设置面板。
 - 新增翻译模块时保持中英文 JSON key 集合一致，并在 `src/i18n/messages.ts` 聚合。
 - launcher 领域模块按职责命名为 `launcherQueries.ts`、`launcherTiles.ts`、`launcherTodos.ts`、`launcherDrop.ts`、`launcherSettings.ts` 等；不要把无关业务合回 `launcher.ts`。
 

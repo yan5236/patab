@@ -60,8 +60,8 @@ function onScreenMenu(event: MouseEvent, screen: Screen) {
         class="flex items-center gap-1 rounded-full px-2.5 py-1 text-xs transition-all"
         :class="[
           i === ui.currentScreenIndex
-            ? 'bg-white/90 font-medium text-neutral-800 shadow-sm'
-            : 'text-neutral-600 hover:bg-white/40',
+            ? 'theme-control font-medium shadow-sm'
+            : 'theme-muted theme-surface-hover',
           drag.hoverKey === `pager:${screen.id}` ? 'ring-2 ring-sky-400' : '',
         ]"
         :title="screen.name"
@@ -74,7 +74,7 @@ function onScreenMenu(event: MouseEvent, screen: Screen) {
 
       <!-- 新建应用屏幕 -->
       <button
-        class="rounded-full p-1 text-neutral-600 transition-colors hover:bg-white/40"
+        class="theme-muted theme-surface-hover rounded-full p-1 transition-colors"
         :title="t('screen.pager.newScreen')"
         @click="ui.openModal({ type: 'screen-create' })"
       >

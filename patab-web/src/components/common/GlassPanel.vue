@@ -9,8 +9,8 @@ withDefaults(defineProps<{ strong?: boolean }>(), { strong: false })
 
 <template>
   <div
-    class="border border-white/50 shadow-lg shadow-black/10 backdrop-blur-2xl"
-    :class="strong ? 'bg-white/80' : 'bg-white/50'"
+    class="theme-glass-panel border shadow-lg backdrop-blur-2xl"
+    :class="strong ? 'is-strong' : ''"
   >
     <slot />
   </div>

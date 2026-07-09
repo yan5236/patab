@@ -20,10 +20,12 @@ import ScreenEditModal from '@/components/modals/ScreenEditModal.vue'
 import SettingsModal from '@/components/modals/SettingsModal.vue'
 import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
 import TodoModal from '@/components/modals/TodoModal.vue'
+import { useThemeMode } from '@/composables/useThemeMode'
 import { resolveAssetPath } from '@/utils/assetPath'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+useThemeMode(computed(() => launcher.settings.themeMode))
 
 const wallpaperStyle = computed(() => ({
   backgroundImage: `url(${resolveAssetPath(launcher.settings.wallpaper)})`,
@@ -45,8 +47,8 @@ function onRootContextMenu(event: MouseEvent) {
     :style="wallpaperStyle"
     @contextmenu="onRootContextMenu"
   >
-    <!-- 轻微暗化，保证白色文字可读 -->
-    <div class="pointer-events-none absolute inset-0 bg-black/10" />
+    <!-- 根据主题轻微调整壁纸遮罩，保证文字和毛玻璃层可读 -->
+    <div class="theme-wallpaper-overlay pointer-events-none absolute inset-0" />
 
     <div class="relative flex h-full flex-col items-center px-4 sm:px-8">
       <ClockDisplay class="mt-8 shrink-0 sm:mt-10" />

@@ -122,8 +122,8 @@ function addCustomWallpaper(src: string, name: string) {
   <div class="space-y-4">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <h3 class="text-base font-semibold text-neutral-800">{{ t('settings.tabs.wallpaper') }}</h3>
-        <p class="mt-0.5 text-xs text-neutral-500">{{ t('settings.wallpaper.description') }}</p>
+        <h3 class="theme-heading text-base font-semibold">{{ t('settings.tabs.wallpaper') }}</h3>
+        <p class="theme-muted mt-0.5 text-xs">{{ t('settings.wallpaper.description') }}</p>
       </div>
       <button
         type="button"
@@ -141,7 +141,7 @@ function addCustomWallpaper(src: string, name: string) {
         :key="item.id"
         type="button"
         class="group relative aspect-video cursor-pointer overflow-hidden rounded-xl border text-left transition"
-        :class="wallpaper === item.src ? 'border-sky-400 ring-2 ring-sky-300' : 'border-white/50 hover:border-white'"
+        :class="wallpaper === item.src ? 'border-sky-400 ring-2 ring-sky-300' : 'theme-border hover:border-white'"
         @click="selectWallpaper(item.src)"
       >
         <span

@@ -37,7 +37,7 @@ function quickAdd() {
       </TransitionGroup>
 
       <!-- Dock 为空时的占位提示 -->
-      <span v-if="launcher.dock.length === 0" class="shrink-0 px-2 text-xs text-neutral-500">
+      <span v-if="launcher.dock.length === 0" class="theme-muted shrink-0 px-2 text-xs">
         {{ t('dock.empty') }}
       </span>
 
@@ -45,7 +45,7 @@ function quickAdd() {
       <div class="mx-1 h-10 w-px shrink-0 bg-neutral-500/30" />
 
       <button
-        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        class="theme-dock-button flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl shadow transition-transform duration-150 hover:scale-110"
         :title="t('dock.settings')"
         @click="ui.openModal({ type: 'settings' })"
       >
@@ -53,7 +53,7 @@ function quickAdd() {
       </button>
 
       <button
-        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        class="theme-dock-button flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl shadow transition-transform duration-150 hover:scale-110"
         :title="t('dock.newShortcut')"
         @click="quickAdd"
       >
@@ -61,7 +61,7 @@ function quickAdd() {
       </button>
 
       <button
-        class="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl bg-white/60 text-neutral-600 shadow transition-transform duration-150 hover:scale-110 hover:text-neutral-800"
+        class="theme-dock-button flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-2xl shadow transition-transform duration-150 hover:scale-110"
         :title="t('dock.componentStore')"
         @click="ui.openModal({ type: 'component-store' })"
       >

@@ -2,6 +2,56 @@
 
 /* ========== PaTab 全局样式 ========== */
 
+:root {
+  --theme-wallpaper-overlay: rgb(0 0 0 / 0.1);
+  --theme-glass-bg: rgb(255 255 255 / 0.5);
+  --theme-glass-strong-bg: rgb(255 255 255 / 0.8);
+  --theme-glass-border: rgb(255 255 255 / 0.5);
+  --theme-shadow: rgb(0 0 0 / 0.1);
+  --theme-modal-mask: rgb(0 0 0 / 0.3);
+  --theme-panel-bg: rgb(255 255 255 / 0.25);
+  --theme-panel-border: rgb(255 255 255 / 0.45);
+  --theme-panel-side-bg: rgb(255 255 255 / 0.35);
+  --theme-row-bg: rgb(255 255 255 / 0.45);
+  --theme-row-hover-bg: rgb(255 255 255 / 0.65);
+  --theme-control-bg: rgb(255 255 255 / 0.55);
+  --theme-control-hover-bg: rgb(255 255 255 / 0.7);
+  --theme-input-bg: rgb(255 255 255 / 0.7);
+  --theme-date-bg: rgb(224 242 254 / 0.9);
+  --theme-date-text: rgb(2 132 199);
+  --theme-menu-bg: rgb(255 255 255 / 0.9);
+  --theme-menu-hover-bg: rgb(240 249 255 / 1);
+  --theme-heading: rgb(38 38 38);
+  --theme-text: rgb(64 64 64);
+  --theme-muted: rgb(115 115 115);
+  --theme-faint: rgb(163 163 163);
+}
+
+:root[data-theme='dark'] {
+  --theme-wallpaper-overlay: rgb(0 0 0 / 0.42);
+  --theme-glass-bg: rgb(24 24 27 / 0.58);
+  --theme-glass-strong-bg: rgb(24 24 27 / 0.88);
+  --theme-glass-border: rgb(255 255 255 / 0.16);
+  --theme-shadow: rgb(0 0 0 / 0.32);
+  --theme-modal-mask: rgb(0 0 0 / 0.55);
+  --theme-panel-bg: rgb(24 24 27 / 0.45);
+  --theme-panel-border: rgb(255 255 255 / 0.14);
+  --theme-panel-side-bg: rgb(39 39 42 / 0.45);
+  --theme-row-bg: rgb(255 255 255 / 0.08);
+  --theme-row-hover-bg: rgb(255 255 255 / 0.14);
+  --theme-control-bg: rgb(255 255 255 / 0.1);
+  --theme-control-hover-bg: rgb(255 255 255 / 0.16);
+  --theme-input-bg: rgb(255 255 255 / 0.14);
+  --theme-date-bg: rgb(14 116 144 / 0.28);
+  --theme-date-text: rgb(125 211 252);
+  --theme-menu-bg: rgb(24 24 27 / 0.94);
+  --theme-menu-hover-bg: rgb(14 116 144 / 0.18);
+  --theme-heading: rgb(245 245 245);
+  --theme-text: rgb(229 229 229);
+  --theme-muted: rgb(161 161 170);
+  --theme-faint: rgb(113 113 122);
+}
+
 html,
 body,
 #app {
@@ -20,6 +70,150 @@ body {
   /* 类操作系统桌面：禁止文本被随意选中，交互更像原生应用 */
   user-select: none;
   -webkit-user-select: none;
+}
+
+.theme-wallpaper-overlay {
+  background: var(--theme-wallpaper-overlay);
+}
+
+.theme-glass-panel {
+  background: var(--theme-glass-bg);
+  border-color: var(--theme-glass-border);
+  box-shadow: 0 10px 15px -3px var(--theme-shadow), 0 4px 6px -4px var(--theme-shadow);
+}
+
+.theme-glass-panel.is-strong {
+  background: var(--theme-glass-strong-bg);
+}
+
+.theme-modal-mask {
+  background: var(--theme-modal-mask);
+}
+
+.theme-heading {
+  color: var(--theme-heading);
+}
+
+.theme-text,
+.theme-tab-active {
+  color: var(--theme-text);
+}
+
+.theme-muted {
+  color: var(--theme-muted);
+}
+
+.theme-faint {
+  color: var(--theme-faint);
+}
+
+.theme-border {
+  border-color: var(--theme-panel-border);
+}
+
+.theme-divider {
+  border-color: var(--theme-panel-border);
+}
+
+.theme-setting-shell {
+  background: var(--theme-panel-bg);
+  border: 1px solid var(--theme-panel-border);
+}
+
+.theme-setting-tabs {
+  background: var(--theme-panel-side-bg);
+  border-right: 1px solid var(--theme-panel-border);
+}
+
+.theme-setting-row,
+.theme-tab-active {
+  background: var(--theme-row-bg);
+}
+
+.theme-setting-row:hover {
+  background: var(--theme-row-hover-bg);
+}
+
+.theme-surface {
+  background: var(--theme-row-bg);
+  color: var(--theme-text);
+}
+
+.theme-surface-hover:hover,
+.theme-surface:hover {
+  background: var(--theme-row-hover-bg);
+}
+
+.theme-tab-idle {
+  color: var(--theme-muted);
+}
+
+.theme-tab-idle:hover {
+  background: var(--theme-row-hover-bg);
+  color: var(--theme-heading);
+}
+
+.theme-dropdown-button {
+  background: var(--theme-control-bg);
+  color: var(--theme-text);
+}
+
+.theme-dropdown-button:hover,
+.theme-control:hover,
+.theme-subtle-button:hover {
+  background: var(--theme-control-hover-bg);
+}
+
+.theme-control {
+  background: var(--theme-control-bg);
+  color: var(--theme-text);
+}
+
+.theme-input {
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+}
+
+.theme-input::placeholder {
+  color: var(--theme-muted);
+}
+
+.theme-subtle-button {
+  color: var(--theme-muted);
+}
+
+.theme-subtle-button:hover {
+  color: var(--theme-heading);
+}
+
+.theme-date-chip {
+  background: var(--theme-date-bg);
+  color: var(--theme-date-text);
+}
+
+.theme-dropdown-menu {
+  background: var(--theme-menu-bg);
+  border: 1px solid var(--theme-glass-border);
+}
+
+.theme-dropdown-item {
+  color: var(--theme-text);
+}
+
+.theme-dropdown-item:hover {
+  background: var(--theme-menu-hover-bg);
+}
+
+.theme-icon-button,
+.theme-dock-button {
+  background: var(--theme-control-bg);
+  color: var(--theme-text);
+}
+
+.theme-icon-button:hover,
+.theme-dock-button:hover {
+  background: var(--theme-control-hover-bg);
+  color: var(--theme-heading);
 }
 
 /* 输入类控件恢复可选中 */

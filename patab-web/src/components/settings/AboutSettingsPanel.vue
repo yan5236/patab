@@ -23,8 +23,8 @@ function handleLinkClick(href: string) {
 
 <template>
   <div class="space-y-3">
-    <h3 class="text-base font-semibold text-neutral-800">PaTab</h3>
-    <div class="rounded-xl bg-white/45 p-4 text-sm leading-6 text-neutral-700">
+    <h3 class="theme-heading text-base font-semibold">PaTab</h3>
+    <div class="theme-surface rounded-xl p-4 text-sm leading-6">
       <p>{{ t('settings.about.description1') }}</p>
       <p>{{ t('settings.about.description2') }}</p>
     </div>
@@ -34,12 +34,12 @@ function handleLinkClick(href: string) {
         v-for="link in ABOUT_LINKS"
         :key="link.key"
         :href="link.href"
-        class="flex cursor-pointer items-center justify-between rounded-xl bg-white/45 px-3 py-3 text-sm text-neutral-700 transition-colors hover:bg-white/65"
+        class="theme-surface flex cursor-pointer items-center justify-between rounded-xl px-3 py-3 text-sm transition-colors"
         :class="{ 'pointer-events-none opacity-60': !link.href }"
         @click.prevent="handleLinkClick(link.href)"
       >
         <span>{{ t(link.key) }}</span>
-        <ChevronRight class="h-4 w-4 text-neutral-400" />
+        <ChevronRight class="theme-faint h-4 w-4" />
       </a>
     </div>
   </div>

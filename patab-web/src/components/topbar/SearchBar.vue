@@ -94,14 +94,14 @@ onBeforeUnmount(() => clearTimeout(suggestTimer))
       type="text"
       :disabled="isSearchDisabled"
       :placeholder="engine ? t('topbar.searchIn', { name: engine.name }) : t('topbar.noSearchEngine')"
-      class="h-full min-w-0 flex-1 bg-transparent text-[15px] text-neutral-800 outline-none placeholder:text-neutral-500 disabled:cursor-not-allowed disabled:text-neutral-400"
+      class="theme-text h-full min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--theme-muted)] disabled:cursor-not-allowed disabled:opacity-60"
       @focus="scheduleSuggestions(keyword)"
       @blur="suggestionsOpen = false"
       @keydown.enter="submit()"
     >
 
     <button
-      class="shrink-0 cursor-pointer rounded-full p-1.5 text-neutral-600 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:text-neutral-400 disabled:hover:bg-transparent"
+      class="theme-icon-button shrink-0 cursor-pointer rounded-full p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-transparent"
       :disabled="isSearchDisabled"
       :title="t('topbar.search')"
       @click="submit()"
