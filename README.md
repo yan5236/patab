@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="patab-web/public/logo.png" alt="PaTab Logo" width="128" height="128" />
+  <img src="assets/logo.jpg" alt="PaTab Logo" width="128" height="128" />
 </p>
 
 <h1 align="center">PaTab</h1>
@@ -28,7 +28,7 @@
 
 | 💻 桌面端 | 📱 移动端 |
 |:---:|:---:|
-| ![PC 版本截图](patab-introduction/public/pc-version-introduction-image.png) | ![移动端截图](patab-introduction/public/mobile-version-introduction-image.png) |
+| ![PC 版本截图](assets/pc-screenshot.jpg) | ![移动端截图](assets/mobile-screenshot.jpg) |
 
 ---
 
@@ -130,7 +130,6 @@ pnpm dev          # 开发服务器启动在 http://localhost:6108
 # 主应用 - 网页版
 cd patab-web
 pnpm build
-
 # 主应用 - 浏览器扩展版
 pnpm build:extension
 

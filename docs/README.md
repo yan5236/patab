@@ -44,6 +44,7 @@ pnpm dev
 pnpm build
 pnpm build:extension
 pnpm test:unit
+pnpm run deploy
 ```
 
 介绍站：
@@ -53,7 +54,7 @@ cd patab-introduction
 pnpm run deploy
 ```
 
-当前只部署介绍站到 Cloudflare Pages，生产域名为 `https://patab-introduction.nanhaiblog.top`；在线新标签页站 `patab-web` 不随介绍站部署，`https://patab.nanhaiblog.top` 保留给在线新标签页站。
+`patab-web` 和介绍站都通过 Cloudflare Pages 部署。`patab-web` 生产域名为 `https://patab.nanhaiblog.top`，介绍站生产域名为 `https://patab-introduction.nanhaiblog.top`。
 
 ## 维护要求
 

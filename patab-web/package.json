@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "build:extension": "run-p type-check build-extension-only",
+    "deploy": "pnpm build && npx wrangler pages deploy dist --project-name=patab-web --branch=main --commit-dirty=true",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "vite build",
