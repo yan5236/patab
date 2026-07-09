@@ -11,10 +11,10 @@ import { LINKS } from "../../data/links";
 /** 站内二级页导航项 */
 const NAV_ITEMS = [
   { label: "首页", href: "/" },
-  { label: "安装教程", href: "/install" },
-  { label: "用户协议", href: "/user-agreement" },
-  { label: "隐私政策", href: "/privacy" },
-  { label: "文档", href: "/docs" },
+  { label: "安装教程", href: "/install/" },
+  { label: "用户协议", href: "/user-agreement/" },
+  { label: "隐私政策", href: "/privacy/" },
+  { label: "文档", href: "/docs/" },
 ];
 
 export default function Navbar() {

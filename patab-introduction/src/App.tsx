@@ -17,15 +17,21 @@ import StaticHtmlPage from "./components/sections/StaticHtmlPage";
 import { INFO_PAGES } from "./data/pages";
 
 const STATIC_HTML_PAGES: Record<string, string> = {
-  "/install": "/install.html",
+  "/install": "/pages/install-content.html",
   "/privacy": "/legal/privacy-policy.html",
   "/user-agreement": "/legal/user-agreement.html",
 };
 
+/** 规整 Pages 清理 URL 产生的尾斜杠，保证二级页路由稳定命中。 */
+function normalizePathname(pathname: string) {
+  return pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+}
+
 export default function App() {
   const rootRef = useRef<HTMLDivElement>(null);
-  const page = INFO_PAGES[window.location.pathname];
-  const staticHtmlSrc = STATIC_HTML_PAGES[window.location.pathname];
+  const pathname = normalizePathname(window.location.pathname);
+  const page = INFO_PAGES[pathname];
+  const staticHtmlSrc = STATIC_HTML_PAGES[pathname];
 
   // 大图（首屏 PC 截图）加载完成后重新计算各 ScrollTrigger 位置，防止触发点漂移
   useGSAP(
