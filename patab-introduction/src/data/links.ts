@@ -12,10 +12,10 @@ export const LINKS = {
   edgeStore: "#",
   /** 离线插件安装包下载 */
   offlineZip: "https://github.com/yan5236/patab/releases/latest/download/patab-extension.zip",
-  /** 开源仓库（页脚占位） */
-  repository: "#",
-  /** 反馈建议（页脚占位） */
-  feedback: "#",
+  /** 开源仓库 */
+  repository: "https://github.com/yan5236/patab",
+  /** 反馈建议 */
+  feedback: "https://github.com/yan5236/patab/issues",
   /** 更新日志（页脚占位） */
   changelog: "#",
 } as const;

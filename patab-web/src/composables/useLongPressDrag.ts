@@ -212,8 +212,10 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
         clientY: startY - TOUCH_MENU_OFFSET_Y,
       }),
     )
+    // 先派发业务 contextmenu，再拦截浏览器随后补发的原生 contextmenu
     window.addEventListener('contextmenu', blockNativeTouchMenu, { capture: true })
-    window.addEventListener('click', swallowClick, { capture: true, once: true })
+    // 只吞掉落在原图块上的 click（避免抬手时误触发"打开网址"），不吞菜单项点击
+    window.addEventListener('click', swallowTouchClick, { capture: true, once: true })
   }
 
   function cancelPress() {
@@ -225,6 +227,8 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
     releasePointer()
     if (touchMenuOpened) {
       removeNativeMenuBlockTimer = setTimeout(removeNativeMenuBlock, 600)
+      // 若浏览器未补发 click，once 监听会残留并误吞下一次点击，延迟清理
+      setTimeout(() => window.removeEventListener('click', swallowTouchClick, { capture: true }), 80)
     } else {
       removeNativeMenuBlock()
     }
@@ -498,6 +502,14 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function swallowClick(event: MouseEvent) {
     event.stopPropagation()
     event.preventDefault()
+  }
+
+  /** 触摸长按后，吞掉落在原图块上的抬手 click，避免误触发打开网址；菜单项点击不吞 */
+  function swallowTouchClick(event: MouseEvent) {
+    if (pressElement && pressElement.contains(event.target as Node)) {
+      event.stopPropagation()
+      event.preventDefault()
+    }
   }
 
   /** 捕获当前 pointer，避免触摸拖拽中途被浏览器或滚动容器切断 */
