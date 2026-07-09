@@ -10,6 +10,7 @@ const FOOTER_LINKS = [
   { label: "用户协议", href: "/user-agreement/" },
   { label: "隐私政策", href: "/privacy/" },
   { label: "文档", href: "/docs/" },
+  { label: "更新日志", href: "/changelog/" },
   { label: "反馈建议", href: LINKS.feedback },
 ];
 

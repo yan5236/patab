@@ -38,7 +38,8 @@ flowchart TD
 - `patab-web/src/utils/assetPath.ts`：统一解析 public 静态资源路径，扩展版通过 `chrome.runtime.getURL` 访问内置资源。
 - `patab-web/src/__tests__/`：单元测试。
 - `patab-web/extension/manifest.json`：Chrome/Edge Manifest V3 新标签页扩展清单，只在扩展构建时复制到 `dist-extension/`。
-- `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策和文档等公开说明页。
+- `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策、文档和更新日志等公开说明页。
+- `patab-introduction/public/changelog.md`：介绍站更新日志内容源，后续发布记录只改 Markdown，不改页面代码。
 
 ## 依赖方向
 
@@ -69,7 +70,7 @@ flowchart TD
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、中英文界面语言、拖拽和 localStorage 持久化。
 - 已完成：Chrome/Edge Manifest V3 新标签页扩展构建，扩展版与网页版共享同一套 Vue 源码。
-- 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策和文档二级页。
+- 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策、文档和更新日志二级页。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
 
@@ -89,3 +90,4 @@ flowchart TD
 - 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；扩展版 fetch JSONP 文本后从必应实际包装中解析 payload；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。
 - 主屏批量管理模式只保存在 `stores/ui.ts` 的瞬时状态中；`TileItem.vue` 负责选择圆点、点击拦截和批量右键菜单，`launcherTiles.ts` 处理批量删除，`launcherDrop.ts` 处理批量拖放规则。
 - 扩展功能优先放在 Vite 构建脚本、`extension/manifest.json` 和 `utils/runtimeEnvironment.ts` / `utils/assetPath.ts` 这类薄适配层；不得为扩展版复制 App、store 或组件。
+- 介绍站更新日志只维护 `patab-introduction/public/changelog.md`；页面解析逻辑保持轻量，只支持约定的标题、版本、分类和列表项。
