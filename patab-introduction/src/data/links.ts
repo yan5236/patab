@@ -11,7 +11,7 @@ export const LINKS = {
   /** Edge 外接程序商店 */
   edgeStore: "#",
   /** 离线插件安装包下载 */
-  offlineZip: "#",
+  offlineZip: "https://github.com/yan5236/patab/releases/latest/download/patab-extension.zip",
   /** 开源仓库（页脚占位） */
   repository: "#",
   /** 反馈建议（页脚占位） */
