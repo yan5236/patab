@@ -17,6 +17,7 @@ import StaticHtmlPage from "./components/sections/StaticHtmlPage";
 import { INFO_PAGES } from "./data/pages";
 
 const STATIC_HTML_PAGES: Record<string, string> = {
+  "/install": "/install.html",
   "/privacy": "/legal/privacy-policy.html",
   "/user-agreement": "/legal/user-agreement.html",
 };

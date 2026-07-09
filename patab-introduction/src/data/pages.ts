@@ -11,24 +11,6 @@ export interface InfoPage {
 }
 
 export const INFO_PAGES: Record<string, InfoPage> = {
-  "/install": {
-    title: "安装教程",
-    subtitle: "网页版可直接打开，插件版按浏览器提示完成加载即可。",
-    sections: [
-      {
-        title: "在线网页版",
-        items: ["点击顶部“立即体验”或首页按钮。", "打开后把页面加入书签，后续可直接访问。"],
-      },
-      {
-        title: "浏览器插件版",
-        items: [
-          "下载离线安装包并解压。",
-          "在 Chrome / Edge 扩展管理页打开开发者模式。",
-          "选择“加载已解压的扩展程序”，选中解压后的目录。",
-        ],
-      },
-    ],
-  },
   "/docs": {
     title: "文档",
     subtitle: "这里整理 PaTab 的核心用法，方便快速上手。",
