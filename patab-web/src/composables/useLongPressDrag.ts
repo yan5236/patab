@@ -51,6 +51,12 @@ const TOUCH_MENU_OFFSET_X = 28
 const TOUCH_MENU_OFFSET_Y = 132
 /** 紧凑让位预览的指针距离迟滞（像素）：距上次让位提交不足此值不重建预览，吸收手指微抖 */
 const COMMIT_GATE = 6
+/** 拖拽时指针靠近可滚动容器边缘多少像素内触发自动滚动 */
+const AUTO_SCROLL_EDGE = 72
+/** 自动滚动最大速度（px/frame @60fps） */
+const AUTO_SCROLL_MAX_SPEED = 12
+/** 自动滚动最小速度（px/frame @60fps） */
+const AUTO_SCROLL_MIN_SPEED = 2
 type ScrollAxis = 'x' | 'y'
 
 /** 被拖拽元素需要提供的载荷（图块本体 + 来源位置） */
@@ -118,6 +124,17 @@ function findScrollableAncestor(el: HTMLElement | null, axis: ScrollAxis): HTMLE
   return null
 }
 
+/** 查找指针下方需要自动滚动的容器：主屏网格 / 文件夹网格 / 兜底可滚动祖先 */
+function findAutoScrollContainer(x: number, y: number): HTMLElement | null {
+  const el = document.elementFromPoint(x, y)
+  if (!el) return null
+  const gridEl = el.closest<HTMLElement>('[data-drop="grid"], .screen-grid')
+  if (gridEl && gridEl.scrollHeight > gridEl.clientHeight) return gridEl
+  const folderGrid = el.closest<HTMLElement>('[data-drop="cell"][data-zone="folder"]')
+  if (folderGrid && folderGrid.scrollHeight > folderGrid.clientHeight) return folderGrid
+  return el instanceof HTMLElement ? findScrollableAncestor(el, 'y') : null
+}
+
 export function useLongPressDrag(getPayload: () => DragPayload | null) {
   const dragStore = useDragStore()
   const launcher = useLauncherStore()
@@ -150,6 +167,9 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   let srcOffsetX = 0
   let srcOffsetY = 0
   let activePayload: DragPayload | null = null
+  /** 自动滚动容器的 rAF id 与元素引用 */
+  let autoScrollRaf: number | null = null
+  let autoScrollEl: HTMLElement | null = null
 
   /* ---------- 阶段一：长按判定 ---------- */
 
@@ -305,9 +325,82 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
 
   function onDragMove(event: PointerEvent) {
     if (!dragStore.tile) return
-    const target = resolveDropTarget(event.clientX, event.clientY)
-    dragStore.update(event.clientX, event.clientY, target)
+    const x = event.clientX
+    const y = event.clientY
+    const target = resolveDropTarget(x, y)
+    dragStore.update(x, y, target)
     applyHoverTimers(target)
+    updateAutoScroll(x, y)
+  }
+
+  /** 根据指针位置启动/切换/停止自动滚动容器 */
+  function updateAutoScroll(x: number, y: number) {
+    if (!dragStore.tile) {
+      stopAutoScroll()
+      return
+    }
+    const el = findAutoScrollContainer(x, y)
+    if (!el) {
+      stopAutoScroll()
+      return
+    }
+    if (autoScrollEl !== el) {
+      startAutoScroll(el)
+    }
+  }
+
+  /** 开始以 rAF 循环自动滚动指定容器 */
+  function startAutoScroll(el: HTMLElement) {
+    stopAutoScroll()
+    autoScrollEl = el
+    let lastTime = performance.now()
+
+    const tick = (now: number) => {
+      if (!autoScrollEl || !dragStore.tile) {
+        stopAutoScroll()
+        return
+      }
+      const deltaTime = now - lastTime
+      lastTime = now
+
+      const rect = autoScrollEl.getBoundingClientRect()
+      const x = dragStore.pointerX
+      const y = dragStore.pointerY
+      const topDist = y - rect.top
+      const bottomDist = rect.bottom - y
+      const maxScroll = autoScrollEl.scrollHeight - autoScrollEl.clientHeight
+
+      let velocity = 0
+      if (topDist >= 0 && topDist < AUTO_SCROLL_EDGE) {
+        const ratio = 1 - topDist / AUTO_SCROLL_EDGE
+        velocity = -(AUTO_SCROLL_MIN_SPEED + (AUTO_SCROLL_MAX_SPEED - AUTO_SCROLL_MIN_SPEED) * ratio)
+      } else if (bottomDist >= 0 && bottomDist < AUTO_SCROLL_EDGE) {
+        const ratio = 1 - bottomDist / AUTO_SCROLL_EDGE
+        velocity = AUTO_SCROLL_MIN_SPEED + (AUTO_SCROLL_MAX_SPEED - AUTO_SCROLL_MIN_SPEED) * ratio
+      }
+
+      if (velocity !== 0 && maxScroll > 0) {
+        const scale = deltaTime / 16
+        autoScrollEl.scrollTop = Math.max(0, Math.min(maxScroll, autoScrollEl.scrollTop + velocity * scale))
+        // 容器滚动后落点可能变化，重新解析并更新预览
+        const target = resolveDropTarget(x, y)
+        dragStore.update(x, y, target)
+        applyHoverTimers(target)
+      }
+
+      autoScrollRaf = requestAnimationFrame(tick)
+    }
+
+    autoScrollRaf = requestAnimationFrame(tick)
+  }
+
+  /** 停止自动滚动循环 */
+  function stopAutoScroll() {
+    if (autoScrollRaf !== null) {
+      cancelAnimationFrame(autoScrollRaf)
+      autoScrollRaf = null
+    }
+    autoScrollEl = null
   }
 
   /**
@@ -478,6 +571,7 @@ export function useLongPressDrag(getPayload: () => DragPayload | null) {
   function finishDrag() {
     clearTimeout(pagerTimer)
     clearTimeout(folderCloseTimer)
+    stopAutoScroll()
     removeNativeMenuBlock()
     lastCommitX = 0
     lastCommitY = 0
