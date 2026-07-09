@@ -57,7 +57,7 @@ function addComponent(id: string) {
         v-model="query"
         type="search"
         :placeholder="t('modals.componentStore.searchPlaceholder')"
-        class="h-11 w-full rounded-2xl bg-white/65 px-4 text-sm text-neutral-700 outline-none ring-1 ring-white/60 placeholder:text-neutral-500 focus:ring-sky-300"
+        class="theme-input theme-input-border h-11 w-full rounded-2xl border px-4 text-sm outline-none focus:border-sky-400"
       >
 
       <div class="grid gap-4 sm:grid-cols-2">
@@ -78,7 +78,7 @@ function addComponent(id: string) {
         </ComponentStoreItem>
         <div
           v-if="filteredComponents.length === 0"
-          class="rounded-[1.75rem] bg-white/45 px-4 py-14 text-center text-sm text-neutral-500 sm:col-span-2"
+          class="theme-surface theme-muted rounded-[1.75rem] px-4 py-14 text-center text-sm sm:col-span-2"
         >
           {{ t('modals.componentStore.empty') }}
         </div>

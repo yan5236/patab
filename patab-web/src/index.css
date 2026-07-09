@@ -17,6 +17,13 @@
   --theme-control-bg: rgb(255 255 255 / 0.55);
   --theme-control-hover-bg: rgb(255 255 255 / 0.7);
   --theme-input-bg: rgb(255 255 255 / 0.7);
+  --theme-input-border: rgb(0 0 0 / 0.08);
+  --theme-error-bg: rgb(254 226 226);
+  --theme-error-text: rgb(220 38 38);
+  --theme-card-preview-from: rgb(186 230 253 / 0.8);
+  --theme-card-preview-via: rgb(255 255 255 / 0.6);
+  --theme-card-preview-to: rgb(167 243 208 / 0.7);
+  --theme-card-icon-bg: rgb(255 255 255 / 0.8);
   --theme-date-bg: rgb(224 242 254 / 0.9);
   --theme-date-text: rgb(2 132 199);
   --theme-menu-bg: rgb(255 255 255 / 0.9);
@@ -42,6 +49,13 @@
   --theme-control-bg: rgb(255 255 255 / 0.1);
   --theme-control-hover-bg: rgb(255 255 255 / 0.16);
   --theme-input-bg: rgb(255 255 255 / 0.14);
+  --theme-input-border: rgb(255 255 255 / 0.12);
+  --theme-error-bg: rgb(127 29 29 / 0.35);
+  --theme-error-text: rgb(252 165 165);
+  --theme-card-preview-from: rgb(12 74 110 / 0.55);
+  --theme-card-preview-via: rgb(255 255 255 / 0.06);
+  --theme-card-preview-to: rgb(6 78 59 / 0.5);
+  --theme-card-icon-bg: rgb(255 255 255 / 0.1);
   --theme-date-bg: rgb(14 116 144 / 0.28);
   --theme-date-text: rgb(125 211 252);
   --theme-menu-bg: rgb(24 24 27 / 0.94);
@@ -176,6 +190,23 @@ body {
 
 .theme-input::placeholder {
   color: var(--theme-muted);
+}
+
+.theme-input-border {
+  border-color: var(--theme-input-border);
+}
+
+.theme-error {
+  background: var(--theme-error-bg);
+  color: var(--theme-error-text);
+}
+
+.theme-card-preview {
+  background: linear-gradient(to bottom right, var(--theme-card-preview-from), var(--theme-card-preview-via), var(--theme-card-preview-to));
+}
+
+.theme-card-icon-bg {
+  background: var(--theme-card-icon-bg);
 }
 
 .theme-subtle-button {

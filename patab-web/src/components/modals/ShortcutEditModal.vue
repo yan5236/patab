@@ -49,32 +49,32 @@ function save() {
     <div class="flex gap-4">
       <div class="flex-1 space-y-3">
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">{{ t('common.name') }}</span>
+          <span class="mb-1 block text-xs theme-muted">{{ t('common.name') }}</span>
           <input
             v-model="name"
             type="text"
             :placeholder="t('modals.shortcut.namePlaceholder')"
-            class="w-full rounded-xl border border-black/10 bg-white/70 px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
+            class="theme-input theme-input-border w-full rounded-xl border px-3 py-2 text-sm outline-none focus:border-sky-400"
             @keydown.enter="save"
           >
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">{{ t('common.url') }}</span>
+          <span class="mb-1 block text-xs theme-muted">{{ t('common.url') }}</span>
           <input
             v-model="url"
             type="text"
             :placeholder="t('modals.shortcut.urlPlaceholder')"
-            class="w-full rounded-xl border border-black/10 bg-white/70 px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
+            class="theme-input theme-input-border w-full rounded-xl border px-3 py-2 text-sm outline-none focus:border-sky-400"
             @keydown.enter="save"
           >
         </label>
         <label class="block">
-          <span class="mb-1 block text-xs text-neutral-600">{{ t('modals.shortcut.iconUrl') }}</span>
+          <span class="mb-1 block text-xs theme-muted">{{ t('modals.shortcut.iconUrl') }}</span>
           <input
             v-model="iconUrl"
             type="text"
             placeholder="https://…/icon.png"
-            class="w-full rounded-xl border border-black/10 bg-white/70 px-3 py-2 text-sm text-neutral-800 outline-none focus:border-sky-400"
+            class="theme-input theme-input-border w-full rounded-xl border px-3 py-2 text-sm outline-none focus:border-sky-400"
             @keydown.enter="save"
           >
         </label>
@@ -90,13 +90,13 @@ function save() {
             :color="colorForName(name || '?')"
           />
         </div>
-        <span class="max-w-full truncate text-xs text-neutral-600">{{ name || t('common.preview') }}</span>
+        <span class="max-w-full truncate text-xs theme-muted">{{ name || t('common.preview') }}</span>
       </div>
     </div>
 
     <template #footer>
       <button
-        class="cursor-pointer rounded-xl px-4 py-2 text-sm text-neutral-600 transition-colors hover:bg-black/5"
+        class="theme-subtle-button cursor-pointer rounded-xl px-4 py-2 text-sm transition-colors"
         @click="ui.closeModal()"
       >
         {{ t('common.cancel') }}
