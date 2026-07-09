@@ -1,5 +1,5 @@
 /**
- * 首屏 Hero：晨光渐变背景 + 大标题 + 三个 CTA 占位入口 +
+ * 首屏 Hero：晨光渐变背景 + 大标题 + 三个 CTA 入口 +
  * 浏览器 Mockup 内嵌 PC 截图，四周悬浮玻璃磁贴。
  */
 import { useRef } from "react";
@@ -26,6 +26,7 @@ const FLOAT_TILES = [
   { icon: FolderOpen, className: "right-[6%] bottom-[10%] text-dawn-500" },
 ];
 
+/** 渲染介绍站首屏，并在插件商店上架前禁用商店相关入口。 */
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -191,6 +192,7 @@ export default function HeroSection() {
             href="#download"
             variant="glass"
             className="w-full max-w-xs md:w-auto"
+            disabled
           >
             <Puzzle className="size-4" />
             添加到 Chrome / Edge

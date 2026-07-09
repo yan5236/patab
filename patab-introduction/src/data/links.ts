@@ -1,11 +1,11 @@
 /**
  * 全站外链占位符
- * 网页版尚未上线、插件尚未上架，暂时全部指向 "#"。
+ * 网页版使用正式域名，插件尚未上架的入口继续占位。
  * 未来上线后只需修改此文件。
  */
 export const LINKS = {
   /** 在线网页版入口 */
-  webApp: "#",
+  webApp: "https://patab.nanhaiblog.top",
   /** Chrome 应用商店 */
   chromeStore: "#",
   /** Edge 外接程序商店 */

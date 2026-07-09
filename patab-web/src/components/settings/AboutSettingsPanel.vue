@@ -8,10 +8,9 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-// TODO: 产品上线前请把以下占位链接替换为实际的线上地址
 const ABOUT_LINKS = [
-  { key: 'settings.about.privacy', href: '' },
-  { key: 'settings.about.terms', href: '' },
+  { key: 'settings.about.privacy', href: 'https://patab-introduction.nanhaiblog.top/privacy' },
+  { key: 'settings.about.terms', href: 'https://patab-introduction.nanhaiblog.top/user-agreement' },
   { key: 'settings.about.changelog', href: '' },
 ] as const
 

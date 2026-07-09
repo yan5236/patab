@@ -1,6 +1,6 @@
 /**
  * 下载 / CTA 区：三张入口卡（网页版 / 插件商店 / 离线安装包），
- * 链接均为占位符，上线后统一在 data/links.ts 中替换。
+ * 插件商店未上架前保持禁用态，上线后统一在 data/links.ts 中替换。
  */
 import { useRef } from "react";
 import { Globe, Puzzle, Download, ShieldCheck } from "lucide-react";
@@ -10,6 +10,7 @@ import GlassCard from "../common/GlassCard";
 import CtaButton from "../common/CtaButton";
 import { LINKS } from "../../data/links";
 
+/** 渲染介绍站下载区，并在插件商店未上架时禁用商店入口。 */
 export default function DownloadSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -109,11 +110,21 @@ export default function DownloadSection() {
               接管新标签页，体验最完整
             </p>
             <div className="mt-5 flex w-full flex-col gap-2">
-              <CtaButton href={LINKS.chromeStore} variant="glass" className="w-full py-2.5!">
+              <CtaButton
+                href={LINKS.chromeStore}
+                variant="glass"
+                className="w-full py-2.5!"
+                disabled
+              >
                 <img src="/chrome.png" alt="" className="size-5" />
                 Chrome 应用商店
               </CtaButton>
-              <CtaButton href={LINKS.edgeStore} variant="glass" className="w-full py-2.5!">
+              <CtaButton
+                href={LINKS.edgeStore}
+                variant="glass"
+                className="w-full py-2.5!"
+                disabled
+              >
                 <img src="/edge.png" alt="" className="size-5" />
                 Edge 外接程序
               </CtaButton>
