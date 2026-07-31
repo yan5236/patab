@@ -5,6 +5,8 @@
   "menu": {
     "manage": "管理",
     "exitManage": "退出管理",
+    "enterCleanMode": "进入纯净模式",
+    "showApps": "显示应用",
     "newShortcut": "新建快捷方式",
     "newFolder": "新建文件夹",
     "changeWallpaper": "更换壁纸",

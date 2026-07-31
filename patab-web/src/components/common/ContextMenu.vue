@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
           v-for="(item, i) in ui.contextMenu.items"
           :key="i"
           class="flex w-full items-center gap-2.5 rounded-lg px-3 py-1.5 text-left text-sm transition-colors"
-          :class="item.danger ? 'text-red-600 hover:bg-red-500/10' : 'text-neutral-700 hover:bg-black/5'"
+          :class="item.danger ? 'text-[var(--theme-error-text)] hover:bg-red-500/10' : 'theme-dropdown-item'"
           @click="item.action(), ui.closeContextMenu()"
         >
           <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />

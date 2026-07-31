@@ -5,7 +5,7 @@
  * - 空白处右键：新建快捷方式 / 新建文件夹 / 更换壁纸
  */
 import { computed } from 'vue'
-import { FolderPlus, Image, SquareCheckBig, SquarePlus, X } from '@lucide/vue'
+import { EyeOff, FolderPlus, Image, SquareCheckBig, SquarePlus, X } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import type { MenuItem } from '@/types'
 import { useLauncherStore } from '@/stores/launcher'
@@ -54,12 +54,28 @@ function onBlankMenu(event: MouseEvent) {
     icon: Image,
     action: () => ui.openModal({ type: 'settings', tab: 'wallpaper' }),
   })
+  items.push({
+    label: t('screen.menu.enterCleanMode'),
+    icon: EyeOff,
+    action: () => launcher.updateSettings({ cleanMode: true }),
+  })
   ui.openContextMenu(event, items)
+}
+
+/** 空白区域双击进入纯净模式，并阻止根布局立即把它恢复 */
+function onBlankDoubleClick(event: MouseEvent) {
+  if (ui.managementMode || (event.target as HTMLElement).closest('.screen-tile')) return
+  event.stopPropagation()
+  launcher.updateSettings({ cleanMode: true })
 }
 </script>
 
 <template>
-  <div class="relative h-full w-full overflow-hidden" @contextmenu="onBlankMenu">
+  <div
+    class="relative h-full w-full overflow-hidden"
+    @contextmenu="onBlankMenu"
+    @dblclick="onBlankDoubleClick"
+  >
     <Transition :name="transitionName">
       <ScreenGrid
         v-if="ui.currentScreen"

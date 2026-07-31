@@ -28,7 +28,7 @@ flowchart TD
 - `patab-web/src/stores/launcherTiles.ts`：launcher 快捷方式、文件夹、小组件、屏幕和 Dock 的业务动作。
 - `patab-web/src/stores/launcherTodos.ts`：launcher 待办条目和待办列表的业务动作。
 - `patab-web/src/stores/launcherDrop.ts`：launcher 拖拽落点、批量拖拽和跨容器移动规则。
-- `patab-web/src/stores/launcherSettings.ts`：launcher 设置补丁写入入口。
+- `patab-web/src/stores/launcherSettings.ts`：launcher 设置补丁写入入口，包含持久化的纯净模式状态。
 - `patab-web/src/stores/ui.ts`：全局 UI 状态，管理弹窗、菜单等临时界面状态。
 - `patab-web/src/stores/drag.ts`：拖拽过程状态。
 - `patab-web/src/composables/`：复杂交互逻辑，例如拖拽、网格翻转、时间刷新。
@@ -85,6 +85,7 @@ flowchart TD
 - `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。
 - 主题设置通过 `settings.themeMode` 持久化，通用设置面板使用 `AppDropdown` 切换 `system` / `light` / `dark`；根组件通过主题工具把最终深浅色写入 `documentElement`，组件可读颜色优先走 `index.css` 的 `theme-*` 公共类。
 - 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。
+- 纯净模式通过 `settings.cleanMode` 持久化；主屏空白处右键菜单或双击进入，根布局只隐藏应用屏幕、分页器与 Dock，始终保留时钟、日期和搜索栏。
 - 语言设置通过 `settings.language` 持久化，通用设置面板使用 `AppDropdown` 切换 `zh-CN` / `en-US`；新增可见文案必须进入对应模块 JSON，不要直接写死在组件模板里。
 - 搜索引擎设置通过 `settings.searchEngines` 持久化，搜索栏使用圆形图标按钮打开自建引擎选择框；搜索地址模板统一使用 `{q}` 占位，用户清空列表时搜索框进入禁用态。
 - 搜索联想由 `components/topbar/SearchSuggestions.vue` 展示，`utils/searchSuggestions.ts` 通过必应 JSONP 接口取词；扩展版 fetch JSONP 文本后从必应实际包装中解析 payload；所有搜索引擎共用联想源，但提交搜索仍使用当前引擎模板。

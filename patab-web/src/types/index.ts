@@ -129,6 +129,8 @@ export interface Settings {
   hour12: boolean
   /** 是否在时钟下方显示日期 */
   showDate: boolean
+  /** 是否隐藏应用屏幕、分页器与 Dock，仅保留时钟和搜索栏 */
+  cleanMode: boolean
   /** 当前搜索引擎 ID；无可用引擎时为空 */
   searchEngine: string
   /** 可用搜索引擎列表 */

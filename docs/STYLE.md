@@ -9,6 +9,7 @@
 - 用户可见文案必须放进 `patab-web/src/i18n/locales/{zh-CN,en-US}/` 对应模块 JSON，组件内通过 `vue-i18n` 使用，不新增硬编码界面文案。
 - 单选下拉优先使用 `components/common/AppDropdown.vue`，不要用原生 `select` 破坏设置弹窗的统一视觉。
 - 深浅色主题优先通过 `index.css` 的 `--theme-*` 变量和 `theme-*` 公共类维护，不为单个页面复制一套颜色分支。
+- 全局右键菜单统一复用 `ContextMenu.vue` 和 `theme-dropdown-item`，禁止为业务入口硬编码菜单文字颜色。
 - 单文件原则上不超过 500 行；超过时优先拆分，但不为小改动做无关重构。
 - 优先复用现有 helper、类型和组件。
 - 函数级注释使用中文，说明职责、输入边界或关键副作用。

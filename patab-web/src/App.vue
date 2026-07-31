@@ -5,6 +5,8 @@
  * 以及全局层的挂载：文件夹弹层 / 右键菜单 / 拖拽幽灵 / 各弹窗
  */
 import { computed } from 'vue'
+import { Eye } from '@lucide/vue'
+import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import ClockDisplay from '@/components/topbar/ClockDisplay.vue'
@@ -25,6 +27,7 @@ import { resolveAssetPath } from '@/utils/assetPath'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const { t } = useI18n()
 useThemeMode(computed(() => launcher.settings.themeMode))
 
 const wallpaperStyle = computed(() => ({
@@ -37,7 +40,24 @@ const wallpaperStyle = computed(() => ({
  */
 function onRootContextMenu(event: MouseEvent) {
   if ((event.target as HTMLElement).closest('input, textarea')) return
+  if (launcher.settings.cleanMode) {
+    ui.openContextMenu(event, [
+      {
+        label: t('screen.menu.showApps'),
+        icon: Eye,
+        action: () => launcher.updateSettings({ cleanMode: false }),
+      },
+    ])
+    return
+  }
   event.preventDefault()
+}
+
+/** 纯净模式下双击非保留区域，恢复应用屏幕 */
+function onRootDoubleClick(event: MouseEvent) {
+  if (!launcher.settings.cleanMode) return
+  if ((event.target as HTMLElement).closest('[data-clean-mode-retained]')) return
+  launcher.updateSettings({ cleanMode: false })
 }
 </script>
 
@@ -46,21 +66,28 @@ function onRootContextMenu(event: MouseEvent) {
     class="relative h-full w-full overflow-hidden bg-cover bg-center"
     :style="wallpaperStyle"
     @contextmenu="onRootContextMenu"
+    @dblclick="onRootDoubleClick"
   >
     <!-- 根据主题轻微调整壁纸遮罩，保证文字和毛玻璃层可读 -->
     <div class="theme-wallpaper-overlay pointer-events-none absolute inset-0" />
 
     <div class="relative flex h-full flex-col items-center px-4 sm:px-8">
-      <ClockDisplay class="mt-8 shrink-0 sm:mt-10" />
-      <SearchBar class="mt-4 shrink-0 sm:mt-6" />
-
-      <!-- 应用屏幕区 -->
-      <div class="mt-4 min-h-0 w-full max-w-5xl flex-1 pb-40 sm:mt-6 sm:pb-0">
-        <ScreenViewport />
+      <div data-clean-mode-retained class="contents">
+        <ClockDisplay class="mt-8 shrink-0 sm:mt-10" />
+        <SearchBar class="mt-4 shrink-0 sm:mt-6" />
       </div>
 
-      <ScreenPager class="fixed bottom-24 left-1/2 z-30 -translate-x-1/2 sm:static sm:mb-3 sm:translate-x-0" />
-      <DockBar class="mb-0 shrink-0 sm:mb-5" />
+      <Transition name="clean-mode">
+        <div v-if="!launcher.settings.cleanMode" class="flex min-h-0 w-full flex-1 flex-col items-center">
+          <!-- 应用屏幕区 -->
+          <div class="mt-4 min-h-0 w-full max-w-5xl flex-1 pb-40 sm:mt-6 sm:pb-0">
+            <ScreenViewport />
+          </div>
+
+          <ScreenPager class="fixed bottom-24 left-1/2 z-30 -translate-x-1/2 sm:static sm:mb-3 sm:translate-x-0" />
+          <DockBar class="mb-0 shrink-0 sm:mb-5" />
+        </div>
+      </Transition>
     </div>
 
     <!-- 全局层 -->
@@ -86,3 +113,16 @@ function onRootContextMenu(event: MouseEvent) {
     <TodoModal v-if="ui.modal?.type === 'todo'" />
   </div>
 </template>
+
+<style scoped>
+.clean-mode-enter-active,
+.clean-mode-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.clean-mode-enter-from,
+.clean-mode-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+</style>

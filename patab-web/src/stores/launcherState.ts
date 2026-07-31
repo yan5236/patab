@@ -110,6 +110,7 @@ function buildSeedState(): LauncherState {
       customWallpapers: [],
       hour12: false,
       showDate: true,
+      cleanMode: false,
       searchEngine: 'baidu',
       searchEngines: DEFAULT_SEARCH_ENGINES.map((engine) => ({ ...engine })),
       placementMode: 'compact',
@@ -195,6 +196,7 @@ export function createInitialLauncherState(): LauncherState {
   initial.settings.language = normalizeLocale(initial.settings.language)
   initial.settings.themeMode = normalizeThemeMode(initial.settings.themeMode)
   initial.settings.showDate ??= true
+  initial.settings.cleanMode ??= false
   initial.settings.searchEngines = sanitizeSearchEngines(initial.settings.searchEngines)
   initial.settings.searchEngine = sanitizeSearchEngineId(
     initial.settings.searchEngine,

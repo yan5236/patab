@@ -26,6 +26,7 @@ function makeState(overrides: Partial<LauncherState> = {}): LauncherState {
       customWallpapers: [],
       hour12: false,
       showDate: true,
+      cleanMode: false,
       searchEngine: 'baidu',
       searchEngines: [],
       placementMode: 'compact',

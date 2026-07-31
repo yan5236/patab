@@ -5,6 +5,8 @@
   "menu": {
     "manage": "Manage",
     "exitManage": "Exit management",
+    "enterCleanMode": "Enter clean mode",
+    "showApps": "Show apps",
     "newShortcut": "New shortcut",
     "newFolder": "New folder",
     "changeWallpaper": "Change wallpaper",

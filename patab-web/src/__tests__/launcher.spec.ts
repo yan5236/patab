@@ -607,6 +607,7 @@ describe('持久化', () => {
     expect(store.settings.language).toBe('zh-CN')
     expect(store.settings.showDate).toBe(true)
     expect(store.settings.themeMode).toBe('system')
+    expect(store.settings.cleanMode).toBe(false)
   })
 
   it('初始化会清洗语言设置，只保留受支持语言', () => {
@@ -743,6 +744,19 @@ describe('持久化', () => {
     await vi.advanceTimersByTimeAsync(400)
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!)
     expect(saved.todos.some((t: { text: string }) => t.text === '测试待办')).toBe(true)
+    vi.useRealTimers()
+  })
+
+  it('纯净模式会持久化，旧数据缺少该字段时默认关闭', async () => {
+    vi.useFakeTimers()
+    const store = setupFixture()
+
+    expect(store.settings.cleanMode).toBe(false)
+    store.updateSettings({ cleanMode: true })
+    await vi.advanceTimersByTimeAsync(400)
+
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!)
+    expect(saved.settings.cleanMode).toBe(true)
     vi.useRealTimers()
   })
 })
