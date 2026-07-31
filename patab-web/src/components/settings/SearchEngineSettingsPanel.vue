@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * SearchEngineSettingsPanel —— 搜索引擎设置面板
- * 负责搜索引擎草稿的增删改选，保存时机仍由 SettingsModal 统一控制。
+ * 负责搜索引擎的增删改选，变更由 SettingsModal 立即同步到 store。
  */
 import { computed, ref } from 'vue'
 import { Check, Pencil, Plus, Trash2 } from '@lucide/vue'

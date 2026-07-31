@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
  * SettingsModal —— 设置弹窗（Dock 齿轮按钮打开）
- * 只负责设置页签、草稿状态和统一保存，具体设置项交给子面板组件。
+ * 只负责设置页签、即时同步和子面板编排，具体设置项交给子面板组件。
  */
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { ArrowLeft, Clock3, Image, Info, Search } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
@@ -63,7 +63,7 @@ const contentRef = ref<HTMLElement | null>(null)
 const mobileBackPinned = ref(false)
 const mobileTitlePinned = ref(false)
 const mobileReturning = ref(false)
-let returnTimer: ReturnType<typeof window.setTimeout> | null = null
+let returnTimer: number | null = null
 
 const showMobileHeader = computed(() => !!activeTab.value && (mobileBackPinned.value || mobileTitlePinned.value))
 const settingsPanelClass = computed(() =>
@@ -73,8 +73,8 @@ const settingsPanelClass = computed(() =>
   ].join(' '),
 )
 
-/** 保存设置草稿，并把未选择壁纸时回退到第一张默认壁纸 */
-function save() {
+/** 把当前弹窗选项立即同步到持久设置 */
+function syncSettings() {
   launcher.updateSettings({
     language: language.value,
     themeMode: themeMode.value,
@@ -86,9 +86,15 @@ function save() {
     searchEngines: searchEngines.value,
     placementMode: compact.value ? 'compact' : 'free',
   })
-  setLocale(language.value)
-  ui.closeModal()
 }
+
+watch(
+  [language, themeMode, wallpaper, customWallpapers, hour12, showDate, searchEngine, searchEngines, compact],
+  syncSettings,
+  { deep: true, flush: 'sync' },
+)
+
+watch(language, setLocale, { flush: 'sync' })
 
 /** 切换左侧设置页签，并清理二级弹层的临时错误 */
 function selectTab(tab: SettingsTab['id']) {
@@ -240,13 +246,7 @@ onBeforeUnmount(() => {
         class="theme-subtle-button cursor-pointer rounded-xl px-4 py-2 text-sm transition-colors"
         @click="ui.closeModal()"
       >
-        {{ t('common.cancel') }}
-      </button>
-      <button
-        class="cursor-pointer rounded-xl bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600"
-        @click="save"
-      >
-        {{ t('common.save') }}
+        {{ t('common.close') }}
       </button>
     </template>
   </BaseModal>

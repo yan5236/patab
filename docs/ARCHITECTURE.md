@@ -66,6 +66,8 @@ flowchart TD
 4. `launcher` store 通过防抖写入 `localStorage`。
 5. 组件响应式刷新界面。
 
+设置弹窗不保留待提交草稿：子面板通过 `v-model` 上报变更，`SettingsModal.vue` 立即调用 `launcher.updateSettings()`，语言另同步到 `vue-i18n`。关闭弹窗只结束编辑，不回滚已生效选项。
+
 ## 当前状态
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、中英文界面语言、拖拽和 localStorage 持久化。

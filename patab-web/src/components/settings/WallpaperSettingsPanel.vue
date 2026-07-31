@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * WallpaperSettingsPanel —— 壁纸设置面板
- * 负责壁纸选择与添加壁纸流程，保存时机仍由 SettingsModal 统一控制。
+ * 负责壁纸选择与添加壁纸流程，变更由 SettingsModal 立即同步到 store。
  */
 import { computed, ref } from 'vue'
 import { Check, Plus } from '@lucide/vue'
@@ -33,7 +33,7 @@ function wallpaperLabel(item: WallpaperOption): string {
   return t(`settings.wallpaper.names.${item.id}`)
 }
 
-/** 选中某张壁纸预览，保存前只更新草稿值 */
+/** 选中某张壁纸，并通过双向绑定立即生效 */
 function selectWallpaper(src: string) {
   wallpaper.value = src
   wallpaperError.value = ''
