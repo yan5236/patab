@@ -4,7 +4,12 @@
  * 仅在打开“更多图标”或渲染非常用图标时异步载入，避免拖大首屏 JS。
  */
 import type { LucideIcon } from '@lucide/vue'
-import { FALLBACK_SCREEN_ICON, normalizeScreenIcon, type ScreenIconName } from './screenIcons'
+import {
+  FALLBACK_SCREEN_ICON,
+  getCommonScreenIconComponent,
+  normalizeScreenIcon,
+  type ScreenIconName,
+} from './screenIcons'
 
 type ScreenIconModule = { default: LucideIcon }
 type ScreenIconImporter = () => Promise<ScreenIconModule>
@@ -12,7 +17,7 @@ type ScreenIconImporter = () => Promise<ScreenIconModule>
 const iconModules = import.meta.glob<ScreenIconModule>([
   '@lucide-icons/*.mjs',
   '!**/index.mjs',
-])
+], { query: '?screen-icon-dynamic' })
 
 /** 把 Lucide 的短横线文件名转换成持久化使用的 PascalCase 图标名。 */
 function iconNameFromPath(path: string): ScreenIconName {
@@ -33,13 +38,13 @@ export function isScreenIconName(value: unknown): value is ScreenIconName {
   return typeof value === 'string' && SCREEN_ICON_NAME_SET.has(value)
 }
 
-/** 按需载入单个图标组件；载入失败时安全回退到布局图标。 */
+/** 按需载入指定图标组件；载入失败时安全回退到布局图标。 */
 export async function loadScreenIconComponent(value: unknown): Promise<LucideIcon> {
   const importer = iconImporters[normalizeScreenIcon(value)] ?? iconImporters[FALLBACK_SCREEN_ICON]
   try {
     return (await importer!()).default
   } catch {
-    return (await iconImporters[FALLBACK_SCREEN_ICON]!()).default
+    return getCommonScreenIconComponent(FALLBACK_SCREEN_ICON)!
   }
 }
 

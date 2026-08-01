@@ -23,7 +23,7 @@ loadScreenIconComponent(name: string): Promise<LucideIcon>
 
 ## 依赖与降级
 
-- 完整图标目录通过 Vite `import.meta.glob` 按需加载已安装的 `@lucide/vue` 单图标模块，并在 glob 阶段排除聚合入口；常用图标留在 `screenIcons.ts`，不引入新依赖，也不把完整目录打进首屏 JS。
+- 完整图标目录通过带 `?screen-icon-dynamic` 查询标记的 Vite `import.meta.glob` 按需加载已安装的 `@lucide/vue` 单图标模块，并在 glob 阶段排除聚合入口；生产构建只合并这些带标记的动态模块，不递归吞并首屏共享依赖，因此完整目录保持延迟加载，同时不会在滚动时并发请求上百个小文件。
 - 图标选择器每批渲染 80 个图标，保证列表形成滚动区域；滚动到底部继续加载，完整目录与搜索结果不截断。
 - store、分页器和弹窗只依赖以上公开接口，不直接访问图标目录内部映射。
 - 旧版十二个 Emoji 映射为语义相近的 Lucide 图标；未知或失效值回退 `LayoutGrid`。
@@ -35,3 +35,4 @@ loadScreenIconComponent(name: string): Promise<LucideIcon>
 - 有效图标名保持不变，非法值回退 `LayoutGrid`。
 - 搜索忽略大小写和空格，空搜索返回完整目录。
 - 同一图标重复加载时复用浏览器模块缓存，加载失败时回退 `LayoutGrid`。
+- 生产构建只生成一个完整图标共享包，不再生成一千多个单图标 JS 文件。

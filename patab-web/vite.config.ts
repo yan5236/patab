@@ -50,4 +50,19 @@ export default defineConfig({
   server: {
     port: 6109,
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            {
+              name: 'screen-icon-library',
+              test: /screen-icon-dynamic/,
+              includeDependenciesRecursively: false,
+            },
+          ],
+        },
+      },
+    },
+  },
 })
