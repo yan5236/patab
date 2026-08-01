@@ -1,193 +1,121 @@
-
 <p align="center">
-  <img src="assets/logo.jpg" alt="PaTab Logo" width="128" height="128" />
-</p>
-
-<h1 align="center">PaTab</h1>
-
-<p align="center">
-  <strong>一块屏幕，装下你的整个工作台</strong>
+  <img src="./assets/readme/hero.svg" width="100%" alt="PaTab：把浏览器新标签页变成由搜索、快捷方式、文件夹、待办和 Dock 组成的本地工作台" />
 </p>
 
 <p align="center">
-  将浏览器新标签页变成一个类桌面的工作空间——书签、搜索、待办、文件夹以磁贴形式铺在眼前，像使用手机桌面一样自然。
+  <a href="https://patab.nanhaiblog.top"><strong>在线体验</strong></a>
+  ·
+  <a href="https://patab-introduction.nanhaiblog.top">产品介绍</a>
+  ·
+  <a href="https://patab-introduction.nanhaiblog.top/install/">安装指南</a>
+  ·
+  <a href="https://patab-introduction.nanhaiblog.top/changelog/">更新日志</a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vuedotjs&logoColor=white" alt="Vue 3.5" />
-  <img src="https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite&logoColor=white" alt="Vite 8" />
-  <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white" alt="TypeScript 6" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-4.3-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
-  <img src="https://img.shields.io/badge/Pinia-3.0-F7D336?logo=pinia&logoColor=white" alt="Pinia 3" />
-  <img src="https://img.shields.io/badge/Chrome_Extension-MV3-4285F4?logo=googlechrome&logoColor=white" alt="Chrome MV3" />
+  <img src="https://img.shields.io/badge/Vue-3.5-42B883?logo=vuedotjs&logoColor=white" alt="Vue 3.5" />
+  <img src="https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white" alt="TypeScript 6.0" />
+  <img src="https://img.shields.io/badge/Chrome%20%2F%20Edge-MV3-4285F4?logo=googlechrome&logoColor=white" alt="Chrome 与 Edge Manifest V3" />
+  <img src="https://img.shields.io/badge/license-MIT-21B28A" alt="MIT License" />
 </p>
 
----
+## 先看效果
 
-## 📸 预览
+<p align="center">
+  <img src="./assets/pc-screenshot.jpg" width="72%" alt="PaTab 桌面端：搜索、快捷方式、文件夹、待办与 Dock 组成的浏览器工作台" />
+  &nbsp;
+  <img src="./assets/mobile-screenshot.jpg" width="23%" alt="PaTab 移动端纵向工作台界面" />
+</p>
 
-| 💻 桌面端 | 📱 移动端 |
-|:---:|:---:|
-| ![PC 版本截图](assets/pc-screenshot.jpg) | ![移动端截图](assets/mobile-screenshot.jpg) |
+PaTab 是一个本地优先的浏览器起始页。它用熟悉的桌面布局整理常用网站、搜索入口与待办事项，同时提供网页版和 Chrome / Edge Manifest V3 新标签页扩展。
 
----
+## 为什么用 PaTab
 
-## ✨ 核心特性
+- **桌面式整理**：8×4 磁贴网格、多屏分页、自由或紧凑布局，把不同场景分开收纳。
+- **搜索一步直达**：预置 7 个搜索引擎，支持实时联想与自定义搜索模板。
+- **拖拽完成归类**：快捷方式、文件夹、屏幕与 Dock 共享自然的拖放体验。
+- **待办就在眼前**：智能列表、自定义清单、日期、星标和排序无需切换应用。
+- **按你的环境显示**：自定义壁纸、浅色 / 深色 / 跟随系统主题，以及中英文界面。
+- **数据留在本机**：无需注册，桌面配置保存在当前浏览器的 `localStorage`，不会上传到 PaTab 服务器。
 
-- **🖥️ 多屏桌面** —— 8×4 网格磁贴布局，多个屏幕自由分页，每屏可自定义名称与 emoji。支持紧凑、自由两种布局模式随心切换。
-- **🔍 一站式搜索** —— 内置百度、必应、谷歌等 7+ 搜索引擎，支持自定义引擎模板。搜索框实时联想建议，输入即可直达。
-- **📁 文件夹收纳** —— 拖拽快捷方式即可归类，3×3 迷你预览一眼看清内容，告别杂乱的浏览器书签栏。
-- **✅ 内置待办** —— 智能列表与自定义清单，支持日期排期、星标标记与拖拽排序，完成任务有清脆的反馈提示。
-- **🖱️ Mac 风格 Dock** —— 高频网站常驻底部 Dock 栏，悬停显示名称，设置与快捷添加入口触手可及。
-- **🎨 主题切换** —— 支持浅色 / 深色 / 跟随系统三种主题模式，毛玻璃与色彩变量贯穿全局。
-- **🌐 中英双语** —— 界面语言支持中文与英文一键切换，文案按模块拆分管理。
-- **🔒 隐私优先** —— 所有数据保存在浏览器本地 localStorage，无需注册账号、不上传服务器、不追踪行为。
-- **🧩 浏览器扩展** —— 支持 Chrome / Edge Manifest V3 新标签页扩展，接管新标签页获得最完整体验。
-- **📦 组件商店** —— 内置可扩展组件商店，小组件按需安装，桌面个性化灵活组合。
+## 使用方式
 
----
+### 在线使用
 
-## 🛠️ 技术栈
+打开 [patab.nanhaiblog.top](https://patab.nanhaiblog.top)，无需安装即可体验完整界面。
 
-| 层面 | 技术 |
-|:---|:---|
-| 前端框架 | Vue 3 + Composition API |
-| 构建工具 | Vite 8 |
-| 类型系统 | TypeScript 6.0 |
-| 状态管理 | Pinia 3 |
-| 样式方案 | Tailwind CSS 4.3 |
-| 图标库 | Lucide Vue |
-| 动效 | motion-v |
-| 国际化 | vue-i18n |
-| 测试 | Vitest + @vue/test-utils + jsdom |
-| 介绍站 | React 19 + GSAP + Vite |
-| 扩展 | Chrome/Edge Manifest V3 |
+### 接管浏览器新标签页
 
----
+Chrome 与 Edge 商店版本仍在准备中。现在可以从 [GitHub Releases](https://github.com/yan5236/patab/releases/latest/download/patab-extension.zip) 下载离线包，并按照 [安装指南](https://patab-introduction.nanhaiblog.top/install/) 手动加载。
 
-## 📂 项目结构
+> 网页版与扩展版运行在不同的浏览器存储空间，配置不会自动同步。
+
+## 本地开发
+
+环境要求：Node.js `^22.18.0 || >=24.12.0`，并使用仓库锁定的 pnpm 依赖。
+
+```bash
+git clone https://github.com/yan5236/patab.git
+cd patab/patab-web
+pnpm install
+pnpm dev
+```
+
+主应用运行在 `http://localhost:6109`。介绍站位于 `patab-introduction/`，开发端口为 `6108`。
+
+### 常用命令
+
+```bash
+# patab-web/
+pnpm dev                 # 启动主应用
+pnpm build               # 构建网页版
+pnpm build:extension     # 构建 MV3 扩展
+pnpm test:unit           # 运行单元测试
+
+# patab-introduction/
+pnpm dev                 # 启动介绍站
+pnpm build               # 构建介绍站
+```
+
+## 项目组成
 
 ```text
 patab/
-├── patab-web/                 # 🏠 主应用（Vue 3 + Vite）
-│   ├── public/                #    静态资源（Logo、壁纸等）
-│   ├── src/
-│   │   ├── components/        #    Vue 组件（screen / dock / modals / settings / topbar / widgets / common）
-│   │   ├── composables/       #    组合式函数（拖拽、主题、时间等交互逻辑）
-│   │   ├── stores/            #    Pinia 状态（launcher 领域模块 + UI 瞬时状态）
-│   │   ├── i18n/              #    中英文翻译资源
-│   │   ├── types/             #    全局 TypeScript 类型定义
-│   │   ├── utils/             #    纯工具函数（URL、图标、网格、壁纸、搜索引擎等）
-│   │   └── __tests__/         #    单元测试
-│   ├── extension/             #    Chrome/Edge MV3 扩展清单
-│   └── vite.config.ts
-│
-├── patab-introduction/        # 🌐 介绍站（React + Vite + GSAP）
-│   ├── public/                #    静态资源（截图、安装页面、法律文档）
-│   ├── src/
-│   │   ├── components/        #    React 组件（sections / layout / common）
-│   │   └── data/              #    特性、展示、技术亮点等数据
-│   └── index.html
-│
-├── docs/                      # 📚 项目文档
-│   ├── ARCHITECTURE.md        #    架构说明与模块职责
-│   ├── STYLE.md               #    代码风格与组件化规范
-│   └── SECURITY.md            #    安全规范
-│
-├── .claude/                   # Claude Code 配置
-├── .agents/                   # 代理配置
-└── AGENTS.md                  # 代理指令
+├── patab-web/            # Vue 3 主应用与 Chrome / Edge MV3 扩展构建
+├── patab-introduction/   # React 介绍站、安装指南、更新日志与法律页面
+├── assets/               # README 与产品展示资源
+├── docs/                 # 架构、安全和代码风格文档
+└── NOTICE                # 生产依赖开放源代码许可清单
 ```
 
----
+| 部分 | 技术 |
+| --- | --- |
+| 主应用 | Vue 3、TypeScript、Pinia、Tailwind CSS、motion-v、vue-i18n |
+| 构建与测试 | Vite 8、Vitest、Vue Test Utils、jsdom |
+| 介绍站 | React 19、GSAP、Tailwind CSS、Vite |
+| 浏览器扩展 | Chrome / Edge Manifest V3，与网页版共享 Vue 业务源码 |
 
-## 🚀 快速开始
+更完整的模块职责和依赖方向见 [架构说明](./docs/ARCHITECTURE.md)。
 
-### 环境要求
+## 参与开发
 
-- **Node.js** `^22.18.0 || >=24.12.0`
-- **pnpm** 包管理器
+开始修改前，请先阅读：
 
-### 启动主应用（patab-web）
+- [ARCHITECTURE.md](./docs/ARCHITECTURE.md)：模块职责与依赖方向
+- [STYLE.md](./docs/STYLE.md)：代码风格、组件化和测试约定
+- [SECURITY.md](./docs/SECURITY.md)：输入、持久化与扩展权限边界
+
+提交变更前至少运行：
 
 ```bash
-cd patab-web
-pnpm install
-pnpm dev          # 开发服务器启动在 http://localhost:6109
+pnpm --dir patab-web build
+pnpm --dir patab-web test:unit -- --run
 ```
 
-### 启动介绍站（patab-introduction）
+欢迎通过 [Issues](https://github.com/yan5236/patab/issues) 提交问题与建议。
 
-```bash
-cd patab-introduction
-pnpm install
-pnpm dev          # 开发服务器启动在 http://localhost:6108
-```
+## 许可证
 
-### 构建
-
-```bash
-# 主应用 - 网页版
-cd patab-web
-pnpm build
-# 主应用 - 浏览器扩展版
-pnpm build:extension
-
-# 介绍站
-cd patab-introduction
-pnpm build
-```
-
-### 运行测试
-
-```bash
-cd patab-web
-pnpm test:unit
-```
-
-### 更新开放源代码许可
-
-两个前端项目安装依赖后，运行以下命令重新收集生产依赖许可证，并同时更新介绍站 JSON 与仓库根目录 `NOTICE`：
-
-```bash
-pnpm --dir patab-introduction run notice:generate
-pnpm --dir patab-introduction run test:licenses
-```
-
----
-
-## 📖 使用方式
-
-| 方式 | 说明 |
-|:---|:---|
-| **在线网页版** | 直接在浏览器中打开网页版，无需安装 |
-| **Chrome 插件版** | 从 Chrome 应用商店安装，接管新标签页 |
-| **Edge 插件版** | 从 Edge 外接程序安装，接管新标签页 |
-| **离线安装包** | 下载 `.zip`，开发者模式手动加载扩展 |
-
-> 插件版即将上架 Chrome 应用商店和 Edge 外接程序。
-
----
-
-## 🤝 贡献
-
-新功能开发前请先阅读：
-
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) —— 了解架构和依赖方向
-- [`docs/STYLE.md`](docs/STYLE.md) —— 编码规范与组件化标准
-- [`docs/SECURITY.md`](docs/SECURITY.md) —— 安全约束与持久化规则
-
-提交前务必通过构建和测试：
-
-```bash
-cd patab-web
-pnpm build && pnpm test:unit
-```
-
----
-
-## 📄 许可证
-
-本项目基于 [MIT 许可证](license) 开源。
+PaTab 基于 [MIT License](./license) 开源。第三方生产依赖许可见 [NOTICE](./NOTICE)。
 
 © 2026 yan5236
