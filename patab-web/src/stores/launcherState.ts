@@ -21,6 +21,7 @@ import {
 } from '@/utils/searchEngines'
 import { normalizeThemeMode } from '@/utils/theme'
 import { normalizeLocale } from '@/i18n/language'
+import { normalizeScreenIcon } from '@/utils/screenIcons'
 
 /** localStorage 存储键（含版本号，便于将来迁移） */
 export const STORAGE_KEY = 'patab:v1'
@@ -61,7 +62,7 @@ function buildSeedState(): LauncherState {
       {
         id: createId(),
         name: 'AI',
-        icon: '🤖',
+        icon: 'Bot',
         tiles: [
           s({ name: 'ChatGPT', url: 'chatgpt.com' }),
           s({ name: 'Claude', url: 'claude.ai' }),
@@ -83,7 +84,7 @@ function buildSeedState(): LauncherState {
       {
         id: createId(),
         name: '学习',
-        icon: '📚',
+        icon: 'BookOpen',
         tiles: [
           s({ name: 'GitHub', url: 'github.com' }),
           s({ name: 'MDN', url: 'developer.mozilla.org' }),
@@ -205,6 +206,9 @@ export function createInitialLauncherState(): LauncherState {
   initial.settings.placementMode ??= 'compact'
   initial.todos = sanitizeTodos(initial.todos)
   initial.todoLists = sanitizeTodoLists(initial.todoLists)
-  initial.screens.forEach(layoutScreen)
+  initial.screens.forEach((screen) => {
+    screen.icon = normalizeScreenIcon(screen.icon)
+    layoutScreen(screen)
+  })
   return initial
 }

@@ -20,6 +20,8 @@ flowchart TD
 - `patab-web/src/App.vue`：根组件，负责壁纸、主布局和全局弹层挂载。
 - `patab-web/src/components/`：界面组件，按 common、dock、modals、screen、settings、topbar、widgets 拆分。
 - `patab-web/src/components/common/AppDropdown.vue`：全局通用单选下拉框，设置语言等需要统一视觉的选择项优先复用它。
+- `patab-web/src/components/common/AppLucideIcon.vue`：按持久化名称渲染应用屏幕的 Lucide 图标；常用图标同步渲染，非常用图标按需加载。
+- `patab-web/src/components/modals/ScreenIconPicker.vue`：提供完整 Lucide 图标目录的搜索与分批渲染，通过异步组件仅在打开时加载，不直接读写 store。
 - `patab-web/src/i18n/`：Vue I18n 实例、语言清洗工具和按模块拆分的中英文 JSON 翻译资源。
 - `patab-web/src/stores/launcher.ts`：持久业务状态门面，创建状态、组装领域 action，并保留组件调用的稳定 API。
 - `patab-web/src/stores/launcherState.ts`：launcher 默认数据、localStorage 读取和旧数据兼容清洗。
@@ -36,6 +38,8 @@ flowchart TD
 - `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
 - `patab-web/src/utils/runtimeEnvironment.ts`：识别当前运行在网页版还是 Chrome/Edge 扩展页。
 - `patab-web/src/utils/assetPath.ts`：统一解析 public 静态资源路径，扩展版通过 `chrome.runtime.getURL` 访问内置资源。
+- `patab-web/src/utils/screenIcons.ts`：维护应用屏幕常用图标、旧 Emoji 映射与持久化名称清洗。
+- `patab-web/src/utils/screenIconLibrary.ts`：通过 Vite 图标模块 glob 提供完整目录、搜索和单图标动态导入，避免完整 Lucide 图标实现进入首屏 JS。
 - `patab-web/src/__tests__/`：单元测试。
 - `patab-web/extension/manifest.json`：Chrome/Edge Manifest V3 新标签页扩展清单，只在扩展构建时复制到 `dist-extension/`。
 - `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策、文档和更新日志等公开说明页。
@@ -84,6 +88,7 @@ flowchart TD
 - 新 UI 开发默认先拆成可复用组件，页面层只负责组合和传参。
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
+- 应用屏幕图标持久化 Lucide 图标名称；渲染统一复用 `AppLucideIcon`，旧 Emoji 在 launcher 初始化时由 `screenIcons.ts` 自动迁移；完整图标目录必须保持异步加载，禁止重新从 `@lucide/vue` 根入口导入全部 `icons`。
 - `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。
 - 主题设置通过 `settings.themeMode` 持久化，通用设置面板使用 `AppDropdown` 切换 `system` / `light` / `dark`；根组件通过主题工具把最终深浅色写入 `documentElement`，组件可读颜色优先走 `index.css` 的 `theme-*` 公共类。
 - 时钟设置通过 `settings.hour12` 与 `settings.showDate` 持久化；顶部时钟组件只负责展示，开关由通用设置面板维护。

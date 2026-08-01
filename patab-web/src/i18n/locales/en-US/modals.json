@@ -11,7 +11,12 @@
     "editTitle": "Edit screen",
     "nameLabel": "Screen name (group by use, e.g. Study or Video)",
     "namePlaceholder": "Example: Study",
-    "iconLabel": "Screen icon"
+    "iconLabel": "Screen icon",
+    "moreIcons": "More icons",
+    "iconsTitle": "Choose a screen icon",
+    "iconSource": "Icons from:",
+    "iconSearchPlaceholder": "Search icons by name",
+    "iconEmpty": "No matching icons"
   },
   "componentStore": {
     "title": "Component store",

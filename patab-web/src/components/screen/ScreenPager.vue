@@ -12,6 +12,7 @@ import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { useDragStore } from '@/stores/drag'
 import GlassPanel from '@/components/common/GlassPanel.vue'
+import AppLucideIcon from '@/components/common/AppLucideIcon.vue'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -68,7 +69,7 @@ function onScreenMenu(event: MouseEvent, screen: Screen) {
         @click="ui.goToScreen(i)"
         @contextmenu="onScreenMenu($event, screen)"
       >
-        <span>{{ screen.icon }}</span>
+        <AppLucideIcon :name="screen.icon" class="h-3.5 w-3.5 shrink-0" />
         <span class="max-w-20 truncate">{{ screen.name }}</span>
       </button>
 

@@ -11,7 +11,12 @@
     "editTitle": "编辑应用屏幕",
     "nameLabel": "屏幕名称（按用途分类，如：学习、视频）",
     "namePlaceholder": "例如：学习",
-    "iconLabel": "屏幕图标"
+    "iconLabel": "屏幕图标",
+    "moreIcons": "更多图标",
+    "iconsTitle": "选择屏幕图标",
+    "iconSource": "图标来源于：",
+    "iconSearchPlaceholder": "按英文名称搜索图标",
+    "iconEmpty": "没有找到相关图标"
   },
   "componentStore": {
     "title": "组件商店",

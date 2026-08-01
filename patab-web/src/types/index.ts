@@ -51,7 +51,7 @@ export type Tile = Shortcut | Folder | WidgetTile
 export interface Screen {
   id: string
   name: string
-  /** emoji 图标，显示在分页指示器上 */
+  /** Lucide 图标名称，显示在分页指示器上 */
   icon: string
   tiles: Tile[]
 }

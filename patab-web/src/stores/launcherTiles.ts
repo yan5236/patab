@@ -11,6 +11,7 @@ import { createId } from '@/utils/id'
 import { buildShortcut } from './launcherState'
 import { clearPos, placeOnScreen, recompactScreen } from './launcherPlacement'
 import type { LauncherQueries } from './launcherQueries'
+import { normalizeScreenIcon } from '@/utils/screenIcons'
 
 type LauncherTileState = {
   screens: Ref<Screen[]>
@@ -133,7 +134,12 @@ export function createLauncherTileActions({
 
   /** 创建新的应用屏幕 */
   function addScreen(name: string, icon: string): Screen {
-    const screen: Screen = { id: createId(), name: name.trim(), icon, tiles: [] }
+    const screen: Screen = {
+      id: createId(),
+      name: name.trim(),
+      icon: normalizeScreenIcon(icon),
+      tiles: [],
+    }
     screens.value.push(screen)
     return screen
   }
@@ -143,7 +149,7 @@ export function createLauncherTileActions({
     const screen = findScreen(screenId)
     if (!screen) return
     screen.name = data.name.trim()
-    screen.icon = data.icon
+    screen.icon = normalizeScreenIcon(data.icon)
   }
 
   /** 删除屏幕：内容并入第一个剩余屏幕，避免误删数据；至少保留一个屏幕 */

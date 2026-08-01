@@ -42,6 +42,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@lucide-icons': fileURLToPath(
+        new URL('./node_modules/@lucide/vue/dist/esm/icons', import.meta.url),
+      ),
     },
   },
   server: {
