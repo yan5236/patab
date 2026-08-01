@@ -11,6 +11,7 @@ const FOOTER_LINKS = [
   { label: "隐私政策", href: "/privacy/" },
   { label: "文档", href: "/docs/" },
   { label: "更新日志", href: "/changelog/" },
+  { label: "开放源代码许可", href: "/open-source-licenses/" },
   { label: "反馈建议", href: LINKS.feedback },
 ];
 

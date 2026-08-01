@@ -42,8 +42,9 @@ flowchart TD
 - `patab-web/src/utils/screenIconLibrary.ts`：通过 Vite 图标模块 glob 提供完整目录、搜索和单图标动态导入，避免完整 Lucide 图标实现进入首屏 JS。
 - `patab-web/src/__tests__/`：单元测试。
 - `patab-web/extension/manifest.json`：Chrome/Edge Manifest V3 新标签页扩展清单，只在扩展构建时复制到 `dist-extension/`。
-- `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策、文档和更新日志等公开说明页。
+- `patab-introduction/`：React + Vite 介绍站，负责产品首页、安装教程、隐私政策、文档、更新日志和开放源代码许可等公开说明页。
 - `patab-introduction/public/changelog.md`：介绍站更新日志内容源，后续发布记录只改 Markdown，不改页面代码。
+- `patab-introduction/public/open-source-licenses.json` 与仓库根目录 `NOTICE`：介绍站与网页端的生产依赖许可清单，由 `scripts/generate-open-source-licenses.mjs` 同步生成。
 
 ## 依赖方向
 
@@ -99,3 +100,4 @@ flowchart TD
 - 主屏批量管理模式只保存在 `stores/ui.ts` 的瞬时状态中；`TileItem.vue` 负责选择圆点、点击拦截和批量右键菜单，`launcherTiles.ts` 处理批量删除，`launcherDrop.ts` 处理批量拖放规则。
 - 扩展功能优先放在 Vite 构建脚本、`extension/manifest.json` 和 `utils/runtimeEnvironment.ts` / `utils/assetPath.ts` 这类薄适配层；不得为扩展版复制 App、store 或组件。
 - 介绍站更新日志只维护 `patab-introduction/public/changelog.md`；页面解析逻辑保持轻量，只支持约定的标题、版本、分类和列表项。
+- 两个前端的生产依赖发生变化后，在介绍站运行 `pnpm run notice:generate`，同步生成开放源代码许可 JSON 与仓库根目录 `NOTICE`；页面组件只负责读取和展示 JSON。

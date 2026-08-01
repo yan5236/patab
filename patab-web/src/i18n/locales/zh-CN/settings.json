@@ -60,6 +60,7 @@
     "description2": "快捷方式、待办与设置会保存在浏览器本地。",
     "privacy": "隐私政策",
     "terms": "用户协议",
-    "changelog": "更新日志"
+    "changelog": "更新日志",
+    "openSourceLicenses": "开放源代码许可"
   }
 }

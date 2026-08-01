@@ -145,6 +145,15 @@ cd patab-web
 pnpm test:unit
 ```
 
+### 更新开放源代码许可
+
+两个前端项目安装依赖后，运行以下命令重新收集生产依赖许可证，并同时更新介绍站 JSON 与仓库根目录 `NOTICE`：
+
+```bash
+pnpm --dir patab-introduction run notice:generate
+pnpm --dir patab-introduction run test:licenses
+```
+
 ---
 
 ## 📖 使用方式

@@ -7,9 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build && node scripts/copy-spa-routes.mjs",
     "deploy": "pnpm build && npx wrangler pages deploy dist --project-name=patab-introduction --branch=main --commit-dirty=true",
+    "licenses:generate": "node scripts/generate-open-source-licenses.mjs",
+    "notice:generate": "node scripts/generate-open-source-licenses.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:changelog": "node --test --experimental-strip-types scripts/changelog-parser.test.mjs"
+    "test:changelog": "node --test --experimental-strip-types scripts/changelog-parser.test.mjs",
+    "test:licenses": "node --test scripts/open-source-licenses.test.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

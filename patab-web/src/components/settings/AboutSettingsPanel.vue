@@ -12,6 +12,10 @@ const ABOUT_LINKS = [
   { key: 'settings.about.privacy', href: 'https://patab-introduction.nanhaiblog.top/privacy' },
   { key: 'settings.about.terms', href: 'https://patab-introduction.nanhaiblog.top/user-agreement' },
   { key: 'settings.about.changelog', href: 'https://patab-introduction.nanhaiblog.top/changelog' },
+  {
+    key: 'settings.about.openSourceLicenses',
+    href: 'https://patab-introduction.nanhaiblog.top/open-source-licenses',
+  },
 ] as const
 
 function handleLinkClick(href: string) {

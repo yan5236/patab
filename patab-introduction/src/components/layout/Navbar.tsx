@@ -30,6 +30,7 @@ const NAV_ITEMS = [
   { label: "隐私政策", href: "/privacy/" },
   { label: "文档", href: "/docs/" },
   { label: "更新日志", href: "/changelog/" },
+  { label: "开源许可", href: "/open-source-licenses/" },
   { label: "开源仓库", href: LINKS.repository, icon: GitHubIcon, external: true },
 ];
 

@@ -15,6 +15,7 @@ import DownloadSection from "./components/sections/DownloadSection";
 import InfoPage from "./components/sections/InfoPage";
 import StaticHtmlPage from "./components/sections/StaticHtmlPage";
 import ChangelogPage from "./components/sections/ChangelogPage";
+import OpenSourceLicensesPage from "./components/sections/OpenSourceLicensesPage";
 import { INFO_PAGES } from "./data/pages";
 
 const STATIC_HTML_PAGES: Record<string, string> = {
@@ -25,6 +26,7 @@ const STATIC_HTML_PAGES: Record<string, string> = {
 
 const REACT_PAGES: Record<string, () => React.ReactNode> = {
   "/changelog": () => <ChangelogPage />,
+  "/open-source-licenses": () => <OpenSourceLicensesPage />,
 };
 
 /** 规整 Pages 清理 URL 产生的尾斜杠，保证二级页路由稳定命中。 */
