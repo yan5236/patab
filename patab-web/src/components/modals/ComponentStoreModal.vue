@@ -5,15 +5,17 @@
  * 详情视图：点击卡片 / 标题进入，展示组件各尺寸形态与详细信息（左右滑动切换动画）。
  */
 import { computed, ref } from 'vue'
-import { ListTodo } from '@lucide/vue'
+import { Clock as ClockIcon, ListTodo } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import BaseModal from '@/components/common/BaseModal.vue'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
+import ClockWidget from '@/components/widgets/clock/ClockWidget.vue'
 import ComponentStoreItem from './ComponentStoreItem.vue'
 import ComponentStoreDetail from './ComponentStoreDetail.vue'
-import type { TileSize } from '@/types'
+import { defaultClockConfig } from '@/utils/clock'
+import type { ClockConfig, ClockType, TileSize } from '@/types'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -30,7 +32,30 @@ const components = computed(() => [
     version: '1.0.0',
     developer: 'Patab',
   },
+  {
+    id: 'clock',
+    title: t('modals.componentStore.clockTitle'),
+    description: t('modals.componentStore.clockDescription'),
+    detail: t('modals.componentStore.clockDetail'),
+    icon: ClockIcon,
+    version: '1.0.0',
+    developer: 'Patab',
+  },
 ])
+
+/** 时钟预览用的固定配置（避免预览触发真实图块查找与响铃） */
+const clockPreviews: Record<ClockType, ClockConfig> = {
+  time: defaultClockConfig('time'),
+  stopwatch: defaultClockConfig('stopwatch'),
+  timer: defaultClockConfig('timer'),
+}
+
+/** 详情走马灯按尺寸形态轮换展示三种时钟类型（1×1 / 2×2 为时间，3×2 秒表，4×2 计时器） */
+function clockPreviewType(size: TileSize): ClockType {
+  if (size.w === 3) return 'stopwatch'
+  if (size.w === 4) return 'timer'
+  return 'time'
+}
 
 /** 当前打开的详情组件 id；null 表示处于列表视图 */
 const detailId = ref<string | null>(null)
@@ -48,18 +73,22 @@ const filteredComponents = computed(() => {
   )
 })
 
-/** 判断当前屏幕是否已经添加过指定组件 */
+/** 判断当前屏幕是否已经添加过指定组件（时钟允许同屏多个，永不置灰） */
 function isAdded(id: string): boolean {
   const screen = ui.currentScreen
   return id === 'todo' && !!screen && launcher.hasTodoWidget(screen.id)
 }
 
-/** 把指定组件添加到当前应用屏幕，成功后关闭商店 */
+/** 把指定组件添加到当前应用屏幕；时钟先弹类型选择，不直接添加 */
 function addComponent(id: string) {
   const screen = ui.currentScreen
   if (!screen || isAdded(id)) return
-  if (id === 'todo') launcher.addTodoWidget(screen.id)
-  ui.closeModal()
+  if (id === 'todo') {
+    launcher.addTodoWidget(screen.id)
+    ui.closeModal()
+  } else if (id === 'clock') {
+    ui.openModal({ type: 'clock-type-picker', screenId: screen.id })
+  }
 }
 
 function openDetail(id: string) {
@@ -97,7 +126,12 @@ function closeDetail() {
           >
             <template #preview>
               <div class="pointer-events-none h-full w-full max-w-[270px]">
-                <TodoWidget tile-id="component-store-preview-todo" />
+                <TodoWidget v-if="item.id === 'todo'" tile-id="component-store-preview-todo" />
+                <ClockWidget
+                  v-else-if="item.id === 'clock'"
+                  tile-id="component-store-preview-clock"
+                  :preview-config="clockPreviews.time"
+                />
               </div>
             </template>
           </ComponentStoreItem>
@@ -125,7 +159,13 @@ function closeDetail() {
       >
         <template #slide="{ size, boxStyle }: { size: TileSize; boxStyle: Record<string, string> }">
           <div class="pointer-events-none" :style="boxStyle">
-            <TodoWidget tile-id="component-store-preview-todo" :preview-size="size" />
+            <TodoWidget v-if="detailItem.id === 'todo'" tile-id="component-store-preview-todo" :preview-size="size" />
+            <ClockWidget
+              v-else-if="detailItem.id === 'clock'"
+              tile-id="component-store-preview-clock"
+              :preview-size="size"
+              :preview-config="clockPreviews[clockPreviewType(size)]"
+            />
           </div>
         </template>
       </ComponentStoreDetail>

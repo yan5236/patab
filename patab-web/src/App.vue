@@ -22,6 +22,8 @@ import ScreenEditModal from '@/components/modals/ScreenEditModal.vue'
 import SettingsModal from '@/components/modals/SettingsModal.vue'
 import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
 import TodoModal from '@/components/modals/TodoModal.vue'
+import ClockTypePickerModal from '@/components/modals/ClockTypePickerModal.vue'
+import ClockDetailModal from '@/components/modals/ClockDetailModal.vue'
 import { useThemeMode } from '@/composables/useThemeMode'
 import { resolveAssetPath } from '@/utils/assetPath'
 
@@ -137,6 +139,12 @@ watch(
     <SettingsModal v-if="ui.modal?.type === 'settings'" />
     <ComponentStoreModal v-if="ui.modal?.type === 'component-store'" />
     <TodoModal v-if="ui.modal?.type === 'todo'" />
+    <ClockTypePickerModal
+      v-if="ui.modal?.type === 'clock-type-picker'"
+      :screen-id="ui.modal.screenId"
+      :tile-id="ui.modal.tileId"
+    />
+    <ClockDetailModal v-if="ui.modal?.type === 'clock-detail'" :tile-id="ui.modal.tileId" />
   </div>
 </template>
 

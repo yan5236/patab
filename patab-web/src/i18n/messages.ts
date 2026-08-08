@@ -10,6 +10,7 @@ import zhDock from './locales/zh-CN/dock.json'
 import zhModals from './locales/zh-CN/modals.json'
 import zhTodo from './locales/zh-CN/todo.json'
 import zhWidgets from './locales/zh-CN/widgets.json'
+import zhClock from './locales/zh-CN/clock.json'
 
 import enCommon from './locales/en-US/common.json'
 import enSettings from './locales/en-US/settings.json'
@@ -19,6 +20,7 @@ import enDock from './locales/en-US/dock.json'
 import enModals from './locales/en-US/modals.json'
 import enTodo from './locales/en-US/todo.json'
 import enWidgets from './locales/en-US/widgets.json'
+import enClock from './locales/en-US/clock.json'
 
 export const messages = {
   'zh-CN': {
@@ -30,6 +32,7 @@ export const messages = {
     modals: zhModals,
     todo: zhTodo,
     widgets: zhWidgets,
+    clock: zhClock,
   },
   'en-US': {
     common: enCommon,
@@ -40,5 +43,6 @@ export const messages = {
     modals: enModals,
     todo: enTodo,
     widgets: enWidgets,
+    clock: enClock,
   },
 } as const

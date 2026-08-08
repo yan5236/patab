@@ -13,6 +13,7 @@ import type {
 } from '@/types'
 import { colorForName, normalizeUrl } from '@/utils/favicon'
 import { layoutScreen, normalizeTileSize } from '@/utils/grid'
+import { sanitizeClockConfig } from '@/utils/clock'
 import { createId } from '@/utils/id'
 import {
   DEFAULT_SEARCH_ENGINES,
@@ -208,7 +209,12 @@ export function createInitialLauncherState(): LauncherState {
   initial.todoLists = sanitizeTodoLists(initial.todoLists)
   initial.screens.forEach((screen) => {
     screen.icon = normalizeScreenIcon(screen.icon)
-    screen.tiles.forEach((tile) => normalizeTileSize(tile))
+    screen.tiles.forEach((tile) => {
+      normalizeTileSize(tile)
+      if (tile.type === 'widget' && tile.widgetType === 'clock') {
+        tile.config = sanitizeClockConfig(tile.config)
+      }
+    })
     layoutScreen(screen)
   })
   return initial

@@ -44,14 +44,58 @@ export interface Folder extends GridPos {
   size?: TileSize
 }
 
+/** 时钟小组件类型：时间 / 秒表 / 计时器 */
+export type ClockType = 'time' | 'stopwatch' | 'timer'
+
+/** 秒表的一次计次记录 */
+export interface StopwatchLap {
+  /** 计次时的总耗时（毫秒） */
+  total: number
+  /** 与上一次计次的差值（毫秒） */
+  delta: number
+}
+
+/** 秒表运行状态（随图块持久化，刷新后按时间戳继续计时） */
+export interface StopwatchState {
+  /** 本轮计时的开始时间戳（仅运行中有效，暂停时为 null） */
+  startedAt: number | null
+  /** 暂停时累计的毫秒数 */
+  accumulatedMs: number
+  running: boolean
+  /** 计次记录，最新一条在最前 */
+  laps: StopwatchLap[]
+}
+
+/** 计时器运行状态（随图块持久化，刷新后按结束时间戳继续倒计时） */
+export interface TimerState {
+  /** 设定的总时长（毫秒） */
+  durationMs: number
+  /** 预计结束时间戳（仅运行中有效，暂停时为 null） */
+  endsAt: number | null
+  /** 暂停 / 结束时的剩余毫秒数 */
+  remainingMs: number
+  running: boolean
+  /** 已结束，等待用户停止响铃 */
+  finished: boolean
+}
+
+/** 时钟小组件的配置与运行状态 */
+export interface ClockConfig {
+  type: ClockType
+  stopwatch: StopwatchState
+  timer: TimerState
+}
+
 /** 小组件图块（在网格中占多格的功能卡片） */
 export interface WidgetTile extends GridPos {
   id: string
   type: 'widget'
-  /** 小组件种类，目前仅支持待办事项 */
-  widgetType: 'todo'
+  /** 小组件种类 */
+  widgetType: 'todo' | 'clock'
   /** 自定义尺寸（格数），缺省 3×2 */
   size?: TileSize
+  /** 时钟小组件的类型与运行状态（仅 widgetType === 'clock' 时存在） */
+  config?: ClockConfig
 }
 
 /** 应用屏幕网格中的一个图块 */
@@ -218,4 +262,8 @@ export type ModalState =
   | { type: 'component-store' }
   /** 待办事项弹窗 */
   | { type: 'todo' }
+  /** 时钟类型选择：带 tileId 为切换已有图块类型，带 screenId 为添加到屏幕 */
+  | { type: 'clock-type-picker'; screenId?: string; tileId?: string }
+  /** 时钟小组件详情弹窗（1×1 图标形态点开） */
+  | { type: 'clock-detail'; tileId: string }
   | null

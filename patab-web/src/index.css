@@ -271,3 +271,18 @@ textarea {
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* 时钟计时器到时：脉冲光环提醒，直到用户停止响铃（磁贴与详情弹窗共用） */
+.clock-alarm {
+  animation: clock-alarm-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes clock-alarm-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(245 158 11 / 70%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(245 158 11 / 0%);
+  }
+}

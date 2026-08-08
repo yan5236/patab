@@ -5,8 +5,9 @@
  * 不处理拖拽落点分支，拖拽统一放在 launcherDrop。
  */
 import type { Ref } from 'vue'
-import type { Folder, Screen, Settings, Shortcut, ShortcutTarget, Tile } from '@/types'
+import type { ClockType, Folder, Screen, Settings, Shortcut, ShortcutTarget, Tile } from '@/types'
 import { colorForName, normalizeUrl } from '@/utils/favicon'
+import { defaultClockConfig } from '@/utils/clock'
 import { createId } from '@/utils/id'
 import { buildShortcut } from './launcherState'
 import { clearPos, placeOnScreen, recompactScreen } from './launcherPlacement'
@@ -132,6 +133,28 @@ export function createLauncherTileActions({
     placeOnScreen(screen, widget)
   }
 
+  /** 在指定屏幕添加时钟小组件；允许同一屏幕存在多个，类型由参数指定 */
+  function addClockWidget(screenId: string, clockType: ClockType) {
+    const screen = findScreen(screenId)
+    if (!screen) return
+    const widget: Tile = {
+      id: createId(),
+      type: 'widget',
+      widgetType: 'clock',
+      config: defaultClockConfig(clockType),
+    }
+    screen.tiles.push(widget)
+    placeOnScreen(screen, widget)
+  }
+
+  /** 切换时钟小组件类型并重置运行状态（秒表 / 计时器数据一并清空） */
+  function switchClockType(tileId: string, clockType: ClockType) {
+    const container = findContainerOf(tileId)
+    const tile = container?.find((t) => t.id === tileId)
+    if (tile?.type !== 'widget' || tile.widgetType !== 'clock') return
+    tile.config = defaultClockConfig(clockType)
+  }
+
   /** 创建新的应用屏幕 */
   function addScreen(name: string, icon: string): Screen {
     const screen: Screen = {
@@ -162,7 +185,7 @@ export function createLauncherTileActions({
     if (removed && fallback) {
       const merged = removed.tiles.filter(
         (t) =>
-          t.type !== 'widget' ||
+          t.type !== 'widget' || t.widgetType !== 'todo' ||
           !fallback.tiles.some((f) => f.type === 'widget' && f.widgetType === t.widgetType),
       )
       merged.forEach((t) => clearPos(t))
@@ -192,6 +215,8 @@ export function createLauncherTileActions({
     disbandFolder,
     hasTodoWidget,
     addTodoWidget,
+    addClockWidget,
+    switchClockType,
     addScreen,
     updateScreen,
     removeScreen,

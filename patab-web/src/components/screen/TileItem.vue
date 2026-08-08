@@ -22,6 +22,7 @@ import FolderTile from './FolderTile.vue'
 import ResizeHandle from './ResizeHandle.vue'
 import { useTileResize } from '@/composables/useTileResize'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
+import ClockWidget from '@/components/widgets/clock/ClockWidget.vue'
 
 const props = defineProps<{
   tile: Tile
@@ -167,6 +168,7 @@ function onManagedMenu(event: MouseEvent) {
     </span>
     <ShortcutTile v-if="tile.type === 'shortcut'" :shortcut="tile" :in-folder="zone === 'folder'" />
     <FolderTile v-else-if="tile.type === 'folder'" :folder="tile" />
+    <ClockWidget v-else-if="tile.type === 'widget' && tile.widgetType === 'clock'" :tile-id="tile.id" />
     <TodoWidget v-else :tile-id="tile.id" />
     <ResizeHandle v-if="isResizing" @resize-start="onHandlePointerdown" />
   </div>

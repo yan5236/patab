@@ -1,0 +1,26 @@
+{
+  "title": "Clock",
+  "pickerTitle": "Choose clock type",
+  "switchType": "Switch type",
+  "current": "Current",
+  "types": {
+    "time": "Time",
+    "stopwatch": "Stopwatch",
+    "timer": "Timer"
+  },
+  "typeDesc": {
+    "time": "Live clock following the 12/24-hour and date settings",
+    "stopwatch": "0.01s precision with pause and laps",
+    "timer": "Countdown with a looping alarm and highlight when done"
+  },
+  "start": "Start",
+  "pause": "Pause",
+  "resume": "Resume",
+  "reset": "Reset",
+  "lap": "Lap",
+  "stop": "Stop",
+  "hours": "h",
+  "minutes": "m",
+  "seconds": "s",
+  "timerDone": "Time's up"
+}

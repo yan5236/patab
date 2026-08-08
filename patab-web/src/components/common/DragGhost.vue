@@ -11,6 +11,7 @@ import { useDragStore } from '@/stores/drag'
 import { useUiStore } from '@/stores/ui'
 import AppIcon from './AppIcon.vue'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
+import ClockWidget from '@/components/widgets/clock/ClockWidget.vue'
 
 const drag = useDragStore()
 const ui = useUiStore()
@@ -52,9 +53,10 @@ const batchCount = computed(() =>
           :color="drag.tile.color"
         />
       </div>
-      <!-- 小组件：还原整卡（按来源尺寸），而非单个小图标 -->
+      <!-- 小组件：还原整卡（按来源尺寸），而非单个小图标；按 widgetType 分发 -->
       <div v-else-if="drag.tile.type === 'widget'" :style="widgetStyle">
-        <TodoWidget :tile-id="drag.tile.id" />
+        <ClockWidget v-if="drag.tile.widgetType === 'clock'" :tile-id="drag.tile.id" />
+        <TodoWidget v-else :tile-id="drag.tile.id" />
       </div>
       <!-- 文件夹：示意图标 -->
       <div
