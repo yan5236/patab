@@ -12,7 +12,7 @@ import type {
   TodoList,
 } from '@/types'
 import { colorForName, normalizeUrl } from '@/utils/favicon'
-import { layoutScreen } from '@/utils/grid'
+import { layoutScreen, normalizeTileSize } from '@/utils/grid'
 import { createId } from '@/utils/id'
 import {
   DEFAULT_SEARCH_ENGINES,
@@ -208,6 +208,7 @@ export function createInitialLauncherState(): LauncherState {
   initial.todoLists = sanitizeTodoLists(initial.todoLists)
   initial.screens.forEach((screen) => {
     screen.icon = normalizeScreenIcon(screen.icon)
+    screen.tiles.forEach((tile) => normalizeTileSize(tile))
     layoutScreen(screen)
   })
   return initial

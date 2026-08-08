@@ -8,7 +8,7 @@
  * - 占位/碰撞检测 isAreaFree、寻空位 firstFreeSlot
  * - 迁移/自动布局 layoutScreen（把无坐标的旧数据 / 种子行主序打包）
  */
-import type { Screen, Tile } from '@/types'
+import type { Screen, Tile, TileSize } from '@/types'
 
 /** 每屏列数（集中常量，方便调参；小组件 3×2 需 COLS≥3） */
 export const COLS = 8
@@ -18,10 +18,57 @@ export const ROWS = 4
 /** 溢出扫描时允许的最大行数（远超一屏，作为兜底上限，防止死循环） */
 const OVERFLOW_MAX_ROW = 1000
 
-/** 图块在网格中占用的宽高（格数） */
-export function tileSize(tile: Tile): { w: number; h: number } {
+/** 文件夹可选尺寸（格数）；1×1 即普通图标形态，3×3 为大文件夹 */
+export const FOLDER_SIZES: TileSize[] = [
+  { w: 1, h: 1 },
+  { w: 2, h: 1 },
+  { w: 1, h: 2 },
+  { w: 2, h: 2 },
+  { w: 3, h: 3 },
+]
+
+/** 小组件可选尺寸（格数）；3×2 为默认，1×1 时退化为图标形态（点击打开待办弹窗） */
+export const WIDGET_SIZES: TileSize[] = [
+  { w: 1, h: 1 },
+  { w: 2, h: 2 },
+  { w: 3, h: 2 },
+  { w: 4, h: 2 },
+]
+
+/** 图块类型的内置默认尺寸 */
+function defaultTileSize(tile: Tile): TileSize {
   if (tile.type === 'widget') return { w: 3, h: 2 }
   return { w: 1, h: 1 }
+}
+
+/** 图块可调整的尺寸候选（快捷方式固定 1×1，返回空表表示不可调） */
+export function allowedSizesFor(tile: Tile): TileSize[] {
+  if (tile.type === 'folder') return FOLDER_SIZES
+  if (tile.type === 'widget') return WIDGET_SIZES
+  return []
+}
+
+/** 尺寸是否在允许表内（逐值比较，避免引用比较） */
+export function isAllowedSize(tile: Tile, size: TileSize): boolean {
+  return allowedSizesFor(tile).some((s) => s.w === size.w && s.h === size.h)
+}
+
+/** 图块在网格中占用的宽高（格数）；自定义 size 优先，缺省走内置默认 */
+export function tileSize(tile: Tile): { w: number; h: number } {
+  const size = (tile.type === 'folder' || tile.type === 'widget') ? tile.size : undefined
+  if (size && isAllowedSize(tile, size)) return { w: size.w, h: size.h }
+  return defaultTileSize(tile)
+}
+
+/** 清洗图块的自定义尺寸：不在允许表内（或等于默认）时移除，回落默认尺寸 */
+export function normalizeTileSize(tile: Tile): void {
+  if (tile.type !== 'folder' && tile.type !== 'widget') return
+  const size = tile.size
+  if (!size) return
+  const fallback = defaultTileSize(tile)
+  if (!isAllowedSize(tile, size) || (size.w === fallback.w && size.h === fallback.h)) {
+    delete tile.size
+  }
 }
 
 /** 两个矩形是否相交（左闭右开） */

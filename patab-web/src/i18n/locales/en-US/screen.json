@@ -12,6 +12,7 @@
     "changeWallpaper": "Change wallpaper",
     "addToDock": "Add to Dock",
     "open": "Open",
+    "resizeTile": "Resize",
     "disbandFolder": "Disband folder",
     "deleteItems": "Delete {count} items",
     "editScreen": "Edit screen",

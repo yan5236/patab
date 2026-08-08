@@ -4,7 +4,7 @@
  * 毛玻璃卡片 + 标题栏（标题栏兼作长按拖动的手柄）；右键：移除小组件
  * 内容区由默认插槽提供，插槽内容应自带 data-nodrag（避免与长按拖动冲突）
  */
-import { Trash2 } from '@lucide/vue'
+import { Expand, Trash2 } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -22,6 +22,11 @@ const { t } = useI18n()
 
 function onMenu(event: MouseEvent) {
   ui.openContextMenu(event, [
+    {
+      label: t('screen.menu.resizeTile'),
+      icon: Expand,
+      action: () => ui.enterTileResize(props.tileId),
+    },
     {
       label: t('widgets.remove'),
       icon: Trash2,

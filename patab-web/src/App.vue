@@ -4,7 +4,7 @@
  * 负责：壁纸背景、整体布局编排（时钟 → 搜索 → 应用屏幕 → 分页器 → Dock）、
  * 以及全局层的挂载：文件夹弹层 / 右键菜单 / 拖拽幽灵 / 各弹窗
  */
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { Eye } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
@@ -59,6 +59,32 @@ function onRootDoubleClick(event: MouseEvent) {
   if ((event.target as HTMLElement).closest('[data-clean-mode-retained]')) return
   launcher.updateSettings({ cleanMode: false })
 }
+
+/**
+ * 调整尺寸模式激活时：点击图块外部或按 Escape 退出
+ * （监听挂在 window 捕获阶段，点到 [data-resize-tile] 内部不退出）
+ */
+function onGlobalPointerdown(event: PointerEvent) {
+  if ((event.target as HTMLElement).closest('[data-resize-tile]')) return
+  ui.exitTileResize()
+}
+
+function onGlobalKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') ui.exitTileResize()
+}
+
+watch(
+  () => ui.resizingTileId,
+  (tileId) => {
+    if (tileId) {
+      window.addEventListener('pointerdown', onGlobalPointerdown, true)
+      window.addEventListener('keydown', onGlobalKeydown, true)
+    } else {
+      window.removeEventListener('pointerdown', onGlobalPointerdown, true)
+      window.removeEventListener('keydown', onGlobalKeydown, true)
+    }
+  },
+)
 </script>
 
 <template>

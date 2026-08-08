@@ -29,6 +29,7 @@ export const useUiStore = defineStore('ui', () => {
     if (clamped === currentScreenIndex.value) return
     screenDirection.value = clamped > currentScreenIndex.value ? 1 : -1
     currentScreenIndex.value = clamped
+    resizingTileId.value = null
   }
 
   function goToScreenById(screenId: string) {
@@ -72,6 +73,7 @@ export const useUiStore = defineStore('ui', () => {
   /** 进入主屏批量管理模式，保留空选择，等待用户点选图块 */
   function enterManagementMode() {
     managementMode.value = true
+    resizingTileId.value = null
     closeContextMenu()
   }
 
@@ -101,6 +103,22 @@ export const useUiStore = defineStore('ui', () => {
     selectedTileIds.value = selectedTileIds.value.filter((id) => topLevelIds.has(id))
   }
 
+  /* ---------- 图块调整尺寸模式 ---------- */
+
+  /** 正处于「调整尺寸」模式的图块 id（右下角显示拖拽柄），null 表示未激活 */
+  const resizingTileId = ref<string | null>(null)
+
+  /** 进入某图块的调整尺寸模式（同一时间只会有一个图块处于该模式） */
+  function enterTileResize(tileId: string) {
+    closeContextMenu()
+    resizingTileId.value = tileId
+  }
+
+  /** 退出调整尺寸模式 */
+  function exitTileResize() {
+    resizingTileId.value = null
+  }
+
   /* ---------- 全局弹窗 ---------- */
 
   const modal = shallowRef<ModalState>(null)
@@ -126,6 +144,9 @@ export const useUiStore = defineStore('ui', () => {
     contextMenu,
     openContextMenu,
     closeContextMenu,
+    resizingTileId,
+    enterTileResize,
+    exitTileResize,
     managementMode,
     selectedTileIds,
     selectedTileIdSet,

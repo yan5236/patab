@@ -14,6 +14,12 @@ export interface GridPos {
   row?: number
 }
 
+/** 图块在网格中占用的宽高（格数）；仅文件夹 / 小组件可自定义，缺省走内置默认 */
+export interface TileSize {
+  w: number
+  h: number
+}
+
 /** 快捷访问（一个可点击打开的网址图标） */
 export interface Shortcut extends GridPos {
   id: string
@@ -34,6 +40,8 @@ export interface Folder extends GridPos {
   type: 'folder'
   name: string
   children: Shortcut[]
+  /** 自定义尺寸（格数），缺省 1×1 */
+  size?: TileSize
 }
 
 /** 小组件图块（在网格中占多格的功能卡片） */
@@ -42,6 +50,8 @@ export interface WidgetTile extends GridPos {
   type: 'widget'
   /** 小组件种类，目前仅支持待办事项 */
   widgetType: 'todo'
+  /** 自定义尺寸（格数），缺省 3×2 */
+  size?: TileSize
 }
 
 /** 应用屏幕网格中的一个图块 */

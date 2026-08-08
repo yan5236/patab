@@ -13,8 +13,10 @@ import {
   firstFreeSlot,
   insertionIndex,
   insertionSlotFromGeometry,
+  allowedSizesFor,
   isAreaFree,
   layoutScreen,
+  normalizeTileSize,
   packOrder,
   rowMajorOrder,
   tileAt,
@@ -70,6 +72,35 @@ describe('grid 网格工具', () => {
   it('tileSize：快捷方式/文件夹 1×1，待办小组件 3×2', () => {
     expect(tileSize(shortcut('a'))).toEqual({ w: 1, h: 1 })
     expect(tileSize(widget('w'))).toEqual({ w: 3, h: 2 })
+  })
+
+  it('tileSize：文件夹/小组件自定义尺寸优先生效，非法尺寸回落默认', () => {
+    const folder: Folder = { id: 'f', type: 'folder', name: 'f', children: [], size: { w: 3, h: 3 } }
+    expect(tileSize(folder)).toEqual({ w: 3, h: 3 })
+    folder.size = { w: 5, h: 5 } // 不在允许表内
+    expect(tileSize(folder)).toEqual({ w: 1, h: 1 })
+    const w = { ...widget('wg'), size: { w: 2, h: 2 } }
+    expect(tileSize(w)).toEqual({ w: 2, h: 2 })
+  })
+
+  it('allowedSizesFor：快捷方式不可调，文件夹/小组件返回候选尺寸表', () => {
+    expect(allowedSizesFor(shortcut('a'))).toEqual([])
+    expect(allowedSizesFor(widget('w')).length).toBeGreaterThan(1)
+    const folder: Folder = { id: 'f', type: 'folder', name: 'f', children: [] }
+    expect(allowedSizesFor(folder)).toContainEqual({ w: 1, h: 1 })
+    expect(allowedSizesFor(folder)).toContainEqual({ w: 3, h: 3 })
+  })
+
+  it('normalizeTileSize：非法尺寸与默认尺寸都会被清除', () => {
+    const folder: Folder = { id: 'f', type: 'folder', name: 'f', children: [], size: { w: 7, h: 1 } }
+    normalizeTileSize(folder)
+    expect(folder.size).toBeUndefined()
+    folder.size = { w: 1, h: 1 } // 等于默认
+    normalizeTileSize(folder)
+    expect(folder.size).toBeUndefined()
+    folder.size = { w: 2, h: 2 }
+    normalizeTileSize(folder)
+    expect(folder.size).toEqual({ w: 2, h: 2 })
   })
 
   it('isAreaFree：越界拒绝、重叠拒绝、ignoreId 忽略自身', () => {

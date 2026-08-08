@@ -16,9 +16,11 @@ import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { useLongPressDrag } from '@/composables/useLongPressDrag'
-import { COLS, tileSize } from '@/utils/grid'
+import { COLS, allowedSizesFor, tileSize } from '@/utils/grid'
 import ShortcutTile from './ShortcutTile.vue'
 import FolderTile from './FolderTile.vue'
+import ResizeHandle from './ResizeHandle.vue'
+import { useTileResize } from '@/composables/useTileResize'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
 
 const props = defineProps<{
@@ -51,6 +53,16 @@ const source = computed<DragSource>(() =>
 )
 
 const { onPointerdown } = useLongPressDrag(() => ({ tile: props.tile, source: source.value }))
+
+/** 尺寸拖拽变形（仅主屏的文件夹 / 小组件支持） */
+const { onHandlePointerdown } = useTileResize(() => props.tile)
+
+/** 本图块类型支持多尺寸调整 */
+const isResizable = computed(() => allowedSizesFor(props.tile).length > 0)
+/** 本图块正处于「调整尺寸」模式：右下角显示拖拽柄并高亮 */
+const isResizing = computed(
+  () => props.zone === 'screen' && isResizable.value && ui.resizingTileId === props.tile.id,
+)
 
 /** 本图块正在被拖拽（主屏：原位留空；文件夹：半透明占位） */
 const isDragSource = computed(() => drag.tile?.id === props.tile.id)
@@ -126,8 +138,10 @@ function onManagedMenu(event: MouseEvent) {
       zone === 'folder' && isDragSource ? 'opacity-30' : '',
       isDragSource ? 'pointer-events-none' : '',
       isHoverCell ? 'bg-white/25 ring-2 ring-white/70' : '',
+      isResizing ? 'ring-2 ring-white/80' : '',
     ]"
     :style="cellStyle"
+    :data-resize-tile="isResizing ? tile.id : undefined"
     :data-drop="zone === 'folder' ? 'cell' : isCompactScreen ? undefined : 'slot'"
     :data-zone="zone === 'folder' ? 'folder' : undefined"
     :data-container="zone === 'folder' ? containerId : undefined"
@@ -154,5 +168,6 @@ function onManagedMenu(event: MouseEvent) {
     <ShortcutTile v-if="tile.type === 'shortcut'" :shortcut="tile" :in-folder="zone === 'folder'" />
     <FolderTile v-else-if="tile.type === 'folder'" :folder="tile" />
     <TodoWidget v-else :tile-id="tile.id" />
+    <ResizeHandle v-if="isResizing" @resize-start="onHandlePointerdown" />
   </div>
 </template>

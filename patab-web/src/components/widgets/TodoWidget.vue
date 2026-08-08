@@ -4,13 +4,16 @@
  *
  * 保留快速添加/查看能力；支持展开弹窗、编辑文本、重要标记、
  * 已完成折叠与长按拖拽排序。
+ * 支持多尺寸（1×1 / 2×2 / 3×2 / 4×2）：缩到 1×1 时退化为应用图标，
+ * 点击直接打开待办弹窗，右键仍可调整尺寸 / 移除。
  */
 import { computed, nextTick, ref } from 'vue'
-import { Maximize2, Plus, Star, Trash2, X } from '@lucide/vue'
+import { Expand, ListChecks, Maximize2, Plus, Star, Trash2, X } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import { useTodoDrag } from '@/composables/useTodoDrag'
+import { tileSize } from '@/utils/grid'
 import WidgetShell from './WidgetShell.vue'
 import type { TodoItem } from '@/types'
 
@@ -28,6 +31,30 @@ const editingText = ref('')
 const editInputRef = ref<HTMLInputElement | null>(null)
 
 const todayStr = new Date().toISOString().slice(0, 10)
+
+/** 本小组件图块（用于读取自定义尺寸） */
+const tile = computed(() => {
+  for (const screen of launcher.screens) {
+    const found = screen.tiles.find((item) => item.id === props.tileId)
+    if (found) return found
+  }
+  return undefined
+})
+
+/** 缩到 1×1 时退化为普通应用图标：点击打开待办弹窗 */
+const isIcon = computed(() => {
+  if (!tile.value) return false
+  const { w, h } = tileSize(tile.value)
+  return w === 1 && h === 1
+})
+
+/** 图标形态的右键菜单（与 WidgetShell 保持一致：调整尺寸 / 移除） */
+function onIconMenu(event: MouseEvent) {
+  ui.openContextMenu(event, [
+    { label: t('screen.menu.resizeTile'), icon: Expand, action: () => ui.enterTileResize(props.tileId) },
+    { label: t('widgets.remove'), icon: Trash2, danger: true, action: () => launcher.removeTile(props.tileId) },
+  ])
+}
 
 const sortedTodos = computed(() => [...launcher.todos].sort((a, b) => a.order - b.order))
 const activeTodos = computed(() => sortedTodos.value.filter((t) => !t.done))
@@ -94,7 +121,22 @@ function formatDate(date?: string): string {
 </script>
 
 <template>
-  <WidgetShell :tile-id="tileId" :title="t('todo.title')">
+  <!-- 1×1 图标形态：外观与快捷方式一致，点击打开待办弹窗 -->
+  <button
+    v-if="isIcon"
+    class="group flex w-full cursor-pointer flex-col items-center gap-1.5 pt-1.5"
+    :title="t('todo.title')"
+    @click="openModal"
+    @contextmenu="onIconMenu"
+  >
+    <div
+      class="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/40 bg-white/40 shadow-md shadow-black/20 backdrop-blur-xl transition-transform duration-150 group-hover:scale-105"
+    >
+      <ListChecks class="h-8 w-8 text-white drop-shadow" />
+    </div>
+    <span class="max-w-full truncate px-1 text-xs text-white drop-shadow">{{ t('todo.title') }}</span>
+  </button>
+  <WidgetShell v-else :tile-id="tileId" :title="t('todo.title')">
     <template #actions>
       <button
         class="theme-subtle-button cursor-pointer rounded p-1 transition-colors"
