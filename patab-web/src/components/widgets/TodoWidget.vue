@@ -15,9 +15,13 @@ import { useUiStore } from '@/stores/ui'
 import { useTodoDrag } from '@/composables/useTodoDrag'
 import { tileSize } from '@/utils/grid'
 import WidgetShell from './WidgetShell.vue'
-import type { TodoItem } from '@/types'
+import type { TileSize, TodoItem } from '@/types'
 
-const props = defineProps<{ tileId: string }>()
+const props = defineProps<{
+  tileId: string
+  /** 商店详情预览用：强制以指定格数尺寸渲染（不依赖真实图块） */
+  previewSize?: TileSize
+}>()
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -43,9 +47,8 @@ const tile = computed(() => {
 
 /** 缩到 1×1 时退化为普通应用图标：点击打开待办弹窗 */
 const isIcon = computed(() => {
-  if (!tile.value) return false
-  const { w, h } = tileSize(tile.value)
-  return w === 1 && h === 1
+  const size = props.previewSize ?? (tile.value ? tileSize(tile.value) : undefined)
+  return !!size && size.w === 1 && size.h === 1
 })
 
 /** 图标形态的右键菜单（与 WidgetShell 保持一致：调整尺寸 / 移除） */
@@ -121,7 +124,8 @@ function formatDate(date?: string): string {
 </script>
 
 <template>
-  <!-- 1×1 图标形态：外观与快捷方式一致，点击打开待办弹窗 -->
+  <!-- 1×1 图标形态：外观与快捷方式一致，点击打开待办弹窗；
+       商店预览（previewSize）时改用主题色，避免白色玻璃样式在浅色预览底上看不清 -->
   <button
     v-if="isIcon"
     class="group flex w-full cursor-pointer flex-col items-center gap-1.5 pt-1.5"
@@ -130,11 +134,17 @@ function formatDate(date?: string): string {
     @contextmenu="onIconMenu"
   >
     <div
-      class="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/40 bg-white/40 shadow-md shadow-black/20 backdrop-blur-xl transition-transform duration-150 group-hover:scale-105"
+      class="flex h-16 w-16 items-center justify-center rounded-2xl border shadow-md transition-transform duration-150 group-hover:scale-105"
+      :class="previewSize
+        ? 'theme-card-icon-bg theme-border'
+        : 'border-white/40 bg-white/40 shadow-black/20 backdrop-blur-xl'"
     >
-      <ListChecks class="h-8 w-8 text-white drop-shadow" />
+      <ListChecks class="h-8 w-8" :class="previewSize ? 'theme-text' : 'text-white drop-shadow'" />
     </div>
-    <span class="max-w-full truncate px-1 text-xs text-white drop-shadow">{{ t('todo.title') }}</span>
+    <span
+      class="max-w-full truncate px-1 text-xs"
+      :class="previewSize ? 'theme-text' : 'text-white drop-shadow'"
+    >{{ t('todo.title') }}</span>
   </button>
   <WidgetShell v-else :tile-id="tileId" :title="t('todo.title')">
     <template #actions>

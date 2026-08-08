@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * ComponentStoreModal —— 从 Dock 打开的组件商店弹窗
- * 负责搜索可添加组件，并把选中的组件添加到当前应用屏幕。
+ * 列表视图：搜索可添加组件，并把选中的组件添加到当前应用屏幕；
+ * 详情视图：点击卡片 / 标题进入，展示组件各尺寸形态与详细信息（左右滑动切换动画）。
  */
 import { computed, ref } from 'vue'
 import { ListTodo } from '@lucide/vue'
@@ -11,6 +12,8 @@ import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
 import ComponentStoreItem from './ComponentStoreItem.vue'
+import ComponentStoreDetail from './ComponentStoreDetail.vue'
+import type { TileSize } from '@/types'
 
 const launcher = useLauncherStore()
 const ui = useUiStore()
@@ -22,9 +25,19 @@ const components = computed(() => [
     id: 'todo',
     title: t('modals.componentStore.todoTitle'),
     description: t('modals.componentStore.todoDescription'),
+    detail: t('modals.componentStore.todoDetail'),
     icon: ListTodo,
+    version: '1.0.0',
+    developer: 'Patab',
   },
 ])
+
+/** 当前打开的详情组件 id；null 表示处于列表视图 */
+const detailId = ref<string | null>(null)
+/** 列表 ↔ 详情 切换动画方向（进入详情向左推进，返回向右退回） */
+const viewTransition = ref<'store-forward' | 'store-back'>('store-forward')
+
+const detailItem = computed(() => components.value.find((item) => item.id === detailId.value) ?? null)
 
 /** 按名称和简介搜索组件，保持商店结果简单可预期 */
 const filteredComponents = computed(() => {
@@ -48,41 +61,102 @@ function addComponent(id: string) {
   if (id === 'todo') launcher.addTodoWidget(screen.id)
   ui.closeModal()
 }
+
+function openDetail(id: string) {
+  viewTransition.value = 'store-forward'
+  detailId.value = id
+}
+
+function closeDetail() {
+  viewTransition.value = 'store-back'
+  detailId.value = null
+}
 </script>
 
 <template>
-  <BaseModal :title="t('modals.componentStore.title')" panel-class="w-[720px] max-h-[86vh] overflow-y-auto" @close="ui.closeModal()">
-    <div class="space-y-5">
-      <input
-        v-model="query"
-        type="search"
-        :placeholder="t('modals.componentStore.searchPlaceholder')"
-        class="theme-input theme-input-border h-11 w-full rounded-2xl border px-4 text-sm outline-none focus:border-sky-400"
-      >
+  <BaseModal :title="detailItem ? '' : t('modals.componentStore.title')" panel-class="w-[720px] max-h-[86vh] overflow-y-auto" @close="ui.closeModal()">
+    <Transition :name="viewTransition" mode="out-in">
+      <div v-if="!detailItem" key="list" class="space-y-5">
+        <input
+          v-model="query"
+          type="search"
+          :placeholder="t('modals.componentStore.searchPlaceholder')"
+          class="theme-input theme-input-border h-11 w-full rounded-2xl border px-4 text-sm outline-none focus:border-sky-400"
+        >
 
-      <div class="grid gap-4 sm:grid-cols-2">
-        <ComponentStoreItem
-          v-for="item in filteredComponents"
-          :key="item.id"
-          :title="item.title"
-          :description="item.description"
-          :icon="item.icon"
-          :added="isAdded(item.id)"
-          @add="addComponent(item.id)"
-        >
-          <template #preview>
-            <div class="pointer-events-none h-full w-full max-w-[270px]">
-              <TodoWidget tile-id="component-store-preview-todo" />
-            </div>
-          </template>
-        </ComponentStoreItem>
-        <div
-          v-if="filteredComponents.length === 0"
-          class="theme-surface theme-muted rounded-[1.75rem] px-4 py-14 text-center text-sm sm:col-span-2"
-        >
-          {{ t('modals.componentStore.empty') }}
+        <div class="grid gap-4 sm:grid-cols-2">
+          <ComponentStoreItem
+            v-for="item in filteredComponents"
+            :key="item.id"
+            :title="item.title"
+            :description="item.description"
+            :icon="item.icon"
+            :added="isAdded(item.id)"
+            @add="addComponent(item.id)"
+            @open="openDetail(item.id)"
+          >
+            <template #preview>
+              <div class="pointer-events-none h-full w-full max-w-[270px]">
+                <TodoWidget tile-id="component-store-preview-todo" />
+              </div>
+            </template>
+          </ComponentStoreItem>
+          <div
+            v-if="filteredComponents.length === 0"
+            class="theme-surface theme-muted rounded-[1.75rem] px-4 py-14 text-center text-sm sm:col-span-2"
+          >
+            {{ t('modals.componentStore.empty') }}
+          </div>
         </div>
       </div>
-    </div>
+
+      <ComponentStoreDetail
+        v-else
+        key="detail"
+        :title="detailItem.title"
+        :version="detailItem.version"
+        :developer="detailItem.developer"
+        :description="detailItem.description"
+        :detail="detailItem.detail"
+        :icon="detailItem.icon"
+        :added="isAdded(detailItem.id)"
+        @back="closeDetail"
+        @add="addComponent(detailItem.id)"
+      >
+        <template #slide="{ size, boxStyle }: { size: TileSize; boxStyle: Record<string, string> }">
+          <div class="pointer-events-none" :style="boxStyle">
+            <TodoWidget tile-id="component-store-preview-todo" :preview-size="size" />
+          </div>
+        </template>
+      </ComponentStoreDetail>
+    </Transition>
   </BaseModal>
 </template>
+
+<style scoped>
+/* 列表 → 详情：详情从右侧滑入，列表向左淡出 */
+.store-forward-enter-active,
+.store-forward-leave-active,
+.store-back-enter-active,
+.store-back-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.store-forward-enter-from {
+  opacity: 0;
+  transform: translateX(48px);
+}
+.store-forward-leave-to {
+  opacity: 0;
+  transform: translateX(-48px);
+}
+
+/* 详情 → 列表：反向退回 */
+.store-back-enter-from {
+  opacity: 0;
+  transform: translateX(-48px);
+}
+.store-back-leave-to {
+  opacity: 0;
+  transform: translateX(48px);
+}
+</style>

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 /**
  * ComponentStoreItem —— 组件商店中的单个可添加条目
- * 上方展示组件预览，下方展示名称、简介和添加按钮；点击行为交给父组件处理。
+ * 上方展示组件预览，下方展示名称、简介和添加按钮；
+ * 点击卡片 / 标题打开详情（open），点击按钮直接添加（add）。
  */
 import type { Component } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -13,12 +14,15 @@ defineProps<{
   added?: boolean
 }>()
 
-const emit = defineEmits<{ add: [] }>()
+const emit = defineEmits<{ add: []; open: [] }>()
 const { t } = useI18n()
 </script>
 
 <template>
-  <article class="theme-glass-panel overflow-hidden rounded-[1.75rem] border">
+  <article
+    class="theme-glass-panel cursor-pointer overflow-hidden rounded-[1.75rem] border transition-transform duration-150 hover:-translate-y-0.5"
+    @click="emit('open')"
+  >
     <div class="theme-card-preview flex h-48 items-center justify-center p-5">
       <slot name="preview" />
     </div>
@@ -38,7 +42,7 @@ const { t } = useI18n()
         type="button"
         class="flex h-10 w-full cursor-pointer items-center justify-center rounded-2xl bg-neutral-900 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50"
         :disabled="added"
-        @click="emit('add')"
+        @click.stop="emit('add')"
       >
         {{ added ? t('modals.componentStore.added') : t('modals.componentStore.addToScreen') }}
       </button>

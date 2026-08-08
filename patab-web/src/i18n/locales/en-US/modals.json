@@ -24,7 +24,16 @@
     "empty": "No matching components",
     "todoTitle": "Todos",
     "todoDescription": "Track what you need to do today",
+    "todoDetail": "Quick add, inline editing, important marks, completed collapsing and long-press drag sorting. Comes in 1×1, 2×2, 3×2 and 4×2 forms; at 1×1 it falls back to an app icon that opens the todo panel on click.",
     "added": "Added",
-    "addToScreen": "Add to screen"
+    "addToScreen": "Add to screen",
+    "back": "Back",
+    "gallery": "Showcase",
+    "about": "About",
+    "descriptionLabel": "Description",
+    "developerLabel": "Developer",
+    "versionLabel": "Version",
+    "prevSlide": "Previous",
+    "nextSlide": "Next"
   }
 }

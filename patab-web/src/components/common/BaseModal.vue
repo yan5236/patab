@@ -31,7 +31,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
           strong
           :class="['modal-card relative w-[420px] max-w-[92vw] rounded-3xl p-6', panelClass]"
         >
-          <h2 class="theme-heading mb-4 text-lg font-semibold">{{ title }}</h2>
+          <h2 v-if="title" class="theme-heading mb-4 text-lg font-semibold">{{ title }}</h2>
           <slot />
           <div v-if="$slots.footer" class="mt-5 flex justify-end gap-2">
             <slot name="footer" />

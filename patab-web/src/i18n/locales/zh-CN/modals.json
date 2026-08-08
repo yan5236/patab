@@ -24,7 +24,16 @@
     "empty": "没找到相关组件",
     "todoTitle": "待办事项",
     "todoDescription": "记录今天要做的事",
+    "todoDetail": "支持快速添加、编辑文本、重要标记、已完成折叠与长按拖拽排序。提供 1×1、2×2、3×2、4×2 多种尺寸形态，缩到 1×1 时会退化为应用图标，点击即可打开待办弹窗。",
     "added": "已添加",
-    "addToScreen": "添加到屏幕"
+    "addToScreen": "添加到屏幕",
+    "back": "返回",
+    "gallery": "组件展示",
+    "about": "简介",
+    "descriptionLabel": "描述",
+    "developerLabel": "开发者",
+    "versionLabel": "版本",
+    "prevSlide": "上一张",
+    "nextSlide": "下一张"
   }
 }
