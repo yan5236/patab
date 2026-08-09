@@ -1,0 +1,19 @@
+{
+  "name": "patab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:web": "pnpm --filter patab-web dev",
+    "dev:intro": "pnpm --filter patab-introduction dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r --if-present test",
+    "type-check": "pnpm -r --if-present type-check"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2",
+    "vitest": "^4.1.9"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  }
+}

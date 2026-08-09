@@ -5,9 +5,11 @@
  * 运行中的业务 action 仍由 launcher store 统一暴露。
  */
 import type {
+  CustomWidgetTile,
   CustomWallpaper,
   LauncherState,
   Shortcut,
+  Tile,
   TodoItem,
   TodoList,
 } from '@/types'
@@ -32,6 +34,89 @@ const DEFAULT_WALLPAPER = '/scenery1.jpg'
 
 /** 旧版本误写的默认壁纸地址，用于无感迁移 */
 const LEGACY_DEFAULT_WALLPAPER = '/scenery1.png'
+
+/**
+ * 判断不可信持久化值是否为可安全读取字段的普通记录。
+ *
+ * localStorage 中的任何值都可能来自旧版本或被手工修改，后续清洗只能在
+ * 通过此判断后访问属性，避免把原型或 null 当作有效图块引用。
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+/**
+ * 清洗轻量自定义组件图块引用，并丢弃缺少稳定组件或实例 id 的无效项。
+ *
+ * 此处不会查询组件仓库，因此格式正确但暂时缺包的引用必须原样保留；
+ * 后续 UI 再据安装目录将其显示为可恢复占位。尺寸复用主屏既有四档规则，
+ * 无效 variant 或 disabled 值只移除该可选字段，不影响有效实例引用。
+ */
+function sanitizeCustomWidgetTile(value: unknown): CustomWidgetTile | null {
+  if (
+    !isRecord(value)
+    || value.type !== 'widget'
+    || value.widgetType !== 'custom'
+    || typeof value.id !== 'string'
+    || typeof value.componentId !== 'string'
+    || typeof value.instanceId !== 'string'
+  ) {
+    return null
+  }
+
+  const id = value.id.trim()
+  const componentId = value.componentId.trim()
+  const instanceId = value.instanceId.trim()
+  if (!id || !componentId || !instanceId) {
+    return null
+  }
+
+  const tile: CustomWidgetTile = {
+    id,
+    type: 'widget',
+    widgetType: 'custom',
+    componentId,
+    instanceId,
+  }
+  if (typeof value.variantId === 'string' && value.variantId.trim()) {
+    tile.variantId = value.variantId.trim()
+  }
+  if (typeof value.disabled === 'boolean') {
+    tile.disabled = value.disabled
+  }
+  if (
+    isRecord(value.size)
+    && typeof value.size.w === 'number'
+    && typeof value.size.h === 'number'
+  ) {
+    tile.size = { w: value.size.w, h: value.size.h }
+  }
+  if (typeof value.col === 'number' && Number.isInteger(value.col) && value.col >= 0) {
+    tile.col = value.col
+  }
+  if (typeof value.row === 'number' && Number.isInteger(value.row) && value.row >= 0) {
+    tile.row = value.row
+  }
+
+  normalizeTileSize(tile)
+  return tile
+}
+
+/**
+ * 将屏幕内的 custom 图块替换为经过形状校验的轻量引用。
+ *
+ * 内置图块保持既有迁移路径不变；只有标记为 custom 的记录会进入本清洗，
+ * 因而旧版 todo/clock 数据及其 config 不会被此功能重写。
+ */
+function sanitizeScreenCustomWidgetTiles(tiles: Tile[]): Tile[] {
+  return tiles.flatMap((tile) => {
+    if (isRecord(tile) && tile.type === 'widget' && tile.widgetType === 'custom') {
+      const sanitized = sanitizeCustomWidgetTile(tile)
+      return sanitized ? [sanitized] : []
+    }
+    return [tile]
+  })
+}
 
 /** 创建一个快捷方式实体 */
 export function buildShortcut(data: { name: string; url: string; iconUrl?: string }): Shortcut {
@@ -209,6 +294,7 @@ export function createInitialLauncherState(): LauncherState {
   initial.todoLists = sanitizeTodoLists(initial.todoLists)
   initial.screens.forEach((screen) => {
     screen.icon = normalizeScreenIcon(screen.icon)
+    screen.tiles = sanitizeScreenCustomWidgetTiles(screen.tiles)
     screen.tiles.forEach((tile) => {
       normalizeTileSize(tile)
       if (tile.type === 'widget' && tile.widgetType === 'clock') {

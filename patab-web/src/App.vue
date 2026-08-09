@@ -4,10 +4,11 @@
  * 负责：壁纸背景、整体布局编排（时钟 → 搜索 → 应用屏幕 → 分页器 → Dock）、
  * 以及全局层的挂载：文件夹弹层 / 右键菜单 / 拖拽幽灵 / 各弹窗
  */
-import { computed, watch } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { Eye } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
+import { useCustomComponentSafetyStore } from '@/stores/customComponentSafety'
 import { useUiStore } from '@/stores/ui'
 import ClockDisplay from '@/components/topbar/ClockDisplay.vue'
 import SearchBar from '@/components/topbar/SearchBar.vue'
@@ -24,13 +25,18 @@ import ComponentStoreModal from '@/components/modals/ComponentStoreModal.vue'
 import TodoModal from '@/components/modals/TodoModal.vue'
 import ClockTypePickerModal from '@/components/modals/ClockTypePickerModal.vue'
 import ClockDetailModal from '@/components/modals/ClockDetailModal.vue'
+import CustomComponentFeedbackHost from '@/components/custom-components/CustomComponentFeedbackHost.vue'
+import CustomComponentSurfaceHost from '@/components/custom-components/CustomComponentSurfaceHost.vue'
 import { useThemeMode } from '@/composables/useThemeMode'
 import { resolveAssetPath } from '@/utils/assetPath'
 
 const launcher = useLauncherStore()
+const componentSafety = useCustomComponentSafetyStore()
 const ui = useUiStore()
 const { t } = useI18n()
 useThemeMode(computed(() => launcher.settings.themeMode))
+componentSafety.beginInitialBoot()
+if (componentSafety.globalSafeMode) launcher.setAllCustomWidgetsDisabled(true)
 
 const wallpaperStyle = computed(() => ({
   backgroundImage: `url(${resolveAssetPath(launcher.settings.wallpaper)})`,
@@ -87,6 +93,11 @@ watch(
     }
   },
 )
+
+/** 子图块已完成首次登记后再允许安全状态机清除 pending，避免异步握手尚未开始就丢失崩溃恢复信号。 */
+onMounted(() => {
+  componentSafety.finishInitialRegistration()
+})
 </script>
 
 <template>
@@ -145,6 +156,8 @@ watch(
       :tile-id="ui.modal.tileId"
     />
     <ClockDetailModal v-if="ui.modal?.type === 'clock-detail'" :tile-id="ui.modal.tileId" />
+    <CustomComponentFeedbackHost />
+    <CustomComponentSurfaceHost />
   </div>
 </template>
 

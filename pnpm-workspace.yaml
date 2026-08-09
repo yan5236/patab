@@ -1,0 +1,5 @@
+packages:
+  - 'patab-web'
+  - 'patab-web/packages/*'
+  - 'patab-web/examples/*'
+  - 'patab-introduction'

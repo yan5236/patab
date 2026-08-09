@@ -6,8 +6,20 @@
   "chrome_url_overrides": {
     "newtab": "index.html"
   },
+  "sandbox": {
+    "pages": [
+      "custom-component-sandbox.html"
+    ]
+  },
+  "content_security_policy": {
+    "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'"
+  },
   "host_permissions": [
     "https://api.bing.com/*"
+  ],
+  "optional_host_permissions": [
+    "https://*/*",
+    "https://permission-spike.patab.example/*"
   ],
   "icons": {
     "16": "logo.png",

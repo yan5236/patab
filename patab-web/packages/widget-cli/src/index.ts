@@ -1,0 +1,7 @@
+export { runPatabWidgetCli } from './cli.js'
+export { generateWidgetKeyPair, signWidgetPackage } from './keys.js'
+export { checkWidgetProject, createDeterministicWidgetZipForTest, inspectWidgetPackage, packWidgetProject } from './packageCommands.js'
+export { startWidgetSimulator } from './simulator.js'
+export { buildWidgetSurfaces } from './surfaceBuild.js'
+export type { PackWidgetProjectOptions, WidgetPackageSummary } from './packageCommands.js'
+export type { StartWidgetSimulatorOptions } from './simulator.js'

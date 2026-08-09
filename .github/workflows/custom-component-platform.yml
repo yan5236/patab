@@ -1,0 +1,78 @@
+name: Custom component platform CI
+
+on:
+  pull_request:
+    paths:
+      - 'patab-web/**'
+      - 'docs/**'
+      - 'specs/001-custom-component-platform/**'
+      - '.github/workflows/custom-component-platform.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'patab-web/**'
+      - 'docs/**'
+      - 'specs/001-custom-component-platform/**'
+      - '.github/workflows/custom-component-platform.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify custom component platform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.3
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.12.0
+          cache: pnpm
+          cache-dependency-path: patab-web/pnpm-lock.yaml
+
+      - name: 安装锁定依赖
+        working-directory: patab-web
+        run: pnpm install --frozen-lockfile
+
+      - name: 类型检查、单元与集成测试
+        working-directory: patab-web
+        run: |
+          pnpm type-check
+          pnpm exec vitest run --no-file-parallelism
+          pnpm --filter @patab/widget-sdk type-check
+          pnpm --filter @patab/widget-sdk test
+          pnpm --filter @patab/widget-sdk build
+          pnpm --filter @patab/widget-package type-check
+          pnpm --filter @patab/widget-package test
+          pnpm --filter @patab/widget-package build
+          pnpm --filter @patab/widget-cli type-check
+          pnpm --filter @patab/widget-cli test
+          pnpm --filter @patab/widget-cli build
+          pnpm --filter create-patab-widget type-check
+          pnpm --filter create-patab-widget test
+          pnpm --filter create-patab-widget build
+
+      - name: Web 与 MV3 生产构建
+        working-directory: patab-web
+        run: |
+          pnpm build
+          pnpm build:extension
+
+      - name: 官方示例、确定性 ZIP 与签名验证
+        working-directory: patab-web
+        run: node scripts/verify-widget-examples.mjs
+
+      - name: 官方示例的网页导入契约
+        working-directory: patab-web
+        run: pnpm exec vitest run src/custom-components/import/examplePackageImport.spec.ts

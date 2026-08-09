@@ -1,4 +1,12 @@
+node_modules
+dist
+dist-extension
+.pnpm-store
+*.tsbuildinfo
+
 .agents/skills/*
 .claude/skills/*
 .project-memory/*
 .reference/*
+decisions
+specs

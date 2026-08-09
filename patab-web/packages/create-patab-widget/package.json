@@ -1,0 +1,27 @@
+{
+  "name": "create-patab-widget",
+  "version": "1.0.0",
+  "description": "PaTab 自定义组件项目脚手架",
+  "type": "module",
+  "bin": {
+    "create-patab-widget": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "type-check": "tsc --project tsconfig.build.json --noEmit",
+    "test": "vitest run --config vitest.config.ts"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  },
+  "dependencies": {
+    "@patab/widget-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "vitest": "^4.1.9"
+  }
+}

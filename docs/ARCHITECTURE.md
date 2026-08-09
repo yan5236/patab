@@ -11,29 +11,50 @@ flowchart TD
   Stores --> Types["types 全局类型"]
   Stores --> Utils["utils 纯工具"]
   Stores --> Storage["localStorage: patab:v1"]
+  Components --> ComponentStore["组件商店审查 UI"]
+  ComponentStore --> ComponentStoreState["customComponents Store"]
+  ComponentStoreState --> ComponentRepository["IndexedDB: 自定义组件包"]
   Build["Vite 双构建"] --> Web["网页版 dist"]
   Build --> Extension["Chrome/Edge MV3 dist-extension"]
 ```
 
 ## 模块职责
 
+- 仓库根目录是 pnpm workspace 根：成员为 `patab-web`、`patab-web/packages/*`、`patab-web/examples/*`、`patab-introduction`，统一使用根目录 `pnpm-lock.yaml`，依赖安装只在根目录执行。
 - `patab-web/src/App.vue`：根组件，负责壁纸、主布局和全局弹层挂载。
 - `patab-web/src/components/`：界面组件，按 common、dock、modals、screen、settings、topbar、widgets 拆分。
 - `patab-web/src/components/common/AppDropdown.vue`：全局通用单选下拉框，设置语言等需要统一视觉的选择项优先复用它。
 - `patab-web/src/components/common/AppLucideIcon.vue`：按持久化名称渲染应用屏幕的 Lucide 图标；常用图标同步渲染，非常用图标按需加载。
 - `patab-web/src/components/modals/ScreenIconPicker.vue`：提供完整 Lucide 图标目录的搜索与分批渲染，通过异步组件仅在打开时加载，不直接读写 store。
 - `patab-web/src/i18n/`：Vue I18n 实例、语言清洗工具和按模块拆分的中英文 JSON 翻译资源。
+- `patab-web/packages/widget-sdk/`：无 Vue/Pinia 依赖的 API v1 contracts、MessageChannel 客户端、主题 token 与测试 Mock；公开版本独立于宿主应用。
+- `patab-web/packages/widget-package/`：宿主与 CLI 共用的 ZIP 中央目录、解压、文件集、完整性与签名规则；不得用第二套 ZIP 库复制语义。
+- `patab-web/packages/widget-cli/` 与 `packages/create-patab-widget/`：脚手架及 check/build/dev/pack/inspect/keygen 工具链；CLI 只构建和审查静态产物，不能执行导入组件源码。
+- `patab-web/examples/`：Vue 与 Vanilla TypeScript 的公开示例；CI 对其 check/build、确定性双 pack、签名和宿主导入契约执行回归。
 - `patab-web/src/stores/launcher.ts`：持久业务状态门面，创建状态、组装领域 action，并保留组件调用的稳定 API。
 - `patab-web/src/stores/launcherState.ts`：launcher 默认数据、localStorage 读取和旧数据兼容清洗。
 - `patab-web/src/stores/launcherPlacement.ts`：launcher 主屏坐标落位、清坐标和紧凑回填辅助。
 - `patab-web/src/stores/launcherQueries.ts`：launcher 屏幕、文件夹、快捷方式和容器的只读查询。
 - `patab-web/src/stores/launcherTiles.ts`：launcher 快捷方式、文件夹、小组件、屏幕和 Dock 的业务动作。
-- `patab-web/src/stores/launcherTodos.ts`：launcher 待办条目和待办列表的业务动作。
+- `patab-web/src/stores/launcherTodos.ts`：launcher 待办条目和待办列表的业务动作，并发布不含待办正文的领域变化事件。
 - `patab-web/src/stores/launcherDrop.ts`：launcher 拖拽落点、批量拖拽和跨容器移动规则。
 - `patab-web/src/stores/launcherSettings.ts`：launcher 设置补丁写入入口，包含持久化的纯净模式状态。
 - `patab-web/src/stores/ui.ts`：全局 UI 状态，管理弹窗、菜单等临时界面状态。
 - `patab-web/src/stores/drag.ts`：拖拽过程状态。
+- `patab-web/src/stores/customComponents.ts`：自定义组件导入、静态审查、权限/网络来源确认和已安装目录的唯一 UI 门面；组件不得绕过它读取 IndexedDB。
 - `patab-web/src/composables/`：复杂交互逻辑，例如拖拽、网格翻转、时间刷新。
+- `patab-web/src/composables/useCustomComponentImport.ts`：浏览器文件选择后 ZIP Worker 的可取消编排，输入只会进入静态审查。
+- `patab-web/src/custom-components/import/`：解压结果的 Manifest、文件集、完整性、签名和跨字段静态校验；该层不创建 DOM 或执行 package surface。
+- `patab-web/src/custom-components/repository/`：自定义组件 IndexedDB Schema、包、实例私有存储、运行健康与完整卸载事务；不依赖 Vue/Pinia。健康记录复用既有 `runtimeHealth` store，卸载只允许一个覆盖包、grant、版本、文件、数据、健康和 staged 快照的 `readwrite` 事务。
+- `patab-web/src/custom-components/updates/`：更新授权 diff、staged 私有存储、迁移/离屏健康编排和最终提交事务；它只复用 Repository 与页面唯一 `SandboxRuntime`，不另建会话或权限表。
+- `patab-web/src/custom-components/runtime/`：按已锁定的 `SandboxAdapter` 接口隔离 Web `srcdoc` 与 MV3 固定 Manifest sandbox page 差异；`surfaceHtml` 只做惰性结构检查、生产 CSP、最早执行的握手/ESC 桥接与公开 `--pt-*` token 注入，Adapter 只负责 iframe、握手端口和幂等销毁，Broker 是唯一 RPC/事件分发边界，按会话限制请求与异步消息体积并调用实时权限检查；`runtimeHost`、`surfaceHost` 只复用页面唯一 Runtime 与根层 modal 协调器。
+- `patab-web/src/custom-components/capabilities/context.ts`：组装安装快照并把 theme、locale、size、variant、visibility 变化限制为 SDK 公共 DTO；Runtime 可按实例或单 surface 广播，context.get 始终返回副本。
+- `patab-web/src/custom-components/capabilities/storage.ts` 与 `repository/instanceStorageRepository.ts`：storage RPC 只能由 Broker session 派生 `(componentId, instanceId)` 范围；Repository 在 1 MiB 配额内原子提交，提交后仅广播键名和操作类型。
+- `patab-web/src/custom-components/capabilities/channel.ts`：页面级 Hub 只向同一组件与同一 `instanceId` 的已订阅 surface 广播纯 JSON、64 KiB 内的复制消息；Runtime 销毁时统一注销订阅。
+- `patab-web/src/custom-components/capabilities/ui.ts`、`external.ts` 与 `components/custom-components/CustomComponentFeedbackHost.vue`：toast/confirm 仅经 PaTab 宿主反馈层渲染并标识第三方来源；外链要求实时用户手势、HTTPS 和宿主来源确认，随后只以 `noopener,noreferrer` 新标签页打开。
+- `patab-web/src/custom-components/capabilities/todos.ts`：把 launcher 待办动作转换为最小公开 DTO、公开 ID 游标分页和去抖变化订阅；仅接收注入的动态权限检查与领域动作，不读取 Pinia 或返回内部引用。
+- `patab-web/src/custom-components/capabilities/networkPolicy.ts`、`network.ts` 与 `networkAdapters.ts`：先把 RPC DTO 复制为无用户信息、无本机/裸 IP、无危险端口和危险头的精确 HTTPS origin；随后由既有 Broker/Repository grant 校验，再按 Web CORS 或 MV3 精确 host permission 执行受限 fetch，适配器不记录请求正文、Authorization 或浏览器原始异常。`network-capability-probe.html` 是两端真实 adapter 的独立验收入口，不参与日常 App 页面。
+- `patab-web/src/components/custom-components/`：第三方导入入口、错误、安装前审查、权限确认、目录卡片、缺包/停用图块占位、`CustomWidgetHost` 与受控 surface/variant modal；只接收 Store 投影的数据，WidgetShell、标题、拖拽、缩放、焦点、ESC 和移动端尺寸始终由宿主拥有。
 - `patab-web/src/types/index.ts`：跨组件共享的数据结构。
 - `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
 - `patab-web/src/utils/runtimeEnvironment.ts`：识别当前运行在网页版还是 Chrome/Edge 扩展页。
@@ -71,12 +92,31 @@ flowchart TD
 4. `launcher` store 通过防抖写入 `localStorage`。
 5. 组件响应式刷新界面。
 
+第三方组件导入额外遵循：本地文件 → 流式 ZIP Worker → 静态 Manifest/素材/完整性/签名审查 → 用户确认权限与精确网络来源 → Repository 原子写包 → launcher 创建轻量实例引用。审查页不得创建 iframe、插入 package HTML 或执行 surface；`patab:v1` 仅保存实例引用，包与授权保存在独立 IndexedDB。
+
+第三方组件运行时边界由阶段 0 锁定并已在阶段 5 落地：Web 使用唯一 `srcdoc` + `sandbox="allow-scripts"` iframe；MV3 使用固定 Manifest sandbox page，再创建唯一同属性内层 iframe。两端只向 Runtime 返回校验 source 与随机会话令牌后的 `MessagePort` 和幂等销毁句柄，Capability Broker 不感知环境分支；运行时每次调用均重新读取活动版本的 grant，能力实现仍按后续阶段注入。
+
+同 ID 高版本更新先以新旧 Manifest 的权限/origin 差异预填仍声明的旧 grant，新增项保持未授权并由用户重新确认。确认后仅写 staged 包和完整实例快照；migration 与离屏 widget 健康检查复用 Runtime 的 Adapter/CSP/MessageChannel/Broker，但只允许 context、staged storage 和内部完成信号，单实例上限五秒。全部通过后，单个 IndexedDB 事务替换 activeVersion、活动 instanceData 与 grant，并只保留一个上一成功版本；任一步失败删除 staged 内容，旧包、数据和授权不变。
+
+运行恢复遵循单一数据流：根 App 在任何第三方 iframe 创建前恢复/写入本次 `pending`，所有初始图块完成或隔离后才清除；连续三次遗留标记进入全局安全模式并同步停用 launcher 轻量引用。Runtime 的握手失败和 Broker 洪泛通过注入的健康报告器写回同一 `runtimeHealth` 表，单实例 24 小时内第三次失败才由 Runtime host 停用引用。手动重新启用先清健康摘要；安全模式退出不自动执行旧组件。卸载 UI 只通过 `useCustomComponentStore` 获取只读预览，Repository 提交成功后才销毁 session 并移除 launcher 引用。
+
+`network.fetch` 只能走同一 Capability Broker：策略层规范化 URL 和头字段后，Repository 权限源按当前活动 Manifest 的精确 origin 重查 grant；Web 固定使用 CORS、`credentials: 'omit'`、`referrerPolicy: 'no-referrer'` 与 `redirect: 'error'`，MV3 在每次 fetch 前再调用 `chrome.permissions.contains` 检查 `${origin}/*`。两端共用 10 秒、2 MiB 响应和 Broker 每实例 4 个网络未完成请求上限。
+
 设置弹窗不保留待提交草稿：子面板通过 `v-model` 上报变更，`SettingsModal.vue` 立即调用 `launcher.updateSettings()`，语言另同步到 `vue-i18n`。关闭弹窗只结束编辑，不回滚已生效选项。
 
 ## 当前状态
 
 - 已完成：主屏幕、Dock、文件夹、搜索、搜索引擎管理、组件商店、待办小组件、设置弹窗、壁纸、时钟日期显示、中英文界面语言、拖拽和 localStorage 持久化。
 - 已完成：Chrome/Edge Manifest V3 新标签页扩展构建，扩展版与网页版共享同一套 Vue 源码。
+- 已完成：自定义组件阶段 0 的 Web/MV3 sandbox、统一 CSP、精确可选主机权限真实浏览器硬关卡与 `SandboxAdapter` 设计锁定。
+- 已完成：自定义组件阶段 5 的生产 Surface HTML 惰性审查/CSP 注入、Web/MV3 Adapter、MessageChannel 生命周期、结构化 Broker、配额和实时 grant 检查；Web 与 MV3 的真实运行时隔离探针均通过。
+- 已完成：自定义组件阶段 6 的 context/lifecycle、实例存储与变化事件、同实例通道、第三方标识宿主 toast/confirm 及有效手势安全外链；这些能力均复用唯一 Broker 与 Repository，并已在 Web/MV3 真实探针验证。
+- 已完成：自定义组件阶段 7 的 1×1 零执行 `CustomWidgetHost`、Manifest 尺寸与 variant 原生选择、单例根层 detail/settings modal、`ui.openSurface/closeSurface/openVariantPicker`、公开 `--pt-*`/`pt-*` 主题契约与 theme/locale/reduced-motion 生命周期同步；Web 与真实 MV3 均验证 sandbox surface、ESC 与焦点恢复。
+- 已完成：自定义组件阶段 8.3–8.6 的受控网络能力。`network.fetch` 复用既有 Broker、Repository grant 和 SDK 错误码，拒绝危险地址/端口/头字段；Web 仅通过无凭据 CORS fetch，MV3 仅以安装确认用户手势申请和每次调用重查的精确可选 host permission 访问。聚焦与全量安全测试覆盖超时、2 MiB、重定向、并发、CORS、撤销与脱敏。
+- 已完成：自定义组件阶段 4 的 ZIP 导入入口、安装前静态详情、权限/网络来源确认、已安装目录、多实例添加和缺包/停用占位。
+- 已完成：自定义组件阶段 9 更新链路。高 SemVer 仅进入授权 diff 审查；受限 staged migration、全部实例离屏健康检查、activeVersion/data/grants 单事务切换、一个回滚包保留与中断清理已由 Repository/Runtime 共同实现。2026-08-08 使用 CFT Chromium-1217 的 Playwright 独立临时 profile 实测 Web 6109 与 MV3 `dist-extension` 的 `component-update-probe.html`：两端均报告 `activeVersion=1.1.0`、`rollbackVersion=1.0.0`、`failedUpdatePreserved=true`、`storagePreserved=true`、`status=passed`，且无 console/page error。
+- 已完成：自定义组件阶段 10 的 24 小时健康累计、第三次握手/洪泛自动停用、跨启动 pending 和三次安全模式、零 iframe 安全 UI、二次确认完整卸载。2026-08-09 Chrome CFT 151 真实 Web 6109 与加载 `dist-extension` 的 MV3 `recovery-uninstall-probe.html` 均报告握手/洪泛停用、安全模式零 iframe、取消保留和确认原子删除为 `true`，`status=passed`。
+- 已实现：自定义组件阶段 11 的 `@patab/widget-sdk` MessageChannel/API/testing 公开模块、Vue/Vanilla 官方脚手架、`create-patab-widget` 与 `patab-widget` 工具链。CLI 只复用 SDK Schema 和 `@patab/widget-package` 的文件集、完整性、签名与 ZIP 规则；Vite 对每个 Manifest surface 独立构建，最终 HTML 只能保留内联或 data URL 资源，并拒绝动态导入、外链、开发客户端和 source map。开发模拟器只在 loopback Vite server 上向 opaque `allow-scripts` iframe 回显 `Origin: null` 的源码/HMR CORS，生产 check/pack 不携带该开发端点；真实 Linux CLI 验收仍依赖可用 Linux runner。
 - 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策、文档和更新日志二级页。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。
@@ -88,6 +128,9 @@ flowchart TD
 - 新 UI 只放到对应 `components/` 子目录，不把业务堆进 `App.vue`。
 - 新 UI 开发默认先拆成可复用组件，页面层只负责组合和传参。
 - 新增小组件默认从 Dock 右侧的组件商店进入；组件商店使用“真实小组件预览 + 名称简介 + 添加按钮”的商品卡，桌面空白右键菜单只保留屏幕管理与壁纸等基础操作。
+- 第三方组件 UI 只可调用 `useCustomComponentStore` 和 launcher action；不得直接访问自定义组件 IndexedDB、渲染 package HTML 或在安装前创建 iframe。所有导入错误只展示稳定码映射与安全 ZIP 相对路径/Manifest JSON Pointer。
+- 待办 Capability 只通过注入的 launcher 领域动作读写；每个 `todos.*` 方法在调用时重查对应 grant，公开响应与变化事件不得包含列表归属、排序、Pinia 响应式对象或待办正文之外的内部字段。
+- 网络 Capability 只接受 SDK 网络 DTO，必须先经 `networkPolicy` 复制和规范化，再由既有 Broker 的精确 Repository origin grant 放行；禁止增加代理、第二套权限表或日志中拼接 URL、Authorization、正文、Response body 或原始 fetch/Chrome 异常。
 - 新持久化字段必须更新 `types/index.ts`、默认数据、兼容逻辑和相关测试。
 - 应用屏幕图标持久化 Lucide 图标名称；渲染统一复用 `AppLucideIcon`，旧 Emoji 在 launcher 初始化时由 `screenIcons.ts` 自动迁移；完整图标目录必须保持单个异步共享包，禁止重新从 `@lucide/vue` 根入口导入全部 `icons`，也不能重新生成每图标一个请求的部署产物。
 - `launcher.ts` 后续只作为持久业务状态门面；新增查询、图块、待办、拖拽、设置、默认数据、迁移或坐标规则时优先放入现有同目录领域模块，不要继续堆回 store 主文件。

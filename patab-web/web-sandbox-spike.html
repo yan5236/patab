@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PaTab Web 沙箱实验</title>
+  </head>
+  <body>
+    <main>
+      <h1>PaTab Web 沙箱实验</h1>
+      <p>此页面只用于阶段 0.1，验证 opaque origin、MessageChannel 握手与五秒超时。</p>
+      <button id="run-isolation" type="button">运行隔离探测</button>
+      <button id="run-timeout" type="button">运行五秒超时探测</button>
+      <pre id="result" aria-live="polite">等待运行</pre>
+      <div id="sandbox-host" hidden></div>
+    </main>
+    <script type="module" src="/src/custom-components/spikes/webSandboxBrowserProbe.ts"></script>
+  </body>
+</html>

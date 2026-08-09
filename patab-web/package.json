@@ -1,5 +1,5 @@
 {
-  "name": "patab",
+  "name": "patab-web",
   "version": "0.2.0",
   "private": true,
   "type": "module",
@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@lucide/vue": "^1.23.0",
+    "@patab/widget-package": "workspace:*",
+    "@patab/widget-sdk": "workspace:*",
     "@tailwindcss/vite": "^4.3.2",
     "motion-v": "^2.3.0",
     "pinia": "^3.0.4",
@@ -25,11 +27,13 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
+    "@rolldown/binding-win32-x64-msvc": "1.1.4",
     "@types/jsdom": "^28.0.3",
     "@types/node": "^24.13.2",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.9.1",
+    "fake-indexeddb": "^6.2.5",
     "jsdom": "^29.1.1",
     "npm-run-all2": "^9.0.2",
     "typescript": "~6.0.0",

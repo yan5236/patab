@@ -86,17 +86,47 @@ export interface ClockConfig {
   timer: TimerState
 }
 
-/** 小组件图块（在网格中占多格的功能卡片） */
-export interface WidgetTile extends GridPos {
+/** 内置小组件图块（在网格中占多格的功能卡片） */
+export interface BuiltinWidgetTile extends GridPos {
   id: string
   type: 'widget'
-  /** 小组件种类 */
+  /** 内置小组件种类 */
   widgetType: 'todo' | 'clock'
   /** 自定义尺寸（格数），缺省 3×2 */
   size?: TileSize
   /** 时钟小组件的类型与运行状态（仅 widgetType === 'clock' 时存在） */
   config?: ClockConfig
 }
+
+/**
+ * 第三方自定义组件的轻量主状态引用。
+ *
+ * Manifest、权限、HTML 与私有数据只存在组件仓库；主状态仅保留该引用，
+ * 以便包暂时缺失时后续清洗逻辑仍能渲染占位并提供重新导入入口。
+ */
+export interface CustomWidgetTile extends GridPos {
+  id: string
+  type: 'widget'
+  /** 区分内置卡片和经 sandbox 执行的第三方组件。 */
+  widgetType: 'custom'
+  /** 已安装组件的稳定 Manifest id。 */
+  componentId: string
+  /** 同一组件多实例之间隔离私有数据的稳定 id。 */
+  instanceId: string
+  /** 宿主原生类型选择器当前保存的 Manifest variant id。 */
+  variantId?: string
+  /** 已确认的自定义组件尺寸；具体合法性由后续清洗与 Manifest 适配层校验。 */
+  size?: TileSize
+  /** 运行时健康策略停用实例时的持久标记。 */
+  disabled?: boolean
+  /**
+   * 明确禁止自定义组件持久化内置时钟配置，同时保持既有共用 widget 读取逻辑可安全识别该字段不存在。
+   */
+  config?: never
+}
+
+/** 保留内置图块与自定义组件图块的可判别联合，供主屏、拖拽和持久化共用。 */
+export type WidgetTile = BuiltinWidgetTile | CustomWidgetTile
 
 /** 应用屏幕网格中的一个图块 */
 export type Tile = Shortcut | Folder | WidgetTile
@@ -266,4 +296,8 @@ export type ModalState =
   | { type: 'clock-type-picker'; screenId?: string; tileId?: string }
   /** 时钟小组件详情弹窗（1×1 图标形态点开） */
   | { type: 'clock-detail'; tileId: string }
+  /** 第三方组件 detail/settings surface；iframe 会在关闭时由宿主销毁。 */
+  | { type: 'custom-component-surface'; componentId: string; instanceId: string; surface: 'detail' | 'settings' }
+  /** 第三方组件类型选择器；选项只读取已验证 Manifest 静态元数据。 */
+  | { type: 'custom-component-variant-picker'; componentId: string; instanceId?: string; screenId?: string }
   | null

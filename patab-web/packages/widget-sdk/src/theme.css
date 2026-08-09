@@ -1,0 +1,95 @@
+/*
+ * PaTab 自定义组件公开主题契约 v1。
+ *
+ * 宿主会在每个 sandbox 文档的 :root 注入 --pt-* token；本文件只消费公开 token，
+ * 绝不引用宿主内部 theme-* 变量或 Tailwind 工具类。组件可以直接 import 此文件，
+ * 也可以只复用其中的 pt-* 语义类。
+ */
+
+:root {
+  color: var(--pt-text);
+  background: var(--pt-surface);
+  color-scheme: var(--pt-color-scheme, light);
+  font-family: var(--pt-font-sans, system-ui, sans-serif);
+}
+
+.pt-surface {
+  color: var(--pt-text);
+  background: var(--pt-surface);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-md);
+  box-shadow: var(--pt-shadow);
+}
+
+.pt-surface-strong {
+  color: var(--pt-text);
+  background: var(--pt-surface-strong);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  box-shadow: var(--pt-shadow);
+}
+
+.pt-text {
+  color: var(--pt-text);
+}
+
+.pt-text-strong {
+  color: var(--pt-text-strong);
+}
+
+.pt-text-muted {
+  color: var(--pt-text-muted);
+}
+
+.pt-button,
+.pt-input {
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-sm);
+  transition:
+    background-color var(--pt-motion-duration) var(--pt-motion-easing),
+    border-color var(--pt-motion-duration) var(--pt-motion-easing),
+    color var(--pt-motion-duration) var(--pt-motion-easing),
+    transform var(--pt-motion-duration) var(--pt-motion-easing);
+}
+
+.pt-button {
+  color: var(--pt-accent-contrast);
+  background: var(--pt-accent);
+  cursor: pointer;
+}
+
+.pt-button:hover {
+  background: var(--pt-accent-hover);
+}
+
+.pt-button:active {
+  transform: translateY(1px);
+}
+
+.pt-input {
+  box-sizing: border-box;
+  color: var(--pt-text);
+  background: var(--pt-input);
+}
+
+.pt-focus-ring:focus-visible,
+.pt-button:focus-visible,
+.pt-input:focus-visible {
+  outline: 2px solid var(--pt-focus-ring);
+  outline-offset: 2px;
+}
+
+.pt-danger {
+  color: var(--pt-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

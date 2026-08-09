@@ -5,8 +5,19 @@
  * 不处理拖拽落点分支，拖拽统一放在 launcherDrop。
  */
 import type { Ref } from 'vue'
-import type { ClockType, Folder, Screen, Settings, Shortcut, ShortcutTarget, Tile } from '@/types'
+import type {
+  ClockType,
+  CustomWidgetTile,
+  Folder,
+  Screen,
+  Settings,
+  Shortcut,
+  ShortcutTarget,
+  Tile,
+  TileSize,
+} from '@/types'
 import { colorForName, normalizeUrl } from '@/utils/favicon'
+import { isAllowedSize, layoutScreen } from '@/utils/grid'
 import { defaultClockConfig } from '@/utils/clock'
 import { createId } from '@/utils/id'
 import { buildShortcut } from './launcherState'
@@ -155,6 +166,161 @@ export function createLauncherTileActions({
     tile.config = defaultClockConfig(clockType)
   }
 
+  /**
+   * 按 id 查找自定义组件图块引用，且绝不把内置 todo/clock 图块误当作第三方实例修改。
+   *
+   * 该函数只操作 launcher 的轻量引用，不读取组件仓库；因此调用方可据返回值决定
+   * 是否显示缺包占位或重新导入入口，而不会在主状态中混入 Manifest 与私有数据。
+   */
+  function findCustomWidget(tileId: string): CustomWidgetTile | undefined {
+    const container = findContainerOf(tileId)
+    const tile = container?.find((item) => item.id === tileId)
+    return tile?.type === 'widget' && tile.widgetType === 'custom' ? tile : undefined
+  }
+
+  /**
+   * 在指定主屏创建一个新的自定义组件实例引用，并交给既有网格规则安排位置。
+   *
+   * 同一 componentId 每次均生成独立 instanceId，因此后续组件仓库可以为每个实例
+   * 分配独立私有存储；此层不检查包是否存在、Manifest variants 或权限，只拒绝空 id
+   * 与当前主屏不支持的尺寸，避免把不可信 UI 输入写入持久化主状态。
+   */
+  function addCustomWidget(
+    screenId: string,
+    input: { componentId: string; variantId?: string; size?: TileSize },
+  ): CustomWidgetTile | undefined {
+    const screen = findScreen(screenId)
+    const componentId = input.componentId.trim()
+    if (!screen || !componentId) return undefined
+
+    const widget: CustomWidgetTile = {
+      id: createId(),
+      type: 'widget',
+      widgetType: 'custom',
+      componentId,
+      instanceId: createId(),
+    }
+    const variantId = input.variantId?.trim()
+    if (variantId) {
+      widget.variantId = variantId
+    }
+    if (input.size && isAllowedSize(widget, input.size)) {
+      widget.size = { ...input.size }
+    }
+
+    screen.tiles.push(widget)
+    placeOnScreen(screen, widget)
+    return widget
+  }
+
+  /**
+   * 更新已存在自定义组件实例的 variant 引用；传入空值时清除可选 variant。
+   *
+   * Manifest 是否存在该 variant 由后续组件目录与 UI 层确认，此处仅保持主状态引用
+   * 的结构正确并返回操作是否命中了 custom 图块，避免误改内置小组件。
+   */
+  function updateCustomWidgetVariant(tileId: string, variantId?: string): boolean {
+    const widget = findCustomWidget(tileId)
+    if (!widget) return false
+
+    const normalizedVariantId = variantId?.trim()
+    if (normalizedVariantId) {
+      widget.variantId = normalizedVariantId
+    } else {
+      delete widget.variantId
+    }
+    return true
+  }
+
+  /**
+   * 更新自定义组件的主屏尺寸，复用现有小组件四档尺寸和布局约束。
+   *
+   * 传入 undefined 时回到宿主默认尺寸；非法尺寸不会修改现有引用，以免 UI 传入
+   * 未经 Manifest 允许或越出网格的值后导致布局状态损坏。
+   */
+  function updateCustomWidgetSize(tileId: string, size?: TileSize): boolean {
+    const widget = findCustomWidget(tileId)
+    if (!widget) return false
+    if (!size) {
+      delete widget.size
+      return true
+    }
+    if (!isAllowedSize(widget, size)) return false
+
+    widget.size = { ...size }
+    const screen = findScreenOf(tileId)
+    if (screen) {
+      layoutScreen(screen)
+    }
+    return true
+  }
+
+  /**
+   * 持久化自定义组件实例的停用状态，供运行时健康策略和用户手动恢复共用。
+   *
+   * 状态仅落在轻量引用；实际失败原因、计数和安全模式信息仍由后续仓库与安全服务管理。
+   */
+  function setCustomWidgetDisabled(tileId: string, disabled: boolean): boolean {
+    const widget = findCustomWidget(tileId)
+    if (!widget) return false
+
+    widget.disabled = disabled
+    return true
+  }
+
+  /**
+   * 批量更新全部第三方实例的停用标记。
+   *
+   * 全局安全模式恢复时调用此动作，将每个引用显式隔离；退出安全模式后不会自动反转，用户必须在
+   * 管理界面逐个重新启用可信实例，避免一次恢复重新执行所有曾阻断启动的包。
+   */
+  function setAllCustomWidgetsDisabled(disabled: boolean): number {
+    let changed = 0
+    for (const screen of screens.value) {
+      for (const tile of screen.tiles) {
+        if (tile.type !== 'widget' || tile.widgetType !== 'custom' || tile.disabled === disabled) continue
+        tile.disabled = disabled
+        changed += 1
+      }
+    }
+    return changed
+  }
+
+  /**
+   * 移除指定自定义组件的 launcher 引用，不删除组件包、权限或实例私有数据。
+   *
+   * 完整卸载事务将在后续组件管理任务统一清理仓库内容；这里仅保留用户从主屏移除
+   * 单个实例引用的既有语义，并拒绝对内置图块执行该专用动作。
+   */
+  function removeCustomWidget(tileId: string): boolean {
+    if (!findCustomWidget(tileId)) return false
+    removeTile(tileId)
+    return true
+  }
+
+  /**
+   * 删除某组件的全部轻量实例引用。
+   *
+   * 该动作只在 IndexedDB 完整卸载事务成功后由组件管理调用；它不触碰包、授权或私有数据，
+   * 并对每个受影响屏幕重排以避免卸载多个实例后保留无效的紧凑网格空位。
+   */
+  function removeCustomWidgetsByComponent(componentId: string): number {
+    if (!componentId) return 0
+    let removed = 0
+    for (const screen of screens.value) {
+      const removedFromScreen = screen.tiles.filter((tile) => (
+        tile.type === 'widget' && tile.widgetType === 'custom' && tile.componentId === componentId
+      )).length
+      if (removedFromScreen === 0) continue
+      screen.tiles = screen.tiles.filter((tile) => !(
+        tile.type === 'widget' && tile.widgetType === 'custom' && tile.componentId === componentId
+      ))
+      removed += removedFromScreen
+      recompactScreen(screen)
+    }
+    return removed
+  }
+
   /** 创建新的应用屏幕 */
   function addScreen(name: string, icon: string): Screen {
     const screen: Screen = {
@@ -217,6 +383,13 @@ export function createLauncherTileActions({
     addTodoWidget,
     addClockWidget,
     switchClockType,
+    addCustomWidget,
+    updateCustomWidgetVariant,
+    updateCustomWidgetSize,
+    setCustomWidgetDisabled,
+    setAllCustomWidgetsDisabled,
+    removeCustomWidget,
+    removeCustomWidgetsByComponent,
     addScreen,
     updateScreen,
     removeScreen,

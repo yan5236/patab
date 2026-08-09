@@ -1,0 +1,29 @@
+{
+  "name": "@patab/widget-cli",
+  "version": "1.0.0",
+  "description": "PaTab 自定义组件的校验、构建、打包与签名命令行工具",
+  "type": "module",
+  "bin": {
+    "patab-widget": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "type-check": "tsc --project tsconfig.build.json --noEmit",
+    "test": "vitest run --config vitest.config.ts"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  },
+  "dependencies": {
+    "@patab/widget-package": "workspace:*",
+    "@patab/widget-sdk": "workspace:*",
+    "vite": "^8.0.16"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "vitest": "^4.1.9"
+  }
+}

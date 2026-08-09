@@ -70,6 +70,7 @@
 - 非平凡逻辑需要最小可运行测试。
 - 新增持久化字段、拖拽规则、网格算法或 URL 处理时必须补测试。
 - 新增或修改翻译资源时必须覆盖 key 集合一致性，避免某语言缺文案。
+- 自定义组件的公开 API、Manifest、CLI 或安全模型变化时，同步更新 `docs/custom-component-development.md` 与 `docs/custom-component-security.md`；两个官方示例继续作为该公开契约的最小回归样本。
 - 优先测试 `utils/` 和 store 行为，少测样式细节。
 
 ## 提交前检查

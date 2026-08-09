@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PaTab 恢复与卸载验收</title>
+  </head>
+  <body>
+    <main>
+      <h1>PaTab 恢复与卸载验收</h1>
+      <p>验证运行失败、协议洪泛、安全模式和二次确认卸载；结果只包含布尔状态与计数。</p>
+      <button id="run-recovery-uninstall" type="button">运行恢复与卸载验收</button>
+      <pre id="result" aria-live="polite">等待运行</pre>
+      <div id="recovery-uninstall-sandbox-host"></div>
+      <div id="safe-mode-widget-host"></div>
+    </main>
+    <script type="module" src="/src/custom-components/safety/recoveryUninstallBrowserProbe.ts"></script>
+  </body>
+</html>

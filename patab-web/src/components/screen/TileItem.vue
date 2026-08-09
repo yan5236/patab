@@ -11,7 +11,8 @@
 import { computed } from 'vue'
 import { Trash2 } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
-import type { DragSource, MenuItem, Tile } from '@/types'
+import type { WidgetTileSize } from '@patab/widget-sdk'
+import type { CustomWidgetTile, DragSource, MenuItem, Tile, TileSize } from '@/types'
 import { useDragStore } from '@/stores/drag'
 import { useLauncherStore } from '@/stores/launcher'
 import { useUiStore } from '@/stores/ui'
@@ -23,6 +24,9 @@ import ResizeHandle from './ResizeHandle.vue'
 import { useTileResize } from '@/composables/useTileResize'
 import TodoWidget from '@/components/widgets/TodoWidget.vue'
 import ClockWidget from '@/components/widgets/clock/ClockWidget.vue'
+import CustomWidgetHost from '@/components/custom-components/CustomWidgetHost.vue'
+import { getCustomComponentRuntime } from '@/custom-components/runtime/runtimeHost'
+import { useCustomComponentStore } from '@/stores/customComponents'
 
 const props = defineProps<{
   tile: Tile
@@ -34,6 +38,7 @@ const props = defineProps<{
 const drag = useDragStore()
 const launcher = useLauncherStore()
 const ui = useUiStore()
+const customComponents = useCustomComponentStore()
 const { t } = useI18n()
 
 /** 本图块处于紧凑模式的主屏（整格由容器接管放置、拖拽走让位重排） */
@@ -55,11 +60,52 @@ const source = computed<DragSource>(() =>
 
 const { onPointerdown } = useLongPressDrag(() => ({ tile: props.tile, source: source.value }))
 
-/** 尺寸拖拽变形（仅主屏的文件夹 / 小组件支持） */
-const { onHandlePointerdown } = useTileResize(() => props.tile)
+/** 当前 custom 图块的已验证 Manifest；缺包或目录未加载时不开放尺寸操作。 */
+const customTile = computed<CustomWidgetTile | undefined>(() => {
+  const tile = props.tile
+  return tile.type === 'widget' && tile.widgetType === 'custom' ? tile : undefined
+})
+const customManifest = computed(() => {
+  const tile = customTile.value
+  if (!tile) return undefined
+  return customComponents.installedCatalog.find((entry) => entry.component.componentId === tile.componentId)?.manifest
+})
+
+/** 当前类型允许的静态尺寸；未选 variant 时回退组件总尺寸，绝不让动态 third-party 代码参与决策。 */
+const customAllowedSizes = computed<readonly TileSize[]>(() => {
+  const manifest = customManifest.value
+  if (!manifest) return []
+  const variant = customTile.value?.variantId
+    ? manifest.variants?.find((item) => item.id === customTile.value?.variantId)
+    : undefined
+  return (variant?.supportedSizes ?? manifest.sizes).map((size) => ({ w: size.w, h: size.h }))
+})
+
+/** 读取某图块可调整尺寸：自定义组件只使用 Manifest 静态白名单，内置图块沿用既有规则。 */
+function getResizableSizes(tile: Tile): readonly TileSize[] {
+  if (tile.type === 'widget' && tile.widgetType === 'custom' && tile.id === props.tile.id) {
+    return customAllowedSizes.value
+  }
+  return allowedSizesFor(tile)
+}
+
+/** 尺寸拖拽提交后向同实例的所有存活 surface 广播公开 sizeChanged 事件。 */
+function publishCustomSizeChanged(tile: Tile, previousSize: TileSize, size: TileSize): void {
+  if (tile.type !== 'widget' || tile.widgetType !== 'custom') return
+  getCustomComponentRuntime().publishInstanceLifecycle(tile.componentId, tile.instanceId, {
+    event: 'sizeChanged',
+    payload: { previousSize: previousSize as WidgetTileSize, size: size as WidgetTileSize },
+  })
+}
+
+/** 尺寸拖拽变形（仅主屏的文件夹 / 小组件支持），自定义组件额外收紧为 Manifest 声明尺寸。 */
+const { onHandlePointerdown } = useTileResize(() => props.tile, {
+  getAllowedSizes: getResizableSizes,
+  onResizeCommitted: publishCustomSizeChanged,
+})
 
 /** 本图块类型支持多尺寸调整 */
-const isResizable = computed(() => allowedSizesFor(props.tile).length > 0)
+const isResizable = computed(() => getResizableSizes(props.tile).length > 0)
 /** 本图块正处于「调整尺寸」模式：右下角显示拖拽柄并高亮 */
 const isResizing = computed(
   () => props.zone === 'screen' && isResizable.value && ui.resizingTileId === props.tile.id,
@@ -169,6 +215,7 @@ function onManagedMenu(event: MouseEvent) {
     <ShortcutTile v-if="tile.type === 'shortcut'" :shortcut="tile" :in-folder="zone === 'folder'" />
     <FolderTile v-else-if="tile.type === 'folder'" :folder="tile" />
     <ClockWidget v-else-if="tile.type === 'widget' && tile.widgetType === 'clock'" :tile-id="tile.id" />
+    <CustomWidgetHost v-else-if="tile.type === 'widget' && tile.widgetType === 'custom'" :tile="tile" />
     <TodoWidget v-else :tile-id="tile.id" />
     <ResizeHandle v-if="isResizing" @resize-start="onHandlePointerdown" />
   </div>

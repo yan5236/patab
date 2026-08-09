@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PaTab MV3 可选主机权限实验</title>
+  </head>
+  <body>
+    <main>
+      <h1>PaTab MV3 可选主机权限实验</h1>
+      <p>本页仅用于阶段 0.3：每次操作都调用浏览器真实的 <code>chrome.permissions</code> API。</p>
+      <dl>
+        <dt>清单中唯一声明的可选 HTTPS 来源</dt>
+        <dd><code id="declared-origin"></code></dd>
+        <dt>清单中未声明的 HTTPS 来源</dt>
+        <dd><code id="undeclared-origin"></code></dd>
+      </dl>
+      <p>
+        <button id="request-declared-origin" type="button">申请声明来源（首次或撤销后重开）</button>
+        <button id="remove-declared-origin" type="button">撤销声明来源</button>
+        <button id="request-undeclared-origin" type="button">申请未声明来源</button>
+        <button id="refresh-permission-state" type="button">刷新状态</button>
+      </p>
+      <pre id="result" aria-live="polite">等待操作</pre>
+    </main>
+    <script type="module" src="/mv3-permission-spike.js"></script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "examples-vanilla-widget-patab-widget",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  },
+  "scripts": {
+    "dev": "patab-widget dev",
+    "check": "patab-widget check",
+    "build": "patab-widget build",
+    "pack": "patab-widget pack",
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@patab/widget-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@patab/widget-cli": "workspace:*",
+    "typescript": "~6.0.0",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
+  }
+}
