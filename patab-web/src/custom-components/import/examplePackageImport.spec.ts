@@ -5,11 +5,11 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { unzipSync } from '@patab/widget-package'
 
-import { createNodeStaticImageDecoder } from '../../../packages/widget-cli/src/imageDecoder'
-import { packWidgetProject } from '../../../packages/widget-cli/src/packageCommands'
+import { createNodeStaticImageDecoder } from '../../../../packages/widget-cli/src/imageDecoder'
+import { packWidgetProject } from '../../../../packages/widget-cli/src/packageCommands'
 import { reviewCustomComponentPackage } from './packageReview'
 
-const PATAB_WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..')
 const EXAMPLE_DIRECTORY_NAMES = ['vanilla-widget', 'vue-widget'] as const
 
 /**
@@ -30,7 +30,7 @@ async function readPackedFiles(archivePath: string) {
 async function reviewPackedExample(exampleName: string): Promise<void> {
   const temporaryDirectory = await mkdtemp(join(tmpdir(), 'patab-widget-import-contract-'))
   try {
-    const root = join(PATAB_WEB_ROOT, 'examples', exampleName)
+    const root = join(REPO_ROOT, 'examples', exampleName)
     const archivePath = join(temporaryDirectory, `${exampleName}.patab.zip`)
     await packWidgetProject({ root, outputPath: archivePath })
     const review = await reviewCustomComponentPackage(

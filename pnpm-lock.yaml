@@ -8,12 +8,106 @@ importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: ^24.13.2
+        version: 24.13.3
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
       vitest:
         specifier: ^4.1.9
         version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
+
+  examples/vanilla-widget:
+    dependencies:
+      '@patab/widget-sdk':
+        specifier: workspace:*
+        version: link:../../packages/widget-sdk
+    devDependencies:
+      '@patab/widget-cli':
+        specifier: workspace:*
+        version: link:../../packages/widget-cli
+      typescript:
+        specifier: ~6.0.0
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.16
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
+
+  examples/vue-widget:
+    dependencies:
+      '@patab/widget-sdk':
+        specifier: workspace:*
+        version: link:../../packages/widget-sdk
+      vue:
+        specifier: ^3.5.38
+        version: 3.5.41(typescript@6.0.3)
+    devDependencies:
+      '@patab/widget-cli':
+        specifier: workspace:*
+        version: link:../../packages/widget-cli
+      '@vitejs/plugin-vue':
+        specifier: ^6.0.7
+        version: 6.0.8(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))(vue@3.5.41(typescript@6.0.3))
+      typescript:
+        specifier: ~6.0.0
+        version: 6.0.3
+      vite:
+        specifier: ^8.0.16
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
+
+  packages/create-patab-widget:
+    dependencies:
+      '@patab/widget-sdk':
+        specifier: workspace:*
+        version: link:../widget-sdk
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.2
+        version: 24.13.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
+
+  packages/widget-cli:
+    dependencies:
+      '@patab/widget-package':
+        specifier: workspace:*
+        version: link:../widget-package
+      '@patab/widget-sdk':
+        specifier: workspace:*
+        version: link:../widget-sdk
+      vite:
+        specifier: ^8.0.16
+        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.2
+        version: 24.13.3
+      vitest:
+        specifier: ^4.1.9
+        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
+
+  packages/widget-package:
+    dependencies:
+      '@patab/widget-sdk':
+        specifier: workspace:*
+        version: link:../widget-sdk
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
+
+  packages/widget-sdk:
+    dependencies:
+      ajv:
+        specifier: 8.17.1
+        version: 8.17.1
 
   patab-introduction:
     dependencies:
@@ -89,10 +183,10 @@ importers:
         version: 1.30.0(vue@3.5.41(typescript@6.0.3))
       '@patab/widget-package':
         specifier: workspace:*
-        version: link:packages/widget-package
+        version: link:../packages/widget-package
       '@patab/widget-sdk':
         specifier: workspace:*
-        version: link:packages/widget-sdk
+        version: link:../packages/widget-sdk
       '@tailwindcss/vite':
         specifier: ^4.3.2
         version: 4.3.3(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
@@ -157,97 +251,6 @@ importers:
       vue-tsc:
         specifier: ^3.3.5
         version: 3.3.9(typescript@6.0.3)
-
-  patab-web/examples/vanilla-widget:
-    dependencies:
-      '@patab/widget-sdk':
-        specifier: workspace:*
-        version: link:../../packages/widget-sdk
-    devDependencies:
-      '@patab/widget-cli':
-        specifier: workspace:*
-        version: link:../../packages/widget-cli
-      typescript:
-        specifier: ~6.0.0
-        version: 6.0.3
-      vite:
-        specifier: ^8.0.16
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
-
-  patab-web/examples/vue-widget:
-    dependencies:
-      '@patab/widget-sdk':
-        specifier: workspace:*
-        version: link:../../packages/widget-sdk
-      vue:
-        specifier: ^3.5.38
-        version: 3.5.41(typescript@6.0.3)
-    devDependencies:
-      '@patab/widget-cli':
-        specifier: workspace:*
-        version: link:../../packages/widget-cli
-      '@vitejs/plugin-vue':
-        specifier: ^6.0.7
-        version: 6.0.8(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))(vue@3.5.41(typescript@6.0.3))
-      typescript:
-        specifier: ~6.0.0
-        version: 6.0.3
-      vite:
-        specifier: ^8.0.16
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
-
-  patab-web/packages/create-patab-widget:
-    dependencies:
-      '@patab/widget-sdk':
-        specifier: workspace:*
-        version: link:../widget-sdk
-    devDependencies:
-      '@types/node':
-        specifier: ^24.13.2
-        version: 24.13.3
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
-
-  patab-web/packages/widget-cli:
-    dependencies:
-      '@patab/widget-package':
-        specifier: workspace:*
-        version: link:../widget-package
-      '@patab/widget-sdk':
-        specifier: workspace:*
-        version: link:../widget-sdk
-      vite:
-        specifier: ^8.0.16
-        version: 8.2.1(@types/node@24.13.3)(jiti@2.7.0)
-    devDependencies:
-      '@types/node':
-        specifier: ^24.13.2
-        version: 24.13.3
-      vitest:
-        specifier: ^4.1.9
-        version: 4.1.10(@types/node@24.13.3)(jsdom@29.1.1)(vite@8.2.1(@types/node@24.13.3)(jiti@2.7.0))
-
-  patab-web/packages/widget-package:
-    dependencies:
-      '@patab/widget-sdk':
-        specifier: workspace:*
-        version: link:../widget-sdk
-      fflate:
-        specifier: ^0.8.3
-        version: 0.8.3
-
-  patab-web/packages/widget-sdk:
-    dependencies:
-      ajv:
-        specifier: 8.17.1
-        version: 8.17.1
 
 packages:
 

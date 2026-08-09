@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
 
 const execFile = promisify(executeFile)
-const PATAB_WEB_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const EXAMPLE_DIRECTORY_NAMES = ['vanilla-widget', 'vue-widget']
 const PNPM_COMMAND = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 const KEY_PASSPHRASE = 'patab-ci-signing-passphrase'
@@ -20,7 +20,7 @@ const KEY_PASSPHRASE = 'patab-ci-signing-passphrase'
 async function runCommand(command, argumentsList, options = {}) {
   try {
     return await execFile(command, argumentsList, {
-      cwd: PATAB_WEB_ROOT,
+      cwd: REPO_ROOT,
       encoding: 'utf8',
       maxBuffer: 10 * 1024 * 1024,
       shell: process.platform === 'win32',
@@ -78,7 +78,7 @@ async function writeTemporaryPublisher(manifestPath, publicKeyBase64) {
  * 所有输出和私钥位于系统临时目录；Manifest 在 finally 中恢复，因此本地执行不会污染示例源码。
  */
 async function verifyExample(exampleName, temporaryDirectory, environment) {
-  const exampleRoot = join(PATAB_WEB_ROOT, 'examples', exampleName)
+  const exampleRoot = join(REPO_ROOT, 'examples', exampleName)
   const firstArchive = join(temporaryDirectory, `${exampleName}-first.patab.zip`)
   const secondArchive = join(temporaryDirectory, `${exampleName}-second.patab.zip`)
   const signedArchive = join(temporaryDirectory, `${exampleName}-signed.patab.zip`)

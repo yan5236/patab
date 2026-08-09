@@ -54,11 +54,6 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(rootDir, 'index.html'),
-        networkCapabilityProbe: resolve(rootDir, 'network-capability-probe.html'),
-        surfaceCspSpike: resolve(rootDir, 'surface-csp-spike.html'),
-        runtimeSandboxProbe: resolve(rootDir, 'runtime-sandbox-probe.html'),
-        componentUpdateProbe: resolve(rootDir, 'component-update-probe.html'),
-        recoveryUninstallProbe: resolve(rootDir, 'recovery-uninstall-probe.html'),
       },
       output: {
         codeSplitting: {

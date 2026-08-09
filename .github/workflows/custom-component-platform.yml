@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'patab-web/**'
+      - 'packages/**'
+      - 'examples/**'
+      - 'scripts/**'
       - 'docs/**'
       - 'specs/001-custom-component-platform/**'
       - '.github/workflows/custom-component-platform.yml'
@@ -12,6 +15,9 @@ on:
       - main
     paths:
       - 'patab-web/**'
+      - 'packages/**'
+      - 'examples/**'
+      - 'scripts/**'
       - 'docs/**'
       - 'specs/001-custom-component-platform/**'
       - '.github/workflows/custom-component-platform.yml'
@@ -39,10 +45,9 @@ jobs:
         with:
           node-version: 24.12.0
           cache: pnpm
-          cache-dependency-path: patab-web/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: 安装锁定依赖
-        working-directory: patab-web
         run: pnpm install --frozen-lockfile
 
       - name: 类型检查、单元与集成测试
@@ -70,7 +75,6 @@ jobs:
           pnpm build:extension
 
       - name: 官方示例、确定性 ZIP 与签名验证
-        working-directory: patab-web
         run: node scripts/verify-widget-examples.mjs
 
       - name: 官方示例的网页导入契约

@@ -20,17 +20,17 @@ flowchart TD
 
 ## 模块职责
 
-- 仓库根目录是 pnpm workspace 根：成员为 `patab-web`、`patab-web/packages/*`、`patab-web/examples/*`、`patab-introduction`，统一使用根目录 `pnpm-lock.yaml`，依赖安装只在根目录执行。
+- 仓库根目录是 pnpm workspace 根：成员为 `patab-web`、`patab-introduction`、`packages/*`、`examples/*`，统一使用根目录 `pnpm-lock.yaml`，依赖安装只在根目录执行。
 - `patab-web/src/App.vue`：根组件，负责壁纸、主布局和全局弹层挂载。
 - `patab-web/src/components/`：界面组件，按 common、dock、modals、screen、settings、topbar、widgets 拆分。
 - `patab-web/src/components/common/AppDropdown.vue`：全局通用单选下拉框，设置语言等需要统一视觉的选择项优先复用它。
 - `patab-web/src/components/common/AppLucideIcon.vue`：按持久化名称渲染应用屏幕的 Lucide 图标；常用图标同步渲染，非常用图标按需加载。
 - `patab-web/src/components/modals/ScreenIconPicker.vue`：提供完整 Lucide 图标目录的搜索与分批渲染，通过异步组件仅在打开时加载，不直接读写 store。
 - `patab-web/src/i18n/`：Vue I18n 实例、语言清洗工具和按模块拆分的中英文 JSON 翻译资源。
-- `patab-web/packages/widget-sdk/`：无 Vue/Pinia 依赖的 API v1 contracts、MessageChannel 客户端、主题 token 与测试 Mock；公开版本独立于宿主应用。
-- `patab-web/packages/widget-package/`：宿主与 CLI 共用的 ZIP 中央目录、解压、文件集、完整性与签名规则；不得用第二套 ZIP 库复制语义。
-- `patab-web/packages/widget-cli/` 与 `packages/create-patab-widget/`：脚手架及 check/build/dev/pack/inspect/keygen 工具链；CLI 只构建和审查静态产物，不能执行导入组件源码。
-- `patab-web/examples/`：Vue 与 Vanilla TypeScript 的公开示例；CI 对其 check/build、确定性双 pack、签名和宿主导入契约执行回归。
+- `packages/widget-sdk/`：无 Vue/Pinia 依赖的 API v1 contracts、MessageChannel 客户端、主题 token 与测试 Mock；公开版本独立于宿主应用。
+- `packages/widget-package/`：宿主与 CLI 共用的 ZIP 中央目录、解压、文件集、完整性与签名规则；不得用第二套 ZIP 库复制语义。
+- `packages/widget-cli/` 与 `packages/create-patab-widget/`：脚手架及 check/build/dev/pack/inspect/keygen 工具链；CLI 只构建和审查静态产物，不能执行导入组件源码。
+- `examples/`：Vue 与 Vanilla TypeScript 的公开示例；CI 对其 check/build、确定性双 pack、签名和宿主导入契约执行回归。
 - `patab-web/src/stores/launcher.ts`：持久业务状态门面，创建状态、组装领域 action，并保留组件调用的稳定 API。
 - `patab-web/src/stores/launcherState.ts`：launcher 默认数据、localStorage 读取和旧数据兼容清洗。
 - `patab-web/src/stores/launcherPlacement.ts`：launcher 主屏坐标落位、清坐标和紧凑回填辅助。
@@ -53,7 +53,7 @@ flowchart TD
 - `patab-web/src/custom-components/capabilities/channel.ts`：页面级 Hub 只向同一组件与同一 `instanceId` 的已订阅 surface 广播纯 JSON、64 KiB 内的复制消息；Runtime 销毁时统一注销订阅。
 - `patab-web/src/custom-components/capabilities/ui.ts`、`external.ts` 与 `components/custom-components/CustomComponentFeedbackHost.vue`：toast/confirm 仅经 PaTab 宿主反馈层渲染并标识第三方来源；外链要求实时用户手势、HTTPS 和宿主来源确认，随后只以 `noopener,noreferrer` 新标签页打开。
 - `patab-web/src/custom-components/capabilities/todos.ts`：把 launcher 待办动作转换为最小公开 DTO、公开 ID 游标分页和去抖变化订阅；仅接收注入的动态权限检查与领域动作，不读取 Pinia 或返回内部引用。
-- `patab-web/src/custom-components/capabilities/networkPolicy.ts`、`network.ts` 与 `networkAdapters.ts`：先把 RPC DTO 复制为无用户信息、无本机/裸 IP、无危险端口和危险头的精确 HTTPS origin；随后由既有 Broker/Repository grant 校验，再按 Web CORS 或 MV3 精确 host permission 执行受限 fetch，适配器不记录请求正文、Authorization 或浏览器原始异常。`network-capability-probe.html` 是两端真实 adapter 的独立验收入口，不参与日常 App 页面。
+- `patab-web/src/custom-components/capabilities/networkPolicy.ts`、`network.ts` 与 `networkAdapters.ts`：先把 RPC DTO 复制为无用户信息、无本机/裸 IP、无危险端口和危险头的精确 HTTPS origin；随后由既有 Broker/Repository grant 校验，再按 Web CORS 或 MV3 精确 host permission 执行受限 fetch，适配器不记录请求正文、Authorization 或浏览器原始异常。
 - `patab-web/src/components/custom-components/`：第三方导入入口、错误、安装前审查、权限确认、目录卡片、缺包/停用图块占位、`CustomWidgetHost` 与受控 surface/variant modal；只接收 Store 投影的数据，WidgetShell、标题、拖拽、缩放、焦点、ESC 和移动端尺寸始终由宿主拥有。
 - `patab-web/src/types/index.ts`：跨组件共享的数据结构。
 - `patab-web/src/utils/`：URL、图标、网格、ID、壁纸、搜索引擎等可复用纯函数。
