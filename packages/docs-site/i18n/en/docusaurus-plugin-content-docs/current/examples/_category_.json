@@ -1,0 +1,8 @@
+{
+  "label": "Example Walkthroughs",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "Key code walkthroughs of the official vanilla and Vue examples."
+  }
+}

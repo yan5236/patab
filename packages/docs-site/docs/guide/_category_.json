@@ -1,0 +1,8 @@
+{
+  "label": "开发指南",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "组件项目结构、Manifest 配置、运行时交互、能力、主题与多语言、本地调试与测试。"
+  }
+}

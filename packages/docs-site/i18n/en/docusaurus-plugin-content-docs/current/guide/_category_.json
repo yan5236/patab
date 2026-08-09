@@ -1,0 +1,8 @@
+{
+  "label": "Development Guide",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Widget project structure, Manifest configuration, runtime interaction, capabilities, theming and i18n, local debugging and testing."
+  }
+}

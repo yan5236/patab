@@ -1,0 +1,297 @@
+/**
+ * PaTab 插件文档 — 品牌设计系统
+ * 配色取自 PaTab Logo：蓝 → 青渐变，辅以紫与暖橙点缀。
+ */
+
+/* ---------- 品牌色板 ---------- */
+:root {
+  --patab-blue: #3b82dc;
+  --patab-teal: #2fbdb6;
+  --patab-purple: #8b7cf6;
+  --patab-amber: #f0a24e;
+  --patab-deep: #16305e;
+
+  --patab-gradient: linear-gradient(120deg, var(--patab-blue), var(--patab-teal));
+
+  --patab-badge-bg: rgba(59, 130, 220, 0.08);
+  --patab-badge-border: rgba(59, 130, 220, 0.28);
+  --patab-glass-bg: rgba(255, 255, 255, 0.6);
+  --patab-glass-border: rgba(255, 255, 255, 0.7);
+  --patab-section-bg: #f4f8fd;
+  --patab-section-border: #e3ecf7;
+}
+
+/* ---------- Infima 变量覆盖（亮色） ---------- */
+:root {
+  --ifm-color-primary: #2f6fd0;
+  --ifm-color-primary-dark: #2a63bb;
+  --ifm-color-primary-darker: #275db0;
+  --ifm-color-primary-darkest: #1f4c91;
+  --ifm-color-primary-light: #4d84d8;
+  --ifm-color-primary-lighter: #5b8ddc;
+  --ifm-color-primary-lightest: #7ea6e3;
+
+  --ifm-background-color: #fbfdff;
+  --ifm-background-surface-color: #ffffff;
+
+  --ifm-font-family-base:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --ifm-font-family-monospace:
+    'SFMono-Regular', 'Cascadia Code', Consolas, 'JetBrains Mono', Menlo,
+    'Liberation Mono', monospace;
+
+  --ifm-code-font-size: 92%;
+  --ifm-code-border-radius: 6px;
+  --ifm-code-background: rgba(59, 130, 220, 0.08);
+  --ifm-code-color: #1f4c91;
+
+  --ifm-heading-font-weight: 700;
+  --ifm-link-color: #2f6fd0;
+  --ifm-link-hover-color: #2fbdb6;
+
+  --ifm-navbar-height: 3.75rem;
+  --ifm-navbar-background-color: rgba(251, 253, 255, 0.78);
+  --ifm-navbar-shadow: none;
+
+  --ifm-footer-background-color: #0e1c38;
+  --ifm-footer-color: #b9c8e2;
+  --ifm-footer-link-color: #b9c8e2;
+  --ifm-footer-link-hover-color: #ffffff;
+  --ifm-footer-title-color: #ffffff;
+
+  --ifm-card-border-radius: 14px;
+  --ifm-global-radius: 10px;
+
+  --docusaurus-highlighted-code-line-bg: rgba(59, 130, 220, 0.12);
+}
+
+/* ---------- Infima 变量覆盖（暗色） ---------- */
+html[data-theme='dark'] {
+  --patab-blue: #5ea0f0;
+  --patab-teal: #3fd0c9;
+  --patab-purple: #a595fb;
+  --patab-amber: #f5b26b;
+
+  --patab-badge-bg: rgba(94, 160, 240, 0.12);
+  --patab-badge-border: rgba(94, 160, 240, 0.35);
+  --patab-glass-bg: rgba(18, 30, 56, 0.55);
+  --patab-glass-border: rgba(120, 160, 220, 0.22);
+  --patab-section-bg: #0c1424;
+  --patab-section-border: #16223c;
+
+  --ifm-color-primary: #5ea0f0;
+  --ifm-color-primary-dark: #4991ec;
+  --ifm-color-primary-darker: #3a87ea;
+  --ifm-color-primary-darkest: #1f6fe2;
+  --ifm-color-primary-light: #79aff3;
+  --ifm-color-primary-lighter: #8abaf5;
+  --ifm-color-primary-lightest: #b2d1f9;
+
+  --ifm-background-color: #0a1120;
+  --ifm-background-surface-color: #101a30;
+  --ifm-color-emphasis-200: #1d2c4c;
+  --ifm-color-emphasis-300: #253a61;
+
+  --ifm-code-background: rgba(94, 160, 240, 0.14);
+  --ifm-code-color: #a9c8f2;
+
+  --ifm-link-color: #6ea7f2;
+  --ifm-link-hover-color: #3fd0c9;
+
+  --ifm-navbar-background-color: rgba(10, 17, 32, 0.72);
+
+  --ifm-footer-background-color: #070d1a;
+  --ifm-footer-color: #93a5c6;
+  --ifm-footer-link-color: #93a5c6;
+
+  --docusaurus-highlighted-code-line-bg: rgba(94, 160, 240, 0.16);
+}
+
+/* ---------- 全局质感 ---------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 细腻的网点背景，提升辨识度又不干扰阅读 */
+.main-wrapper {
+  background-image: radial-gradient(
+    var(--patab-section-border) 1px,
+    transparent 1px
+  );
+  background-size: 26px 26px;
+}
+
+html[data-theme='dark'] .main-wrapper {
+  background-image: radial-gradient(
+    rgba(120, 160, 220, 0.09) 1px,
+    transparent 1px
+  );
+}
+
+/* ---------- 导航栏：毛玻璃 ---------- */
+.navbar {
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  border-bottom: 1px solid var(--patab-section-border);
+  box-shadow: 0 1px 12px rgba(46, 108, 200, 0.06);
+}
+
+html[data-theme='dark'] .navbar {
+  border-bottom-color: rgba(120, 160, 220, 0.14);
+  box-shadow: 0 1px 14px rgba(0, 0, 0, 0.35);
+}
+
+.navbar__brand {
+  margin-right: 1.4rem;
+}
+
+.navbar__logo {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(46, 108, 200, 0.28);
+}
+
+.navbar__title {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  background: var(--patab-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.navbar__link {
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navbar__link:hover {
+  color: var(--patab-blue);
+  background: var(--patab-badge-bg);
+}
+
+.navbar__link--active {
+  color: var(--patab-blue);
+}
+
+/* 导航栏项的分隔留白更舒展 */
+.navbar__item {
+  margin-left: 0.15rem;
+  margin-right: 0.15rem;
+}
+
+/* ---------- 页脚 ---------- */
+.footer {
+  position: relative;
+  border-top: 1px solid rgba(120, 160, 220, 0.14);
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--patab-gradient);
+  opacity: 0.9;
+}
+
+.footer__title {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.footer__link-item {
+  transition: color 0.15s ease;
+}
+
+.footer__copyright {
+  color: inherit;
+  opacity: 0.65;
+}
+
+/* ---------- 代码块 ---------- */
+.theme-code-block {
+  border-radius: 12px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  box-shadow: 0 4px 18px rgba(46, 108, 200, 0.07);
+  overflow: hidden;
+}
+
+.theme-code-block-highlighted-line {
+  border-left: 3px solid var(--patab-teal);
+}
+
+code {
+  font-weight: 500;
+}
+
+/* ---------- Markdown 内容细节 ---------- */
+.markdown > h2 {
+  margin-top: 2.4rem;
+}
+
+.markdown a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--patab-section-border);
+}
+
+html[data-theme='dark'] .theme-doc-sidebar-container {
+  border-right-color: rgba(120, 160, 220, 0.14);
+}
+
+.menu__link--active {
+  font-weight: 600;
+  background: var(--patab-badge-bg);
+  border-radius: 8px;
+}
+
+.menu__link {
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.menu__link:hover {
+  background: var(--patab-badge-bg);
+}
+
+/* ---------- 提示块（admonition） ---------- */
+.theme-admonition {
+  border-radius: 12px;
+}
+
+/* ---------- 滚动条（可选的轻修饰） ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  border: 2px solid var(--ifm-background-color);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------- 动效降级 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

@@ -56,16 +56,24 @@ Chrome 与 Edge 商店版本仍在准备中。现在可以从 [GitHub Releases](
 
 ```bash
 git clone https://github.com/yan5236/patab.git
-cd patab/patab-web
+cd patab
 pnpm install
-pnpm dev
+pnpm dev:web
 ```
 
-主应用运行在 `http://localhost:6109`。介绍站位于 `patab-introduction/`，开发端口为 `6108`。
+主应用运行在 `http://localhost:6109`。介绍站位于 `patab-introduction/`，开发端口为 `6108`（`pnpm dev:intro`）。
+
+本仓库是 pnpm monorepo，依赖安装只在根目录执行一次，所有子项目共享根目录的 `pnpm-lock.yaml`。
 
 ### 常用命令
 
 ```bash
+# 仓库根目录
+pnpm dev:web             # 启动主应用
+pnpm dev:intro           # 启动介绍站
+pnpm build               # 构建全部子项目
+pnpm test                # 运行全部测试
+
 # patab-web/
 pnpm dev                 # 启动主应用
 pnpm build               # 构建网页版
@@ -89,6 +97,9 @@ PaTab 支持从组件商店导入本地 `.zip` / `.patab.zip` 第三方组件。
 patab/
 ├── patab-web/            # Vue 3 主应用与 Chrome / Edge MV3 扩展构建
 ├── patab-introduction/   # React 介绍站、安装指南、更新日志与法律页面
+├── packages/             # 自定义组件平台：SDK、ZIP 包基础库、CLI 与脚手架
+├── examples/             # 自定义组件官方示例（Vanilla 与 Vue）
+├── scripts/              # CI 使用的示例与签名验证脚本
 ├── assets/               # README 与产品展示资源
 ├── docs/                 # 架构、安全和代码风格文档
 └── NOTICE                # 生产依赖开放源代码许可清单
@@ -100,6 +111,7 @@ patab/
 | 构建与测试 | Vite 8、Vitest、Vue Test Utils、jsdom |
 | 介绍站 | React 19、GSAP、Tailwind CSS、Vite |
 | 浏览器扩展 | Chrome / Edge Manifest V3，与网页版共享 Vue 业务源码 |
+| 组件平台 | `packages/` 下的 widget-sdk、widget-package、widget-cli、create-patab-widget |
 
 更完整的模块职责和依赖方向见 [架构说明](./docs/ARCHITECTURE.md)。
 

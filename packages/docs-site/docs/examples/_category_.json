@@ -1,0 +1,8 @@
+{
+  "label": "示例解析",
+  "position": 8,
+  "link": {
+    "type": "generated-index",
+    "description": "官方 vanilla 与 Vue 示例的关键代码讲解。"
+  }
+}

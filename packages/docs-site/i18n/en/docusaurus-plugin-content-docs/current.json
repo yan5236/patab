@@ -1,0 +1,30 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.docsSidebar.category.开发指南": {
+    "message": "Development Guide",
+    "description": "The label for category '开发指南' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.开发指南.link.generated-index.description": {
+    "message": "Project structure, Manifest configuration, runtime interaction, capabilities, theming & localization, local debugging and testing.",
+    "description": "The generated-index page description for category '开发指南' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Widget SDK 参考": {
+    "message": "Widget SDK Reference",
+    "description": "The label for category 'Widget SDK 参考' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.Widget SDK 参考.link.generated-index.description": {
+    "message": "All exports of @patab/widget-sdk: connection, WidgetApi, events & types, Manifest contracts, theme CSS, and the mock host.",
+    "description": "The generated-index page description for category 'Widget SDK 参考' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.示例解析": {
+    "message": "Example Walkthroughs",
+    "description": "The label for category '示例解析' in sidebar 'docsSidebar'"
+  },
+  "sidebar.docsSidebar.category.示例解析.link.generated-index.description": {
+    "message": "Key code walkthroughs of the official vanilla and Vue examples.",
+    "description": "The generated-index page description for category '示例解析' in sidebar 'docsSidebar'"
+  }
+}

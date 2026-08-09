@@ -1,0 +1,61 @@
+---
+sidebar_position: 5
+---
+
+# theme.css 与主题 token
+
+## 使用方式
+
+```ts
+import '@patab/widget-sdk/theme.css'
+```
+
+样式表基于宿主注入的 `--pt-*` token 定义语义类，并内置 `@media (prefers-reduced-motion: reduce)` 全局降动效规则。不导入也可以——直接在自己的 CSS 中引用 `var(--pt-*)` 即可。
+
+## 语义类
+
+| 类名 | 用途 |
+|---|---|
+| `.pt-surface` | 常规容器背景与文字色 |
+| `.pt-surface-strong` | 强调容器（更高对比的表面） |
+| `.pt-text` | 正文文字色 |
+| `.pt-text-strong` | 标题/强调文字色 |
+| `.pt-text-muted` | 次要/弱化文字色 |
+| `.pt-button` | 按钮（含 hover/active 态） |
+| `.pt-input` | 输入框 |
+| `.pt-focus-ring` | 焦点环 |
+| `.pt-danger` | 危险/破坏性操作色 |
+
+:::note
+以上是 `theme.css` 提供的全部契约类。官方示例中出现的 `pt-card`、`pt-title`、`pt-muted` 类名**不属于** SDK 契约（`theme.css` 中没有这些类），如需卡片样式请用 `.pt-surface` 等契约类或自行定义。
+:::
+
+## 主题 token（20 个）
+
+token 名称属于 API v1 契约，由宿主注入到 sandbox 文档 `:root`，主题切换时同步更新：
+
+| token | 用途 |
+|---|---|
+| `--pt-surface` | 常规表面背景 |
+| `--pt-surface-strong` | 强调表面背景 |
+| `--pt-text` | 正文文字 |
+| `--pt-text-strong` | 强调文字 |
+| `--pt-text-muted` | 弱化文字 |
+| `--pt-accent` | 主题强调色 |
+| `--pt-accent-contrast` | 强调色上的对比文字色 |
+| `--pt-accent-hover` | 强调色 hover 态 |
+| `--pt-border` | 边框 |
+| `--pt-input` | 输入控件背景 |
+| `--pt-danger` | 危险色 |
+| `--pt-focus-ring` | 焦点环 |
+| `--pt-radius-sm` / `--pt-radius-md` / `--pt-radius-lg` | 圆角 |
+| `--pt-shadow` | 阴影 |
+| `--pt-font-sans` | 正文字体族 |
+| `--pt-motion-duration` / `--pt-motion-easing` | 动效时长与缓动 |
+| `--pt-color-scheme` | `color-scheme` 值（light/dark） |
+
+对应的 TypeScript 联合类型为 `WidgetThemeTokenName`；`themeChanged` 事件可携带 `WidgetThemeTokens`（`{ version: 1; values: Record<WidgetThemeTokenName, string> }`）快照。
+
+:::caution
+不要引用宿主内部的 `--theme-*` 变量或宿主 UI 框架的工具类——它们不是公开契约。宿主通过显式映射表把内部变量翻译成 `--pt-*`，未映射的内部变量永远不会暴露给组件。
+:::
