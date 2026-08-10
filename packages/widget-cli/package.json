@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
+    "build": "pnpm --filter patab-web build:widget-dev-host && node scripts/clean-dist.mjs && tsc --project tsconfig.build.json && node scripts/copy-dev-host.mjs",
     "type-check": "tsc --project tsconfig.build.json --noEmit",
     "test": "vitest run --config vitest.config.ts"
   },

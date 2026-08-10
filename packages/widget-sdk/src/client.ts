@@ -39,7 +39,7 @@ export class WidgetApiRequestError extends Error {
   }
 }
 
-/** SDK 客户端可接受的显式端口与超时配置；测试和模拟器可直接提供端口，生产 surface 则使用 connectPatabWidgetClient。 */
+/** SDK 客户端可接受的显式端口与超时配置；测试可直接提供端口，真实 surface 则使用 connectPatabWidgetClient。 */
 export interface WidgetClientOptions {
   readonly port: MessagePort
   readonly sessionId: string

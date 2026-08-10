@@ -266,6 +266,7 @@ export async function startStagedSandboxSurface(
     onDiagnostic: options.onDiagnostic,
     onFlood: handle.destroy,
   })
+  mountHandle.activate()
   if (migrationCompletion) {
     try {
       await waitForMigrationCompletion(STAGED_SANDBOX_TIMEOUT_MS - (Date.now() - startedAt), migrationCompletion)

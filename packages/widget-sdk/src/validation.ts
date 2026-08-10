@@ -16,7 +16,7 @@ export interface WidgetContractValidationFailure {
 }
 
 /**
- * 统一公开契约校验的结果形状，让未来 Broker、CLI 与测试模拟器复用同一份无副作用错误表达。
+ * 统一公开契约校验的结果形状，让 Broker、CLI 与测试 Host 复用同一份无副作用错误表达。
  */
 export type WidgetContractValidationResult = WidgetContractValidationSuccess | WidgetContractValidationFailure
 

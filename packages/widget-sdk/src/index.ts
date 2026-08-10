@@ -64,6 +64,16 @@ export type {
 } from './api.js'
 export { createWidgetMockError, createWidgetMockHost } from './testing.js'
 export type { WidgetMockHost, WidgetMockNetworkHandler, WidgetMockOptions } from './testing.js'
+export {
+  WIDGET_DEV_HOST_PROTOCOL_VERSION,
+  validateWidgetDevSessionDescriptor,
+} from './devHost.js'
+export type {
+  WidgetDevSessionDescriptor,
+  WidgetDevSessionValidationFailure,
+  WidgetDevSessionValidationResult,
+  WidgetDevSessionValidationSuccess,
+} from './devHost.js'
 export type {
   WidgetApiCompatibility,
   WidgetContext,

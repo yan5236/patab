@@ -66,7 +66,7 @@ pnpm run deploy
 
 卸载先展示关联实例、版本和私有数据数量；取消不会变更数据。二次确认后，单个原子事务会删除组件包、授权、活动/回滚/暂存版本、私有数据、健康记录和关联主屏引用。
 
-开发者工作流、Manifest、SDK、模拟器、确定性打包、签名、更新迁移和故障排查见[自定义组件开发指南](./custom-component-development.md)。用户与审核人员可阅读[自定义组件安全说明](./custom-component-security.md)，了解安装前审查、sandbox 边界、网络权限、自动停用与仍无法由浏览器完全消除的 CPU/内存风险。
+开发者工作流、Manifest、SDK、真实 PaTab 开发宿主、确定性打包、签名、更新迁移和故障排查见[自定义组件开发指南](./custom-component-development.md)。用户与审核人员可阅读[自定义组件安全说明](./custom-component-security.md)，了解安装前审查、sandbox 边界、网络权限、自动停用与仍无法由浏览器完全消除的 CPU/内存风险。
 
 ## 维护要求
 

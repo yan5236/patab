@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { join, relative, resolve, sep } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 
 import {
   evaluateWidgetApiCompatibility,
@@ -95,11 +95,24 @@ export async function readDeclaredWidgetAssets(project: WidgetProject): Promise<
   return files
 }
 
-/** 读取所有声明 surface 的源码 HTML，供本地模拟器使用；生产包必须通过独立 Vite 构建而不能直接使用此结果。 */
-export async function readWidgetSurfaceSources(project: WidgetProject): Promise<Readonly<Record<string, string>>> {
-  const sources: Record<string, string> = {}
+/**
+ * 读取每个 surface HTML 的本地模块入口绝对路径，供开发 HMR 建立精确自接收边界。
+ *
+ * 只接受相对 `script type="module"`；外部 URL、根路径、查询参数与越界路径不会被标记为
+ * HMR 入口，随后仍会由开发 surface 的 CSP 审查拒绝。
+ */
+export async function readWidgetSurfaceEntryModulePaths(project: WidgetProject): Promise<readonly string[]> {
+  const paths = new Set<string>()
+  const moduleScriptPattern = /<script\b(?=[^>]*\btype=["']module["'])(?=[^>]*\bsrc=["']([^"']+)["'])[^>]*>/gi
   for (const surface of Object.keys(project.manifest.surfaces).sort()) {
-    sources[surface] = await readUtf8File(getWidgetSurfaceSourcePath(project, surface))
+    const htmlPath = getWidgetSurfaceSourcePath(project, surface)
+    const html = await readUtf8File(htmlPath)
+    for (const match of html.matchAll(moduleScriptPattern)) {
+      const source = match[1]
+      if (!source || !source.startsWith('./') || source.includes('?') || source.includes('#')) continue
+      const modulePath = resolve(dirname(htmlPath), source)
+      if (isInsideProject(project.root, modulePath)) paths.add(modulePath)
+    }
   }
-  return sources
+  return [...paths].sort()
 }

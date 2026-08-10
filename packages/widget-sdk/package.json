@@ -36,6 +36,11 @@
       "import": "./dist/testing.js",
       "default": "./dist/testing.js"
     },
+    "./dev-host": {
+      "types": "./dist/devHost.d.ts",
+      "import": "./dist/devHost.js",
+      "default": "./dist/devHost.js"
+    },
     "./theme.css": "./dist/theme.css"
   },
   "files": [

@@ -4,31 +4,29 @@ sidebar_position: 6
 
 # 本地调试与测试
 
-## 本地模拟器（patab-widget dev）
+## 真实 PaTab 开发宿主（patab-widget dev）
 
 ```bash
 pnpm dev    # = patab-widget dev
 ```
 
-输出形如：
+CLI 默认打开浏览器，并输出不含会话 token 的地址：
 
 ```text
-模拟器已启动：http://127.0.0.1:5174/__patab_widget_simulator__
+PaTab 开发宿主已启动：http://127.0.0.1:5174/__patab_dev__/
 ```
 
-模拟器页面分两部分：
+页面就是与正式站点同源的 PaTab 主屏：当前组件按 Manifest 默认尺寸和 variant 自动放置，拖拽、调整尺寸、右键菜单、detail/settings、主题和语言均使用生产 UI 与 Runtime。surface 入口由 Vite 热更新，SDK 代码无需改动。
 
-- **右侧**：组件 surface 运行在与生产一致的 `sandbox="allow-scripts"` iframe 中，通过注入的桥接脚本获得与宿主一致的 `MessagePort` 握手，SDK 代码无需任何改动即可连接。
-- **左侧控制面板**：切换 surface、图块尺寸、variant、主题（明/暗）、语言、减少动画偏好；mock `ui.confirm` 的结果与 `network.fetch` 的响应（面板 JSON）；查看 `ui.toast` 日志。
-
-模拟器基于 Vite dev server，修改源码即时热更新。常用选项：
+常用选项：
 
 ```bash
-patab-widget dev --host 0.0.0.0 --port 5200   # 默认 127.0.0.1:5174（strictPort，占用即失败）
+patab-widget dev --host localhost --port 5200
+patab-widget dev --no-open
 ```
 
 :::warning
-模拟器是纯本地环境，不需要也不支持接入真实 PaTab 宿主。生产 `check`/`pack` 永远不会读取模拟器地址；模拟器放宽的 loopback 访问只是开发便利，不代表现实宿主行为。要验证真实集成，打包后把 ZIP 重新导入 PaTab。
+开发宿主只覆盖真实 PaTab Web 行为。随机会话不会读取 `patab:v1` 或 `patab-custom-components`，但 loopback 模块与 HMR CSP 仅属于开发便利；生产 `check`/`pack` 仍会拒绝 Vite client、外部运行资源和非自包含 surface。发布前仍要重新导入 ZIP，并单独验证 MV3 sandbox 与可选 host permission。
 :::
 
 ## 单元测试（Mock 宿主）

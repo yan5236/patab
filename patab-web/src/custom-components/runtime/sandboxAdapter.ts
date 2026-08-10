@@ -1,4 +1,5 @@
 import {
+  SANDBOX_ACTIVATE_MESSAGE,
   SANDBOX_CONNECTED_MESSAGE,
   SANDBOX_CONNECT_MESSAGE,
   SANDBOX_MOUNT_MESSAGE,
@@ -19,6 +20,7 @@ export interface SandboxMountRequest {
 export interface SandboxMountHandle {
   readonly frameElement: HTMLIFrameElement
   readonly port: MessagePort
+  activate(): void
   destroy(): void
 }
 
@@ -68,6 +70,7 @@ function completeSandboxHandshake(
   return new Promise((resolve, reject) => {
     let settled = false
     let destroyed = false
+    let activated = false
     let port: MessagePort | undefined
     let timer: number | undefined
 
@@ -98,6 +101,11 @@ function completeSandboxHandshake(
       resolve({
         frameElement: frame,
         port: activePort,
+        activate: () => {
+          if (destroyed || activated) return
+          activated = true
+          activePort.postMessage({ type: SANDBOX_ACTIVATE_MESSAGE, token: request.sessionToken })
+        },
         destroy: () => {
           if (destroyed) return
           destroyed = true

@@ -1,6 +1,30 @@
 /** 自定义组件 IndexedDB 的固定数据库名称，避免与现有轻量 launcher 状态混用。 */
 export const CUSTOM_COMPONENT_DATABASE_NAME = 'patab-custom-components'
 
+/** 开发会话 ID 的安全边界，数据库名不得包含路径、控制字符或任意用户文本。 */
+const DEV_DATABASE_SESSION_ID_PATTERN = /^[A-Za-z0-9_-]{16,128}$/
+
+let customComponentDatabaseName = CUSTOM_COMPONENT_DATABASE_NAME
+let customComponentDatabaseNameLocked = false
+
+/** 为真实 PaTab 开发宿主生成会话隔离的 IndexedDB 名称。 */
+export function createCustomComponentDevDatabaseName(sessionId: string): string {
+  if (!DEV_DATABASE_SESSION_ID_PATTERN.test(sessionId)) throw new Error('开发会话 ID 无效')
+  return `patab-widget-dev-components:${sessionId}`
+}
+
+/**
+ * 在任何 Repository 打开连接前配置一次开发数据库名。
+ *
+ * 已打开或已配置后拒绝切换，避免一个页面中的事务跨两个组件仓库产生不一致状态。
+ */
+export function configureCustomComponentDevDatabase(sessionId: string): void {
+  if (customComponentDatabaseNameLocked || customComponentDatabaseName !== CUSTOM_COMPONENT_DATABASE_NAME) {
+    throw new Error('自定义组件数据库环境已经初始化')
+  }
+  customComponentDatabaseName = createCustomComponentDevDatabaseName(sessionId)
+}
+
 /** 自定义组件 IndexedDB 当前唯一已发布的 Schema 版本。 */
 export const CUSTOM_COMPONENT_DATABASE_VERSION = 1
 
@@ -98,6 +122,7 @@ function closeDatabaseOnVersionChange(database: IDBDatabase): void {
 export function openCustomComponentDatabase(
   databaseFactory: IDBFactory = getDefaultDatabaseFactory(),
 ): Promise<IDBDatabase> {
+  customComponentDatabaseNameLocked = true
   return new Promise((resolve, reject) => {
     let request: IDBOpenDBRequest
     let settled = false
@@ -113,7 +138,7 @@ export function openCustomComponentDatabase(
     }
 
     try {
-      request = databaseFactory.open(CUSTOM_COMPONENT_DATABASE_NAME, CUSTOM_COMPONENT_DATABASE_VERSION)
+      request = databaseFactory.open(customComponentDatabaseName, CUSTOM_COMPONENT_DATABASE_VERSION)
     } catch (error) {
       rejectOnce(error)
       return

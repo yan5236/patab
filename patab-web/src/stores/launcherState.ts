@@ -25,9 +25,10 @@ import {
 import { normalizeThemeMode } from '@/utils/theme'
 import { normalizeLocale } from '@/i18n/language'
 import { normalizeScreenIcon } from '@/utils/screenIcons'
+import { DEFAULT_LAUNCHER_STORAGE_KEY, getLauncherStorageKey } from './launcherStorageEnvironment'
 
 /** localStorage 存储键（含版本号，便于将来迁移） */
-export const STORAGE_KEY = 'patab:v1'
+export const STORAGE_KEY = DEFAULT_LAUNCHER_STORAGE_KEY
 
 /** 默认壁纸地址，必须与 public 中真实文件一致 */
 const DEFAULT_WALLPAPER = '/scenery1.jpg'
@@ -261,9 +262,9 @@ function sanitizeTodos(value: unknown): TodoItem[] {
 }
 
 /** 从 localStorage 读取持久化数据，无数据或损坏时返回 null */
-export function loadPersisted(): LauncherState | null {
+export function loadPersisted(storageKey: string = getLauncherStorageKey()): LauncherState | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(storageKey)
     if (!raw) return null
     const parsed = JSON.parse(raw) as LauncherState
     if (parsed.version !== 1 || !Array.isArray(parsed.screens)) return null
@@ -274,8 +275,8 @@ export function loadPersisted(): LauncherState | null {
 }
 
 /** 构造 launcher store 初始状态，并完成旧持久化数据迁移 */
-export function createInitialLauncherState(): LauncherState {
-  const initial = loadPersisted() ?? buildSeedState()
+export function createInitialLauncherState(storageKey: string = getLauncherStorageKey()): LauncherState {
+  const initial = loadPersisted(storageKey) ?? buildSeedState()
   if (!initial.settings.wallpaper || initial.settings.wallpaper === LEGACY_DEFAULT_WALLPAPER) {
     initial.settings.wallpaper = DEFAULT_WALLPAPER
   }

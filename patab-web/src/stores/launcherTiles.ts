@@ -181,24 +181,25 @@ export function createLauncherTileActions({
   /**
    * 在指定主屏创建一个新的自定义组件实例引用，并交给既有网格规则安排位置。
    *
-   * 同一 componentId 每次均生成独立 instanceId，因此后续组件仓库可以为每个实例
-   * 分配独立私有存储；此层不检查包是否存在、Manifest variants 或权限，只拒绝空 id
-   * 与当前主屏不支持的尺寸，避免把不可信 UI 输入写入持久化主状态。
+   * 常规调用会为同一 componentId 生成独立 instanceId；开发宿主也可传入已经过会话
+   * 描述校验的固定 instanceId，以便刷新后继续命中同一个隔离实例。此层不检查包是否
+   * 存在、Manifest variants 或权限，只拒绝空 id 与当前主屏不支持的尺寸。
    */
   function addCustomWidget(
     screenId: string,
-    input: { componentId: string; variantId?: string; size?: TileSize },
+    input: { componentId: string; instanceId?: string; variantId?: string; size?: TileSize },
   ): CustomWidgetTile | undefined {
     const screen = findScreen(screenId)
     const componentId = input.componentId.trim()
-    if (!screen || !componentId) return undefined
+    const instanceId = input.instanceId?.trim()
+    if (!screen || !componentId || (input.instanceId !== undefined && !instanceId)) return undefined
 
     const widget: CustomWidgetTile = {
       id: createId(),
       type: 'widget',
       widgetType: 'custom',
       componentId,
-      instanceId: createId(),
+      instanceId: instanceId ?? createId(),
     }
     const variantId = input.variantId?.trim()
     if (variantId) {

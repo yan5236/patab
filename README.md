@@ -89,7 +89,7 @@ pnpm build               # 构建介绍站
 
 PaTab 支持从组件商店导入本地 `.zip` / `.patab.zip` 第三方组件。安装前只审查 Manifest、静态素材、完整性、签名与用户确认的权限；第三方代码仅在隔离 sandbox iframe 中运行，不能直接访问宿主 DOM、Pinia、浏览器本地存储或扩展 API。
 
-开发者请阅读[自定义组件开发指南](./docs/custom-component-development.md)，其中包含脚手架、Manifest、SDK、主题、模拟器、打包、签名、更新与故障排查。安装前的安全边界、剩余风险与安全使用建议见[自定义组件安全说明](./docs/custom-component-security.md)。
+开发者请阅读[自定义组件开发指南](./docs/custom-component-development.md)，其中包含脚手架、Manifest、SDK、主题、真实 PaTab 开发宿主、打包、签名、更新与故障排查。安装前的安全边界、剩余风险与安全使用建议见[自定义组件安全说明](./docs/custom-component-security.md)。
 
 ## 项目组成
 

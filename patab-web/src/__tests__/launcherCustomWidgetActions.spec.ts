@@ -48,6 +48,27 @@ describe('自定义组件图块动作', () => {
   })
 
   /**
+   * 验证开发宿主可以复用会话描述中的固定实例 id，同时拒绝显式传入的空 id。
+   */
+  it('允许开发宿主指定固定实例 id', () => {
+    const store = useLauncherStore()
+    store.screens = [createScreen()]
+
+    const widget = store.addCustomWidget('screen-1', {
+      componentId: 'com.example.weather',
+      instanceId: 'dev-instance-1',
+    })
+
+    expect(widget?.instanceId).toBe('dev-instance-1')
+    expect(
+      store.addCustomWidget('screen-1', {
+        componentId: 'com.example.weather',
+        instanceId: '   ',
+      }),
+    ).toBeUndefined()
+  })
+
+  /**
    * 验证 variant、尺寸、停用与移除只作用于 custom 引用，非法尺寸与内置图块 id 都被拒绝。
    */
   it('更新引用字段、停用并移除单个自定义实例', () => {

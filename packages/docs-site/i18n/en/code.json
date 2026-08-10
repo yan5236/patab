@@ -356,8 +356,8 @@
   "home.terminal.comment.dev": {
     "message": "# Enter the project and start the dev server"
   },
-  "home.terminal.output.simulator": {
-    "message": "  ➜ Simulator: http://127.0.0.1:5174/__patab_widget_simulator__"
+  "home.terminal.output.devHost": {
+    "message": "  ➜ PaTab development host: http://127.0.0.1:5174/__patab_dev__/"
   },
   "home.terminal.output.loaded": {
     "message": "  ➜ Sandbox loaded, changes apply instantly…"

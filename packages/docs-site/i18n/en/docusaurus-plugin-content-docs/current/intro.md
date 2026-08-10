@@ -11,7 +11,7 @@ PaTab is a local-first browser new-tab workbench. In addition to the built-in se
 
 - **Framework-agnostic**: Write widgets with any frontend stack (vanilla TypeScript, Vue, etc.). The toolchain only validates the final artifacts and does not restrict the source framework. The official scaffolder ships with two templates: `vue-ts` and `vanilla-ts`.
 - **Public SDK**: Interact with the host through `@patab/widget-sdk` — read context, read and write instance-private storage, invoke host UI (toast, confirm dialogs, external links, modals), subscribe to lifecycle events such as theme/language/size, and access to-do data and controlled network requests according to permissions.
-- **Complete toolchain**: the `create-patab-widget` scaffolder creates a project in one step; `@patab/widget-cli` provides local simulator debugging, validation, building, packaging, and signing.
+- **Complete toolchain**: the `create-patab-widget` scaffolder creates a project in one step; `@patab/widget-cli` provides a real local PaTab development host, validation, building, packaging, and signing.
 - **Distributable**: Widgets are packaged as deterministic `.patab.zip` files (standard ZIP archives) with optional Ed25519 signatures, and can be shared directly with other PaTab users for import and installation.
 
 ## Architecture at a Glance

@@ -9,11 +9,17 @@ import {
   type CustomComponentSafetyState,
   type CustomComponentSafetyStorage,
 } from '@/custom-components/safety/customComponentSafetyState'
+import { getCustomComponentSafetyStorageKey } from './launcherStorageEnvironment'
 
 /** 仅在浏览器中提供 localStorage；测试或不可用环境会安全退化为内存状态。 */
 function getSafetyStorage(): CustomComponentSafetyStorage | undefined {
   try {
-    return typeof localStorage === 'undefined' ? undefined : localStorage
+    if (typeof localStorage === 'undefined') return undefined
+    const storageKey = getCustomComponentSafetyStorageKey()
+    return {
+      getItem: () => localStorage.getItem(storageKey),
+      setItem: (_key, value) => localStorage.setItem(storageKey, value),
+    }
   } catch {
     return undefined
   }

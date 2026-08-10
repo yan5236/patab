@@ -1,11 +1,28 @@
 import { Mv3SandboxAdapter, WebSandboxAdapter } from './sandboxAdapter'
 import { SandboxRuntime } from './sandboxRuntime'
+import { createRepositoryWidgetRuntimeSource } from './runtimeSource'
+import type { WidgetSurfacePreparer } from './runtimeSource'
+import { prepareSandboxSurfaceHtml } from './surfaceHtml'
 import { createRuntimeHealthReporter } from '@/custom-components/safety/runtimeHealthReporter'
 import { resolveAssetPath } from '@/utils/assetPath'
 import { detectRuntimeEnvironment } from '@/utils/runtimeEnvironment'
 
 /** 页面共享的唯一 Runtime；widget 与 modal 必须通过它共享同实例 lifecycle、storage 与 channel。 */
 let runtime: SandboxRuntime | undefined
+
+/** 开发宿主可在 Runtime 首次创建前注入的 surface 准备策略；正式入口始终保持未配置。 */
+let configuredSurfacePreparer: WidgetSurfacePreparer | undefined
+
+/**
+ * 在 Runtime 首次创建前配置专用 HTML 准备策略。
+ *
+ * 该入口只接受已经构造完成的策略，不解析 URL、Manifest 或查询参数；一旦 Runtime 已创建
+ * 或策略已配置即拒绝覆盖，避免页面运行中放宽 sandbox CSP。
+ */
+export function configureCustomComponentSurfacePreparer(preparer: WidgetSurfacePreparer): void {
+  if (runtime || configuredSurfacePreparer) throw new Error('自定义组件 Runtime 环境已经初始化')
+  configuredSurfacePreparer = preparer
+}
 
 /** Runtime 自动停用事件的最小宿主通知，组件只能据此更新轻量 launcher 引用。 */
 export interface RuntimeAutoDisabledEvent {
@@ -47,11 +64,15 @@ export function getCustomComponentRuntime(): SandboxRuntime {
         document,
         mv3SandboxPageUrl: resolveAssetPath('/custom-component-sandbox.html'),
       }),
+      source: createRepositoryWidgetRuntimeSource(),
+      prepareSurface: configuredSurfacePreparer ?? prepareSandboxSurfaceHtml,
       health: createRuntimeHealthReporter(),
       onInstanceAutoDisabled: notifyRuntimeAutoDisabled,
     })
     : new SandboxRuntime({
       adapter: new WebSandboxAdapter({ document }),
+      source: createRepositoryWidgetRuntimeSource(),
+      prepareSurface: configuredSurfacePreparer ?? prepareSandboxSurfaceHtml,
       health: createRuntimeHealthReporter(),
       onInstanceAutoDisabled: notifyRuntimeAutoDisabled,
     })

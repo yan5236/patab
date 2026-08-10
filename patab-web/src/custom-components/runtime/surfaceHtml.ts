@@ -1,4 +1,4 @@
-import { SANDBOX_CONNECTED_MESSAGE, SANDBOX_CONNECT_MESSAGE, SANDBOX_PREPARE_MESSAGE, SANDBOX_READY_MESSAGE } from './protocol'
+import { SANDBOX_ACTIVATE_MESSAGE, SANDBOX_CONNECTED_MESSAGE, SANDBOX_CONNECT_MESSAGE, SANDBOX_PREPARE_MESSAGE, SANDBOX_READY_MESSAGE } from './protocol'
 
 /** 生产 surface 统一使用的最小 CSP；网络只能通过未来 Capability Broker 代理。 */
 export const SURFACE_PRODUCTION_CSP = [
@@ -96,7 +96,7 @@ function assertNoExistingCsp(document: Document): void {
  *
  * 它先验证父窗口、一次性令牌和独占端口，再保留端口给 SDK/Broker 使用；第三方代码不能通过 window 消息伪造已连接状态。
  */
-function createSandboxBootstrap(): string {
+export function createSandboxBootstrap(): string {
   return `(() => {
   let preparedToken = null
   let connected = false
@@ -145,10 +145,13 @@ function createSandboxBootstrap(): string {
     window.__PATAB_WIDGET_SESSION_ID__ = preparedToken
     port.addEventListener('message', (portEvent) => {
       const message = portEvent.data
+      if (message?.type === '${SANDBOX_ACTIVATE_MESSAGE}' && message.token === preparedToken) {
+        window.dispatchEvent(new CustomEvent('patab-widget-connected'))
+        return
+      }
       if (!message || typeof message !== 'object' || message.event !== 'themeChanged') return
       applyThemeTokens(message.payload?.tokens)
     })
-    window.dispatchEvent(new CustomEvent('patab-widget-connected'))
     port.postMessage({ type: '${SANDBOX_CONNECTED_MESSAGE}', token: preparedToken })
   })
 })()`

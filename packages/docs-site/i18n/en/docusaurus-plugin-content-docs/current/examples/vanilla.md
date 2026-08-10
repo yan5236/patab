@@ -135,6 +135,6 @@ Uses the [Mock Host](../sdk/testing.md) to inject initial storage and asserts re
 ```bash
 cd examples/vanilla-widget
 pnpm install
-pnpm dev      # 打开 http://127.0.0.1:5174/__patab_widget_simulator__
+pnpm dev      # Open the real PaTab development host and mount the widget
 pnpm check && pnpm run pack && pnpm exec patab-widget inspect dist/*.patab.zip
 ```

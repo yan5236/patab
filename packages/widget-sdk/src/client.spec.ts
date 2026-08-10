@@ -51,7 +51,7 @@ describe('WidgetClient', () => {
   })
 })
 
-/** 覆盖 testing Mock 的公开状态，确保官方示例和模拟器不会自建第二套 DTO 或错误码。 */
+/** 覆盖 testing Mock 的公开状态，确保官方示例不会自建第二套 DTO 或错误码。 */
 describe('Widget testing mocks', () => {
   /** 验证 Mock 可以驱动存储、主题、surface、待办和网络的正式 SDK 调用。 */
   it('提供可配置的 API v1 Mock', async () => {

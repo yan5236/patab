@@ -31,6 +31,23 @@ function copyExtensionManifest(): Plugin {
   }
 }
 
+/** 仅专用开发宿主构建替换 HTML 入口，保持普通 Vite/Vitest 配置为可合并的静态对象。 */
+function selectWidgetDevHostEntry(): Plugin {
+  return {
+    name: 'select-widget-dev-host-entry',
+    config(_config, environment) {
+      if (environment.mode !== 'widget-dev-host') return
+      return {
+        build: {
+          rolldownOptions: {
+            input: { main: resolve(rootDir, 'widget-dev-host.html') },
+          },
+        },
+      }
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -38,6 +55,7 @@ export default defineConfig({
     vueDevTools(),
     tailwindcss(),
     copyExtensionManifest(),
+    selectWidgetDevHostEntry(),
   ],
   resolve: {
     alias: {

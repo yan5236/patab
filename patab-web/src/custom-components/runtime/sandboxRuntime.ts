@@ -23,11 +23,6 @@ import {
 import { createWidgetStorageBrokerMethods } from '@/custom-components/capabilities/storage'
 import { createWidgetSurfaceBrokerMethods } from '@/custom-components/capabilities/surfaces'
 import { createWidgetUiBrokerMethods } from '@/custom-components/capabilities/ui'
-import {
-  getActiveComponentVersion,
-  getInstalledComponent,
-  readActiveComponentFile,
-} from '@/custom-components/repository/componentPackageRepository'
 import { subscribeInstanceStorage } from '@/custom-components/repository/instanceStorageRepository'
 import type { RuntimeFailureReason } from '@/custom-components/repository/runtimeHealthRepository'
 import type { RuntimeHealthReporter } from '@/custom-components/safety/runtimeHealthReporter'
@@ -49,6 +44,11 @@ import {
   type StartStagedSandboxSurfaceRequest,
 } from './stagedSandboxRunner'
 import { prepareSandboxSurfaceHtml } from './surfaceHtml'
+import {
+  createRepositoryWidgetRuntimeSource,
+  type WidgetRuntimeSource,
+  type WidgetSurfacePreparer,
+} from './runtimeSource'
 import { createWidgetThemeStyle, getWidgetThemeTokens } from './widgetTheme'
 
 /** SDK 健康握手的固定上限；调用方不得把生产启动超时放宽到五秒之外。 */
@@ -97,6 +97,10 @@ export type { StagedSandboxRuntimeHandle, StartStagedSandboxSurfaceRequest }
 /** Runtime 的可替换依赖；基础能力默认注入，后续领域能力通过 methods 追加而非重建 Broker。 */
 export interface SandboxRuntimeOptions {
   readonly adapter: SandboxAdapter
+  /** 组件版本与 surface 的只读来源；生产默认使用活动 Repository。 */
+  readonly source?: WidgetRuntimeSource
+  /** HTML 准备策略只在工厂组装时选择，普通请求不能通过参数放宽 CSP。 */
+  readonly prepareSurface?: WidgetSurfacePreparer
   readonly methods?: Readonly<Record<string, WidgetBrokerMethod>>
   readonly permissions?: WidgetPermissionSource
   readonly context?: WidgetRuntimeContextSource
@@ -227,22 +231,18 @@ export class SandboxRuntime {
   async start(request: StartSandboxSurfaceRequest): Promise<SandboxRuntimeHandle> {
     if (!request.componentId || !request.instanceId || !request.surface) throw new SandboxRuntimeError('INSTANCE_DISABLED')
 
-    const [component, version] = await Promise.all([
-      getInstalledComponent(request.componentId),
-      getActiveComponentVersion(request.componentId),
-    ])
-    if (!component || !version || component.activeVersion !== version.version || !version.isActive || version.stagedUpdateId) {
-      throw new SandboxRuntimeError('INSTANCE_DISABLED')
-    }
-    const declaration = version.manifest.surfaces[request.surface]
+    const source = this.options.source ?? createRepositoryWidgetRuntimeSource()
+    const component = await source.loadComponent(request.componentId)
+    if (!component) throw new SandboxRuntimeError('INSTANCE_DISABLED')
+    const declaration = component.manifest.surfaces[request.surface]
     if (!declaration) throw new SandboxRuntimeError('SURFACE_NOT_DECLARED')
 
-    const file = await readActiveComponentFile(request.componentId, declaration.entry)
-    if (!file || typeof file.content !== 'string') throw new SandboxRuntimeError('INSTANCE_DISABLED')
+    const surfaceHtml = await source.loadSurface(component, request.surface)
+    if (!surfaceHtml) throw new SandboxRuntimeError('INSTANCE_DISABLED')
 
     const session: WidgetBrokerSession = {
       componentId: request.componentId,
-      componentVersion: version.version,
+      componentVersion: component.version,
       instanceId: request.instanceId,
       sessionId: (this.options.createSessionToken ?? createDefaultSessionToken)(),
     }
@@ -254,8 +254,8 @@ export class SandboxRuntime {
       session.instanceId,
       session.componentVersion,
       request.surface,
-      version.manifest.defaultSize,
-      version.manifest.defaultVariant,
+      component.manifest.defaultSize,
+      component.manifest.defaultVariant,
       permissionSnapshot,
       this.options.context,
       request.context,
@@ -263,7 +263,7 @@ export class SandboxRuntime {
     const themeTokens = getWidgetThemeTokens()
     let preparedHtml: string
     try {
-      preparedHtml = prepareSandboxSurfaceHtml(file.content, {
+      preparedHtml = (this.options.prepareSurface ?? prepareSandboxSurfaceHtml)(surfaceHtml, {
         hostThemeStyle: createWidgetThemeStyle(themeTokens),
       })
     } catch {
@@ -334,8 +334,8 @@ export class SandboxRuntime {
       ...createWidgetUiBrokerMethods(session, feedback),
       ...createWidgetSurfaceBrokerMethods(
         session,
-        new Set(Object.keys(version.manifest.surfaces)),
-        version.manifest.variants?.length ?? 0,
+        new Set(Object.keys(component.manifest.surfaces)),
+        component.manifest.variants?.length ?? 0,
       ),
       ...createWidgetExternalBrokerMethods(session, feedback, external),
       ...createWidgetNetworkBrokerMethods(permissions, network),
@@ -351,6 +351,7 @@ export class SandboxRuntime {
         void this.reportRuntimeFailure(session, 'protocol-flood')
       },
     })
+    mountHandle.activate()
     unsubscribeStorage = subscribeInstanceStorage(
       { componentId: session.componentId, instanceId: session.instanceId },
       (change) => {

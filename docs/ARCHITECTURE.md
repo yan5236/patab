@@ -30,6 +30,7 @@ flowchart TD
 - `packages/widget-sdk/`：无 Vue/Pinia 依赖的 API v1 contracts、MessageChannel 客户端、主题 token 与测试 Mock；公开版本独立于宿主应用。
 - `packages/widget-package/`：宿主与 CLI 共用的 ZIP 中央目录、解压、文件集、完整性与签名规则；不得用第二套 ZIP 库复制语义。
 - `packages/widget-cli/` 与 `packages/create-patab-widget/`：脚手架及 check/build/dev/pack/inspect/keygen 工具链；CLI 只构建和审查静态产物，不能执行导入组件源码。
+- `specs/002-real-patab-widget-dev/`：`patab-widget dev` 的真实 PaTab 开发宿主规格。CLI 携带由同版本 `patab-web` 专用入口构建的静态宿主，将 Vite 转换后的 surface 自动安装到会话 IndexedDB，并复用生产 WidgetShell、SandboxAdapter、Capability Broker 与宿主 UI；随机 launcher、安全状态和数据库命名空间不会写入 `patab:v1` 或 `patab-custom-components`。
 - `examples/`：Vue 与 Vanilla TypeScript 的公开示例；CI 对其 check/build、确定性双 pack、签名和宿主导入契约执行回归。
 - `patab-web/src/stores/launcher.ts`：持久业务状态门面，创建状态、组装领域 action，并保留组件调用的稳定 API。
 - `patab-web/src/stores/launcherState.ts`：launcher 默认数据、localStorage 读取和旧数据兼容清洗。
@@ -116,7 +117,7 @@ flowchart TD
 - 已完成：自定义组件阶段 4 的 ZIP 导入入口、安装前静态详情、权限/网络来源确认、已安装目录、多实例添加和缺包/停用占位。
 - 已完成：自定义组件阶段 9 更新链路。高 SemVer 仅进入授权 diff 审查；受限 staged migration、全部实例离屏健康检查、activeVersion/data/grants 单事务切换、一个回滚包保留与中断清理已由 Repository/Runtime 共同实现。2026-08-08 使用 CFT Chromium-1217 的 Playwright 独立临时 profile 实测 Web 6109 与 MV3 `dist-extension` 的 `component-update-probe.html`：两端均报告 `activeVersion=1.1.0`、`rollbackVersion=1.0.0`、`failedUpdatePreserved=true`、`storagePreserved=true`、`status=passed`，且无 console/page error。
 - 已完成：自定义组件阶段 10 的 24 小时健康累计、第三次握手/洪泛自动停用、跨启动 pending 和三次安全模式、零 iframe 安全 UI、二次确认完整卸载。2026-08-09 Chrome CFT 151 真实 Web 6109 与加载 `dist-extension` 的 MV3 `recovery-uninstall-probe.html` 均报告握手/洪泛停用、安全模式零 iframe、取消保留和确认原子删除为 `true`，`status=passed`。
-- 已实现：自定义组件阶段 11 的 `@patab/widget-sdk` MessageChannel/API/testing 公开模块、Vue/Vanilla 官方脚手架、`create-patab-widget` 与 `patab-widget` 工具链。CLI 只复用 SDK Schema 和 `@patab/widget-package` 的文件集、完整性、签名与 ZIP 规则；Vite 对每个 Manifest surface 独立构建，最终 HTML 只能保留内联或 data URL 资源，并拒绝动态导入、外链、开发客户端和 source map。开发模拟器只在 loopback Vite server 上向 opaque `allow-scripts` iframe 回显 `Origin: null` 的源码/HMR CORS，生产 check/pack 不携带该开发端点；真实 Linux CLI 验收仍依赖可用 Linux runner。
+- 已实现：自定义组件阶段 11 的 `@patab/widget-sdk` MessageChannel/API/testing 公开模块、Vue/Vanilla 官方脚手架、`create-patab-widget` 与 `patab-widget` 工具链。`dev` 由 CLI 内置的同源 PaTab 专用构建提供真实主屏与生产 Runtime，在随机 loopback 会话中自动安装组件，并只为 surface 入口注入 Vite 自接收 HMR 边界；`check/build/pack` 仍复用 SDK Schema 和 `@patab/widget-package` 的生产文件集、完整性、签名与 ZIP 规则。普通 Web/MV3 产物不包含开发入口、会话端点或 token 处理代码；跨平台 CLI 与真实 MV3 最终验收仍须在对应环境执行。
 - 已完成：`patab-introduction` 介绍站首页、移动端折叠菜单、安装教程、隐私政策、文档和更新日志二级页。
 - 进行中：持续完善交互细节和可维护性。
 - 待关注：`useLongPressDrag.ts`、部分测试文件较长，后续大改时优先拆分。

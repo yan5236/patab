@@ -26,17 +26,18 @@ patab-widget <dev|check|build|pack|inspect|keygen> [--root 目录] [--out 文件
 | `--root 目录` | 全部 | 组件项目根目录 | 当前工作目录 |
 | `--host 地址` | `dev` | 监听地址 | `127.0.0.1` |
 | `--port 端口` | `dev` | 监听端口（1–65535） | `5174`（strictPort，占用即失败） |
+| `--no-open` | `dev` | 启动服务但不主动打开浏览器 | 默认打开 |
 | `--out 文件` | `pack` | 输出 ZIP 路径（相对项目根） | `dist/<id>-<version>.patab.zip` |
 | `--sign 私钥` | `pack` | PKCS#8 PEM 私钥路径（相对项目根） | 不签名 |
 | `--key-out 文件` | `keygen` | 私钥输出路径 | 项目外 `.patab-widget-keys/` |
 
-## dev — 本地模拟器
+## dev — 真实 PaTab 开发宿主
 
 ```bash
-patab-widget dev [--root 目录] [--host 地址] [--port 端口]
+patab-widget dev [--root 目录] [--host loopback] [--port 端口] [--no-open]
 ```
 
-启动本地模拟器并输出调试地址（默认 `http://127.0.0.1:5174/__patab_widget_simulator__`）。surface 运行在与生产一致的 `sandbox="allow-scripts"` iframe 中，SDK 通过桥接脚本完成与宿主一致的 MessagePort 握手；左侧面板可切换 surface/尺寸/variant/主题/语言并 mock confirm、network、toast。Ctrl+C 退出。详见[本地调试与测试](./guide/testing.md)。
+启动 CLI 内置的真实 PaTab 开发宿主并自动放置当前组件。surface 运行在 `sandbox="allow-scripts"` iframe 中，SDK 请求经过生产 SandboxAdapter 与 Capability Broker；源码入口使用 Vite HMR，PaTab 外壳不会被组件更新替换。launcher、安全状态和组件数据库按随机会话隔离，且服务只接受 `127.0.0.1`、`localhost` 或 `::1`。Ctrl+C 退出。详见[本地调试与测试](./guide/testing.md)。
 
 ## check — 校验项目
 

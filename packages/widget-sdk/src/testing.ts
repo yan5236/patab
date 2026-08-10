@@ -98,7 +98,7 @@ function createMockResponse(requestId: string, result?: unknown, error?: WidgetA
 }
 
 /**
- * 创建用于组件单元测试与本地模拟器的内存 Host。
+ * 创建用于组件单元测试的内存 Host。
  *
  * Mock 复用 MessageChannel、公开 request/response/event DTO 和错误码；它不模拟 ZIP、iframe 或真实权限授予，真实 PaTab 重新导入仍是集成验收。
  */

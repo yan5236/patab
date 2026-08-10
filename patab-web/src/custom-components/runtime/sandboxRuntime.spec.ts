@@ -48,7 +48,7 @@ function createAdapter() {
   const mount = vi.fn(async (request: SandboxMountRequest) => {
     const frame = document.createElement('iframe')
     request.container.append(frame)
-    return { frameElement: frame, port: port as unknown as MessagePort, destroy }
+    return { frameElement: frame, port: port as unknown as MessagePort, activate: vi.fn(), destroy }
   })
   const adapter: SandboxAdapter = { environment: 'web', mount }
   return { adapter, mount, destroy, port }
@@ -109,6 +109,43 @@ beforeEach(() => {
 
 /** 覆盖 Runtime 对已安装包、声明 surface、CSP 准备与幂等销毁的编排边界。 */
 describe('SandboxRuntime', () => {
+  /** 验证 Runtime 可通过只读 Source 与 HTML preparer 启动，而不把 Repository 实现固化在编排类中。 */
+  it('通过注入 source 与 preparer 启动同一 Adapter 和 Broker', async () => {
+    const adapter = createAdapter()
+    const source = {
+      loadComponent: vi.fn(async () => ({
+        componentId: 'com.example.runtime',
+        version: '1.0.0',
+        manifest: createInstallInput().manifest,
+      })),
+      loadSurface: vi.fn(async () => '<!doctype html><html><body>开发 surface</body></html>'),
+    }
+    const prepareSurface = vi.fn(() => '<!doctype html><html><body>已准备开发 surface</body></html>')
+    const runtime = new SandboxRuntime({
+      adapter: adapter.adapter,
+      source,
+      prepareSurface,
+      createSessionToken: () => 'source-session',
+    })
+
+    await runtime.start({
+      componentId: 'com.example.runtime',
+      instanceId: 'instance-source',
+      surface: 'widget',
+      container: document.createElement('div'),
+    })
+
+    expect(source.loadComponent).toHaveBeenCalledWith('com.example.runtime')
+    expect(source.loadSurface).toHaveBeenCalledWith(expect.objectContaining({ version: '1.0.0' }), 'widget')
+    expect(prepareSurface).toHaveBeenCalledWith(expect.stringContaining('开发 surface'), expect.objectContaining({
+      hostThemeStyle: expect.stringContaining('--pt-'),
+    }))
+    expect(adapter.mount).toHaveBeenCalledWith(expect.objectContaining({
+      surfaceHtml: expect.stringContaining('已准备开发 surface'),
+      sessionToken: 'source-session',
+    }))
+  })
+
   /** 验证 Runtime 从活动 Repository 文件准备 CSP 后才调用适配器，并把端口留给内部 Broker。 */
   it('仅启动活动包中已声明 surface 的已准备 HTML', async () => {
     await installComponentPackage(createInstallInput())
@@ -280,7 +317,7 @@ describe('SandboxRuntime', () => {
           requestId: 'migration-complete', method: 'migration.complete', params: {},
         } } as MessageEvent<unknown>)
       }, 15)
-      return { frameElement: frame, port: adapter.port as unknown as MessagePort, destroy: adapter.destroy }
+      return { frameElement: frame, port: adapter.port as unknown as MessagePort, activate: vi.fn(), destroy: adapter.destroy }
     })
     const runtime = new SandboxRuntime({ adapter: adapter.adapter, createSessionToken: () => 'staged-session' })
     const container = document.createElement('div')

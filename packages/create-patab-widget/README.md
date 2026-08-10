@@ -39,7 +39,7 @@ my-widget/
 ```bash
 cd my-widget
 pnpm install
-pnpm dev    # 本地 HMR 沙箱模拟器
+pnpm dev    # 打开真实 PaTab 开发宿主并自动挂载组件
 pnpm check  # Manifest 与资源校验
 pnpm run pack   # 类型检查 + 构建 + 校验 + 确定性 ZIP 打包
 ```

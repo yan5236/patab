@@ -93,7 +93,7 @@ function save(): void {
 ```bash
 cd examples/vue-widget
 pnpm install
-pnpm dev      # 打开 http://127.0.0.1:5174/__patab_widget_simulator__
+pnpm dev      # 打开真实 PaTab 开发宿主并自动挂载组件
 pnpm check && pnpm pack
 ```
 

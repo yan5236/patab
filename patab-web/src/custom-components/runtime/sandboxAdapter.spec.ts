@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  SANDBOX_ACTIVATE_MESSAGE,
   SANDBOX_CONNECTED_MESSAGE,
   SANDBOX_MOUNT_MESSAGE,
   SANDBOX_PREPARE_MESSAGE,
@@ -102,6 +103,13 @@ describe('SandboxAdapter', () => {
     channel.port1.onmessage?.({ data: { type: SANDBOX_CONNECTED_MESSAGE, token: 'session-web' } } as MessageEvent<unknown>)
 
     const handle = await mounting
+    handle.activate()
+    handle.activate()
+    expect(channel.port1.postMessage).toHaveBeenCalledOnce()
+    expect(channel.port1.postMessage).toHaveBeenCalledWith({
+      type: SANDBOX_ACTIVATE_MESSAGE,
+      token: 'session-web',
+    })
     handle.destroy()
     handle.destroy()
     expect(channel.port1.close).toHaveBeenCalledOnce()

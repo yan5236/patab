@@ -16,7 +16,8 @@ import { createLauncherDropActions } from './launcherDrop'
 import { clearPos, placeOnScreen, recompactScreen } from './launcherPlacement'
 import { createLauncherQueries } from './launcherQueries'
 import { createLauncherSettingsActions } from './launcherSettings'
-import { createInitialLauncherState, STORAGE_KEY } from './launcherState'
+import { createInitialLauncherState } from './launcherState'
+import { getLauncherStorageKey } from './launcherStorageEnvironment'
 import { createLauncherTileActions } from './launcherTiles'
 import { createLauncherTodoActions } from './launcherTodos'
 
@@ -24,7 +25,8 @@ export { STORAGE_KEY } from './launcherState'
 export { clearPos, placeOnScreen, recompactScreen } from './launcherPlacement'
 
 export const useLauncherStore = defineStore('launcher', () => {
-  const initial = createInitialLauncherState()
+  const storageKey = getLauncherStorageKey()
+  const initial = createInitialLauncherState(storageKey)
 
   const screens = ref<Screen[]>(initial.screens)
   const dock = ref<Shortcut[]>(initial.dock)
@@ -48,7 +50,7 @@ export const useLauncherStore = defineStore('launcher', () => {
           todoLists: todoLists.value,
           settings: settings.value,
         }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+        localStorage.setItem(storageKey, JSON.stringify(state))
       }, 300)
     },
     { deep: true },

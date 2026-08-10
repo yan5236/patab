@@ -57,7 +57,7 @@ function createAdapter() {
       request.container.append(frameElement)
       const port = createFakePort()
       ports.push(port)
-      return { frameElement, port: port as unknown as MessagePort, destroy: vi.fn() }
+      return { frameElement, port: port as unknown as MessagePort, activate: vi.fn(), destroy: vi.fn() }
     }),
   }
   return { adapter, ports }

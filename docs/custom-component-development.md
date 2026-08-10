@@ -18,7 +18,7 @@ pnpm run pack
 
 脚手架提供 `vue-ts` 与 `vanilla-ts` 两种模板。两者的最终产物契约相同，因此也可以使用其他 Vite 框架；CLI 只验证最终 ZIP，不根据源码框架作特殊放行。
 
-`dev` 是本地 HMR 模拟器，`check` 执行 Manifest、权限、配额和生产 HTML 检查，`build` 为每个 surface 生成独立的自包含 HTML，`pack` 则完成类型检查、构建、完整性、可选签名、确定性 ZIP 与生成后复检。真实 PaTab 重新导入 ZIP 仍是发布前必须进行的集成验收。
+`dev` 会打开 CLI 内置的真实 PaTab 开发宿主、自动安装并放置当前组件，同时保留 Vite HMR；`check` 执行 Manifest、权限、配额和生产 HTML 检查，`build` 为每个 surface 生成独立的自包含 HTML，`pack` 则完成类型检查、构建、完整性、可选签名、确定性 ZIP 与生成后复检。真实 PaTab 开发宿主仍是本地 Web 环境，MV3 扩展与最终 ZIP 重新导入仍是发布前必须进行的验收。
 
 ## 项目结构
 
@@ -102,11 +102,15 @@ surface 启动时可读取组件 ID、实例 ID、组件版本、API 版本、su
 
 `network.fetch` 不携带浏览器 Cookie，固定使用无凭据请求、无 referrer、10 秒超时、2 MiB 响应上限并拒绝任何重定向。不要请求 localhost、裸 IP、带凭据 URL、危险端口，或设置 Cookie、Host、Origin、Referer、`Proxy-*`、`Sec-*` 等头。Authorization 可在单次请求中显式传入，但绝不能写入日志、UI 或 ZIP。
 
-## 本地模拟器
+## 本地真实 PaTab 开发宿主
 
-运行 `pnpm dev` 后，模拟器会把 source/HMR 仅提供给 opaque `sandbox="allow-scripts"` iframe，并提供 surface、尺寸、浅/深色、`zh-CN` / `en-US`、variant、reduced-motion 与 API Mock 控制。模拟器放宽 localhost/HMR 只是开发便利，生产 `check` 与 `pack` 会拒绝这些资源进入 ZIP。
+运行 `pnpm dev` 后，CLI 默认在 loopback 端口启动并打开真实 PaTab 页面。当前 Manifest 会自动安装到随机会话数据库，默认尺寸与 variant 的单个实例通过真实 launcher action 放入主屏；刷新同一页面不会重复添加。页面顶部会显示组件 ID、版本和“开发 HMR 不等于生产校验”的提示。
 
-在模拟器中至少验证：每个声明 surface、每个支持尺寸、语言与主题切换、reduced-motion、必要/可选权限拒绝、storage 与 variant 生命周期。随后将 ZIP 在真实 PaTab Web 与 MV3 扩展中分别重新导入。
+组件仍运行在 opaque `sandbox="allow-scripts"` iframe 中，SDK 请求继续经过生产 SandboxAdapter、握手、Capability Broker、权限、频率与体积限制。surface 入口被标记为 Vite HMR 边界，源码保存后只更新组件 iframe，不刷新 PaTab 外壳或重新打包 ZIP。
+
+开发会话使用随机 launcher key、启动安全 key 与 IndexedDB 名称，不读取或写入 `patab:v1` 和 `patab-custom-components`。服务只接受 `127.0.0.1`、`localhost` 或 `::1`；默认浏览器打开可用 `--no-open` 关闭，显式端口用 `--port` 设置。新的 CLI 进程会创建新的隔离会话，不能恢复上一进程的测试数据。
+
+开发 CSP 只额外允许当前精确 loopback HTTP/WebSocket 来源以承载 Vite 模块和 HMR，不会放宽生产 CSP。开发完成后仍应运行 `check` 与 `pack`，并分别在生产 Web 与 MV3 扩展中重新导入 ZIP。
 
 ## 打包、确定性与签名
 

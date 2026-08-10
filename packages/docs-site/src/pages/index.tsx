@@ -93,8 +93,8 @@ const terminalLines: {prompt?: string; command?: string; comment?: string; outpu
   {prompt: '$', command: 'pnpm dev'},
   {
     output: translate({
-      id: 'home.terminal.output.simulator',
-      message: '  ➜ 模拟器: http://127.0.0.1:5174/__patab_widget_simulator__',
+      id: 'home.terminal.output.devHost',
+      message: '  ➜ PaTab 开发宿主: http://127.0.0.1:5174/__patab_dev__/',
     }),
   },
   {

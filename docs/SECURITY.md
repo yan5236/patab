@@ -38,7 +38,8 @@
 - 错误界面只能显示稳定错误分类以及安全 ZIP 相对路径或 Manifest JSON Pointer；不得显示 ZIP 正文、本机路径、原始异常、密钥或签名材料。
 - `patab-widget check`、`inspect` 与 `pack` 必须复用同一 SDK Schema 和共享包验证链；pack 在任何失败前后删除目标输出，强制执行项目 type-check、生产 surface 自包含校验、完整性与生成后 inspect，且不提供跳过校验的 `--force`。确定性 ZIP 固定排序、压缩级别和 ZIP 允许的最早 DOS 时间，不能写入当前时间。
 - `keygen` 默认把 AES-256-CBC 口令加密的 Ed25519 PKCS#8 私钥写到项目目录外；口令只能来自无回显交互终端或受保护 CI 环境变量。解锁、签名或验签失败必须中断 pack，不能降级为未签名包，也不得在默认报告中输出口令、私钥、本机路径或底层加密异常。
-- 开发模拟器的 Vite CORS 仅向 opaque sandbox 必需的 `Origin: null` 回显，并默认绑定 `127.0.0.1`；该例外只用于读取本机开发源码与 HMR client，不改变生产 surface CSP、Runtime Broker 或网络权限规则。
+- 真实 PaTab 开发宿主只绑定明确 loopback，使用不少于 128 bit 的随机 session/token；token 仅经 fragment 进入页面、立即从地址栏清除，并以 Bearer 访问禁缓存的 descriptor、surface 与声明素材。CLI 输出和固定错误不得包含 token、本机路径或源码。
+- 开发 surface 仍为 opaque `sandbox="allow-scripts"`，且开发 CSP 只允许当前精确 loopback HTTP/WebSocket 与 CLI 注入的随机 Vite base。launcher、启动安全状态和组件 IndexedDB 都使用会话命名空间，不读取 `patab:v1` 或 `patab-custom-components`；普通 Web/MV3 产物必须拒绝开发入口、Vite client、会话端点与 token 处理代码。
 - 必需权限和必需网络来源均须用户明确确认；签名无效或发布者密钥变化时禁止安装。授权与包文件只经 `useCustomComponentStore` 调用 Repository 持久化。
 - 同 ID 更新只继承新旧 Manifest 交集中的既有 grant；新增权限或精确 origin 必须保持未授权并重新审查。更新前只写 staged 包与快照；migration/离屏健康均复用 sandbox Runtime 且不开放 UI、todos、network、channel 或外链，migration 仅能访问自身 staged storage，单实例最长五秒。最终 activeVersion、instanceData 与 grant 必须在一个 IndexedDB 事务切换；失败只清 staged 内容并保留旧包、旧数据、旧授权及一个上一成功版本。
 - 待办 Capability 每次调用都按 `todos.read/create/update/delete` 精确校验动态 grant；只能返回字段受限的复制 DTO。变化事件仅含变化类型与公开 ID，投递前再次检查 `todos.read`，撤销授权后不得继续泄露待办内容或变化。

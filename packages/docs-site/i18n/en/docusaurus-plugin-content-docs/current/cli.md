@@ -26,17 +26,18 @@ Running with no arguments prints help and exits with code 1; `patab-widget help`
 | `--root 目录` | all | Widget project root directory | Current working directory |
 | `--host 地址` | `dev` | Listen address | `127.0.0.1` |
 | `--port 端口` | `dev` | Listen port (1–65535) | `5174` (strictPort; fails if occupied) |
+| `--no-open` | `dev` | Start without opening a browser | Opens by default |
 | `--out 文件` | `pack` | Output ZIP path (relative to project root) | `dist/<id>-<version>.patab.zip` |
 | `--sign 私钥` | `pack` | PKCS#8 PEM private key path (relative to project root) | Unsigned |
 | `--key-out 文件` | `keygen` | Private key output path | `.patab-widget-keys/` outside the project |
 
-## dev — Local Simulator
+## dev — Real PaTab Development Host
 
 ```bash
-patab-widget dev [--root 目录] [--host 地址] [--port 端口]
+patab-widget dev [--root 目录] [--host loopback] [--port 端口] [--no-open]
 ```
 
-Starts the local simulator and prints the debug URL (default `http://127.0.0.1:5174/__patab_widget_simulator__`). Surfaces run in a `sandbox="allow-scripts"` iframe identical to production, and the SDK completes the same MessagePort handshake with the host via a bridge script; the left panel can switch surface/size/variant/theme/locale and mock confirm, network, and toast. Ctrl+C to exit. See [Local Debugging and Testing](./guide/testing.md).
+Starts the real PaTab development host bundled with the CLI and automatically places the current widget. Surfaces remain in `sandbox="allow-scripts"` iframes, and SDK calls pass through the production SandboxAdapter and Capability Broker. Vite HMR updates the widget surface without replacing the PaTab shell. Launcher, safety, and component data use a random isolated session, and only explicit loopback hosts are accepted. Ctrl+C to exit. See [Local Debugging and Testing](./guide/testing.md).
 
 ## check — Validate the Project
 

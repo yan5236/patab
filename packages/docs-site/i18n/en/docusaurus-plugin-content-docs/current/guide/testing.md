@@ -4,31 +4,29 @@ sidebar_position: 6
 
 # Local Debugging and Testing
 
-## Local Simulator (patab-widget dev)
+## Real PaTab Development Host (patab-widget dev)
 
 ```bash
 pnpm dev    # = patab-widget dev
 ```
 
-Output looks like:
+The CLI opens a browser by default and prints a token-free URL:
 
 ```text
-模拟器已启动：http://127.0.0.1:5174/__patab_widget_simulator__
+PaTab 开发宿主已启动：http://127.0.0.1:5174/__patab_dev__/
 ```
 
-The simulator page has two parts:
+The page is the real PaTab shell built from the same source as the website. The current widget is placed with its default size and variant; dragging, resizing, menus, detail/settings surfaces, theme, language, SandboxAdapter, and Capability Broker use production behavior. Vite updates the surface entry without refreshing the PaTab shell.
 
-- **Right side**: the component surface runs in the same `sandbox="allow-scripts"` iframe as in production, obtaining the same `MessagePort` handshake as the real host via an injected bridge script — the SDK code connects without any changes.
-- **Left control panel**: switch the surface, tile size, variant, theme (light/dark), language, and reduced-motion preference; mock `ui.confirm` results and `network.fetch` responses (panel JSON); view the `ui.toast` log.
-
-The simulator is based on the Vite dev server with instant hot reload on source changes. Common options:
+Common options:
 
 ```bash
-patab-widget dev --host 0.0.0.0 --port 5200   # 默认 127.0.0.1:5174（strictPort，占用即失败）
+patab-widget dev --host localhost --port 5200
+patab-widget dev --no-open
 ```
 
 :::warning
-The simulator is a purely local environment; it neither needs nor supports connecting to the real PaTab host. Production `check`/`pack` never read the simulator address; the simulator's relaxed loopback access is a development convenience and does not represent real host behavior. To verify real integration, pack the component and re-import the ZIP into PaTab.
+The development host covers real PaTab Web behavior only. Its random session never reads `patab:v1` or `patab-custom-components`, while loopback modules and the HMR CSP remain development-only conveniences. Production `check`/`pack`, ZIP re-import, MV3 sandbox, and optional host-permission validation are still required before release.
 :::
 
 ## Unit Testing (Mock Host)

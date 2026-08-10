@@ -1,6 +1,7 @@
 node_modules
 dist
 dist-extension
+dist-widget-dev-host
 .pnpm-store
 *.tsbuildinfo
 
