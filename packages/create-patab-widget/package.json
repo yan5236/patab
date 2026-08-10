@@ -1,6 +1,6 @@
 {
   "name": "create-patab-widget",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "license": "MIT",
   "description": "PaTab 自定义组件项目脚手架",
   "type": "module",
