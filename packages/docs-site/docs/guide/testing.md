@@ -54,7 +54,7 @@ Mock 宿主可以注入初始 context、权限、存储、待办数据、网络�
 pnpm type-check   # tsc --noEmit
 pnpm test         # vitest run
 pnpm check        # Manifest + surface 构建 + 完整性/配额校验（不写 ZIP）
-pnpm pack         # 强制 type-check + 完整打包 + 生成后自动复检
+pnpm run pack         # 强制 type-check + 完整打包 + 生成后自动复检
 patab-widget inspect dist/<id>-<version>.patab.zip   # 对成品包再独立复检
 ```
 

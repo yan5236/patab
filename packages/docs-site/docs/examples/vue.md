@@ -94,7 +94,7 @@ function save(): void {
 cd examples/vue-widget
 pnpm install
 pnpm dev      # 打开真实 PaTab 开发宿主并自动挂载组件
-pnpm check && pnpm pack
+pnpm check && pnpm run pack
 ```
 
 仓库根的 `scripts/verify-widget-examples.mjs` 会对两个示例依次执行 check/build/确定性 pack 比对/inspect，以及 keygen 签名打包与验签，可作为 CI 集成参考。

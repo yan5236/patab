@@ -106,7 +106,7 @@ const terminalLines: {prompt?: string; command?: string; comment?: string; outpu
   {
     comment: translate({id: 'home.terminal.comment.pack', message: '# 打包为可分发文件'}),
   },
-  {prompt: '$', command: 'pnpm pack'},
+  {prompt: '$', command: 'pnpm run pack'},
   {
     output: translate({
       id: 'home.terminal.output.packed',

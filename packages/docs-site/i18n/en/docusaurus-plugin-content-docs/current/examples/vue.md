@@ -94,7 +94,7 @@ Unit tests are exactly the same as vanilla (Mock Host + vitest). To run locally:
 cd examples/vue-widget
 pnpm install
 pnpm dev      # Open the real PaTab development host and mount the widget
-pnpm check && pnpm pack
+pnpm check && pnpm run pack
 ```
 
 The repo-root `scripts/verify-widget-examples.mjs` runs check/build/deterministic pack comparison/inspect on both examples in sequence, plus keygen-signed packing and signature verification — a useful reference for CI integration.

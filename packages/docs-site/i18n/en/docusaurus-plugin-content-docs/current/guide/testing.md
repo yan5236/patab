@@ -54,7 +54,7 @@ We recommend running the following in order before committing or publishing:
 pnpm type-check   # tsc --noEmit
 pnpm test         # vitest run
 pnpm check        # Manifest + surface build + integrity/quota validation (no ZIP written)
-pnpm pack         # forces type-check + full packaging + automatic re-validation after generation
+pnpm run pack         # forces type-check + full packaging + automatic re-validation after generation
 patab-widget inspect dist/<id>-<version>.patab.zip   # independently re-validate the finished package
 ```
 
