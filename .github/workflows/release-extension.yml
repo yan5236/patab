@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: patab-web/pnpm-lock.yaml
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: 安装依赖
         working-directory: patab-web
