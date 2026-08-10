@@ -53,8 +53,8 @@ jobs:
       - name: 类型检查、单元与集成测试
         working-directory: patab-web
         run: |
-          pnpm type-check
-          pnpm exec vitest run --no-file-parallelism
+          # 先构建 workspace 依赖包（sdk / package / cli 的 types 与 imports 指向 dist 产物），
+          # 再对消费它们的 patab-web 做类型检查与测试
           pnpm --filter @patab/widget-sdk type-check
           pnpm --filter @patab/widget-sdk test
           pnpm --filter @patab/widget-sdk build
@@ -67,6 +67,8 @@ jobs:
           pnpm --filter create-patab-widget type-check
           pnpm --filter create-patab-widget test
           pnpm --filter create-patab-widget build
+          pnpm type-check
+          pnpm exec vitest run --no-file-parallelism
 
       - name: Web 与 MV3 生产构建
         working-directory: patab-web

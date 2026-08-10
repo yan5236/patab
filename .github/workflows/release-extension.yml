@@ -18,7 +18,7 @@ jobs:
       - name: 安装 pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: 10.18.3
 
       - name: 安装 Node.js
         uses: actions/setup-node@v4
@@ -30,6 +30,12 @@ jobs:
       - name: 安装依赖
         working-directory: patab-web
         run: pnpm install --frozen-lockfile
+
+      - name: 构建 workspace 依赖包
+        working-directory: patab-web
+        run: |
+          pnpm --filter @patab/widget-sdk build
+          pnpm --filter @patab/widget-package build
 
       - name: 构建浏览器扩展
         working-directory: patab-web
