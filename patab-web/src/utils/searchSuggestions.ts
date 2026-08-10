@@ -95,6 +95,13 @@ async function fetchBingSuggestionsByText(keyword: string): Promise<string[]> {
   }
 }
 
+/** 在联想列表中循环移动选中项；未选中时向下取首项、向上取末项，列表为空返回 -1 */
+export function moveSuggestionIndex(current: number, delta: number, count: number): number {
+  if (count <= 0) return -1
+  if (current < 0) return delta > 0 ? 0 : count - 1
+  return (current + delta + count) % count
+}
+
 /** 通过必应接口获取搜索联想；扩展版不用远程 script，失败、超时或空关键词时安全返回空数组 */
 export function fetchBingSuggestions(query: string): Promise<string[]> {
   const keyword = query.trim()

@@ -14,6 +14,16 @@
     "compact": "紧凑排列（拖动图标自动让位）",
     "compactHint": "取消则为自由摆放，可在任意空格留空"
   },
+  "backup": {
+    "title": "导入 / 导出配置",
+    "hint": "备份或恢复布局、屏幕、Dock、壁纸与搜索等配置",
+    "export": "导出配置",
+    "import": "导入配置",
+    "importInvalid": "文件无效或已损坏，请选择正确的配置文件。",
+    "confirmTitle": "覆盖现有配置？",
+    "confirmText": "导入将覆盖当前全部配置（布局、屏幕、Dock、壁纸与设置），此操作不可撤销。是否继续？",
+    "confirmImport": "覆盖并导入"
+  },
   "language": {
     "zhCN": "中文",
     "enUS": "English"

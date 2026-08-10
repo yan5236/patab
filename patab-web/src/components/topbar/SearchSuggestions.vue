@@ -5,6 +5,7 @@
  */
 defineProps<{
   suggestions: string[]
+  activeIndex: number
 }>()
 
 const emit = defineEmits<{
@@ -19,10 +20,11 @@ const emit = defineEmits<{
       class="absolute left-0 top-14 z-[70] w-full overflow-hidden rounded-2xl border border-white/55 bg-white/90 p-2 shadow-2xl backdrop-blur-xl"
     >
       <button
-        v-for="suggestion in suggestions"
+        v-for="(suggestion, index) in suggestions"
         :key="suggestion"
         type="button"
         class="block w-full cursor-pointer rounded-xl px-4 py-2.5 text-left text-sm text-neutral-800 transition-colors hover:bg-sky-50"
+        :class="{ 'bg-neutral-100': index === activeIndex }"
         @mousedown.prevent
         @click="emit('pick', suggestion)"
       >

@@ -14,6 +14,16 @@
     "compact": "Compact layout (icons make room while dragging)",
     "compactHint": "Turn off for free placement with empty grid spaces"
   },
+  "backup": {
+    "title": "Import / Export Config",
+    "hint": "Back up or restore layout, screens, dock, wallpaper, search and other settings",
+    "export": "Export",
+    "import": "Import",
+    "importInvalid": "The file is invalid or corrupted. Choose a valid config file.",
+    "confirmTitle": "Overwrite current config?",
+    "confirmText": "Importing will overwrite all current config (layout, screens, dock, wallpaper and settings). This cannot be undone. Continue?",
+    "confirmImport": "Overwrite and import"
+  },
   "language": {
     "zhCN": "中文",
     "enUS": "English"

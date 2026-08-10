@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { extractBingSuggestions, parseBingJsonpText } from '@/utils/searchSuggestions'
+import {
+  extractBingSuggestions,
+  moveSuggestionIndex,
+  parseBingJsonpText,
+} from '@/utils/searchSuggestions'
 
 describe('searchSuggestions 搜索联想工具', () => {
   it('遍历多个必应分组提取联想词', () => {
@@ -64,5 +68,27 @@ describe('searchSuggestions 搜索联想工具', () => {
     expect(parseBingJsonpText('')).toBeNull()
     expect(parseBingJsonpText('not jsonp')).toBeNull()
     expect(parseBingJsonpText('cb({bad json});')).toBeNull()
+  })
+})
+
+describe('moveSuggestionIndex 键盘导航选中项', () => {
+  it('未选中时向下取首项、向上取末项', () => {
+    expect(moveSuggestionIndex(-1, 1, 3)).toBe(0)
+    expect(moveSuggestionIndex(-1, -1, 3)).toBe(2)
+  })
+
+  it('在列表内向下或向上移动', () => {
+    expect(moveSuggestionIndex(1, 1, 3)).toBe(2)
+    expect(moveSuggestionIndex(1, -1, 3)).toBe(0)
+  })
+
+  it('到达边界时循环到另一端', () => {
+    expect(moveSuggestionIndex(2, 1, 3)).toBe(0)
+    expect(moveSuggestionIndex(0, -1, 3)).toBe(2)
+  })
+
+  it('列表为空时返回 -1', () => {
+    expect(moveSuggestionIndex(-1, 1, 0)).toBe(-1)
+    expect(moveSuggestionIndex(0, 1, 0)).toBe(-1)
   })
 })

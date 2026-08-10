@@ -8,7 +8,7 @@ import { Search } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { useLauncherStore } from '@/stores/launcher'
 import { buildSearchUrl } from '@/utils/searchEngines'
-import { fetchBingSuggestions } from '@/utils/searchSuggestions'
+import { fetchBingSuggestions, moveSuggestionIndex } from '@/utils/searchSuggestions'
 import GlassPanel from '@/components/common/GlassPanel.vue'
 import SearchEnginePicker from '@/components/topbar/SearchEnginePicker.vue'
 import SearchSuggestions from '@/components/topbar/SearchSuggestions.vue'
@@ -18,6 +18,7 @@ const { t } = useI18n()
 const keyword = ref('')
 const suggestions = ref<string[]>([])
 const suggestionsOpen = ref(false)
+const activeSuggestionIndex = ref(-1)
 
 const engines = computed(() => launcher.settings.searchEngines)
 const engine = computed(
@@ -32,6 +33,7 @@ let suggestRequestId = 0
 function closeSuggestions() {
   suggestionsOpen.value = false
   suggestions.value = []
+  activeSuggestionIndex.value = -1
 }
 
 /** 防抖请求必应联想词，旧请求返回时自动丢弃 */
@@ -50,6 +52,7 @@ function scheduleSuggestions(query: string) {
     if (requestId !== suggestRequestId) return
     suggestions.value = nextSuggestions
     suggestionsOpen.value = nextSuggestions.length > 0
+    activeSuggestionIndex.value = -1
   }, 250)
 }
 
@@ -70,6 +73,26 @@ function pickSuggestion(suggestion: string) {
   keyword.value = suggestion
   closeSuggestions()
   submit(suggestion)
+}
+
+/** 上下方向键在联想列表中循环移动选中项，键盘选中优先于鼠标悬停 */
+function moveActiveSuggestion(delta: number) {
+  if (!suggestionsOpen.value) return
+  activeSuggestionIndex.value = moveSuggestionIndex(
+    activeSuggestionIndex.value,
+    delta,
+    suggestions.value.length,
+  )
+}
+
+/** 输入框回车：有键盘选中项时搜索该联想词，否则按输入内容搜索 */
+function submitFromInput() {
+  const active = suggestions.value[activeSuggestionIndex.value]
+  if (suggestionsOpen.value && active) {
+    pickSuggestion(active)
+    return
+  }
+  submit()
 }
 
 watch(keyword, scheduleSuggestions)
@@ -97,7 +120,10 @@ onBeforeUnmount(() => clearTimeout(suggestTimer))
       class="theme-text h-full min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[var(--theme-muted)] disabled:cursor-not-allowed disabled:opacity-60"
       @focus="scheduleSuggestions(keyword)"
       @blur="suggestionsOpen = false"
-      @keydown.enter="submit()"
+      @keydown.enter="submitFromInput()"
+      @keydown.down.prevent="moveActiveSuggestion(1)"
+      @keydown.up.prevent="moveActiveSuggestion(-1)"
+      @keydown.esc="closeSuggestions()"
     >
 
     <button
@@ -112,6 +138,7 @@ onBeforeUnmount(() => clearTimeout(suggestTimer))
     <SearchSuggestions
       v-if="suggestionsOpen"
       :suggestions="suggestions"
+      :active-index="activeSuggestionIndex"
       @pick="pickSuggestion"
     />
   </GlassPanel>

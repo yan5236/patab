@@ -9,7 +9,7 @@ const FOOTER_LINKS = [
   { label: "安装教程", href: "/install/" },
   { label: "用户协议", href: "/user-agreement/" },
   { label: "隐私政策", href: "/privacy/" },
-  { label: "文档", href: "/docs/" },
+  { label: "文档", href: "https://patab-docs.nanhaiblog.top/" },
   { label: "更新日志", href: "/changelog/" },
   { label: "开放源代码许可", href: "/open-source-licenses/" },
   { label: "反馈建议", href: LINKS.feedback },
