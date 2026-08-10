@@ -34,7 +34,7 @@ Widgets **never enter the host application**: third-party code runs in a `sandbo
 
 ## Documentation Map
 
-- [Getting Started](./getting-started.md): create, debug, package, and install your first widget with the scaffolder
+- [Getting Started](./getting-started.mdx): create, debug, package, and install your first widget with the scaffolder
 - [Development Guide](./guide/project-structure.md): project structure, Manifest, lifecycle, capabilities, theming and i18n, local debugging and testing
 - [Widget SDK Reference](./sdk/connection.md): all APIs, events, types, and error codes of `@patab/widget-sdk`
 - [CLI Reference](./cli.md): all commands and options of `patab-widget`

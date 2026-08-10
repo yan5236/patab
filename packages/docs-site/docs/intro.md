@@ -34,7 +34,7 @@ PaTab 是一个本地优先的浏览器新标签页工作台。除了内置的�
 
 ## 文档地图
 
-- [快速开始](./getting-started.md)：用脚手架创建、调试、打包并安装你的第一个组件
+- [快速开始](./getting-started.mdx)：用脚手架创建、调试、打包并安装你的第一个组件
 - [开发指南](./guide/project-structure.md)：项目结构、Manifest、生命周期、能力、主题与多语言、本地调试与测试
 - [Widget SDK 参考](./sdk/connection.md)：`@patab/widget-sdk` 全部 API、事件、类型与错误码
 - [CLI 参考](./cli.md)：`patab-widget` 的全部命令与选项

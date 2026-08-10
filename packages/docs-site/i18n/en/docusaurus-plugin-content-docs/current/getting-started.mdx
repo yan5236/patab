@@ -2,6 +2,9 @@
 sidebar_position: 2
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Getting Started
 
 This guide walks you through creating, debugging, packaging, and installing your first PaTab widget in a few minutes.
@@ -9,15 +12,42 @@ This guide walks you through creating, debugging, packaging, and installing your
 ## Prerequisites
 
 - Node.js `^22.18.0 || >=24.12.0`
-- Any package manager (npm / pnpm / yarn all work)
+- Any package manager (npm / pnpm / yarn / bun)
 
 ## 1. Create a Project with the Scaffolder
 
-```bash
-npm create patab-widget@latest my-widget
-```
+Use your preferred package manager to invoke the scaffolder — all four commands invoke the same one:
 
-You can also use `pnpm create patab-widget my-widget` or `npx create-patab-widget my-widget` — all three invoke the same scaffolder.
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm">
+
+  ```bash
+  npm create patab-widget@latest my-widget
+  ```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  pnpm create patab-widget my-widget
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+  ```bash
+  yarn create patab-widget my-widget
+  ```
+
+  </TabItem>
+  <TabItem value="bun" label="bun">
+
+  ```bash
+  bun create patab-widget my-widget
+  ```
+
+  </TabItem>
+</Tabs>
 
 The interactive terminal asks for a template:
 
@@ -30,21 +60,81 @@ The interactive terminal asks for a template:
 
 You can also skip the prompt directly with `--template` (in non-interactive environments such as CI this option is **required**):
 
-```bash
-npx create-patab-widget my-widget --template vanilla-ts
-```
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm">
+
+  ```bash
+  npm create patab-widget@latest my-widget --template vanilla-ts
+  ```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  pnpm create patab-widget my-widget --template vanilla-ts
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+  ```bash
+  yarn create patab-widget my-widget --template vanilla-ts
+  ```
+
+  </TabItem>
+  <TabItem value="bun" label="bun">
+
+  ```bash
+  bun create patab-widget my-widget --template vanilla-ts
+  ```
+
+  </TabItem>
+</Tabs>
 
 The scaffolder only generates files and does not install dependencies automatically. It refuses to overwrite an existing target directory.
 
 ## 2. Install Dependencies and Start the Local Simulator
 
-```bash
-cd my-widget
-pnpm install
-pnpm dev
-```
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm">
 
-`pnpm dev` actually runs `patab-widget dev`, which starts the local simulator and prints:
+  ```bash
+  cd my-widget
+  npm install
+  npm run dev
+  ```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  cd my-widget
+  pnpm install
+  pnpm dev
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+  ```bash
+  cd my-widget
+  yarn
+  yarn dev
+  ```
+
+  </TabItem>
+  <TabItem value="bun" label="bun">
+
+  ```bash
+  cd my-widget
+  bun install
+  bun dev
+  ```
+
+  </TabItem>
+</Tabs>
+
+`dev` actually runs `patab-widget dev`, which starts the local simulator and prints:
 
 ```text
 模拟器已启动：http://127.0.0.1:5174/__patab_widget_simulator__
@@ -52,22 +142,81 @@ pnpm dev
 
 Open that address in a browser to see the simulator: on the right is the widget surface running in a `sandbox="allow-scripts"` iframe, and the left control panel lets you switch surfaces, sizes, variants, theme, language, and reduced-motion preference, as well as mock confirm dialogs, network responses, and toast logs. The simulator is based on the Vite dev server, so source changes hot-reload instantly.
 
-:::warning Simulator ≠ Direct Host Connection
+:::warning[Simulator ≠ Direct Host Connection]
+
 The PaTab host has **no** debug URL entry point — during development you do not paste a local address into PaTab. The simulator is a standalone local debugging environment; to verify real integration, package the widget and re-import it into PaTab as described below.
+
 :::
 
 ## 3. Validate and Build
 
-```bash
-pnpm check   # Validate Manifest + build all surfaces + integrity/quota checks (no ZIP written)
-pnpm build   # Only verify that each surface builds into self-contained HTML (no artifacts written to disk)
-```
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm">
+
+  ```bash
+  npm run check   # Validate Manifest + build all surfaces + integrity/quota checks (no ZIP written)
+  npm run build   # Only verify that each surface builds into self-contained HTML (no artifacts written to disk)
+  ```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  pnpm check   # Validate Manifest + build all surfaces + integrity/quota checks (no ZIP written)
+  pnpm build   # Only verify that each surface builds into self-contained HTML (no artifacts written to disk)
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+  ```bash
+  yarn check   # Validate Manifest + build all surfaces + integrity/quota checks (no ZIP written)
+  yarn build   # Only verify that each surface builds into self-contained HTML (no artifacts written to disk)
+  ```
+
+  </TabItem>
+  <TabItem value="bun" label="bun">
+
+  ```bash
+  bun run check   # Validate Manifest + build all surfaces + integrity/quota checks (no ZIP written)
+  bun run build   # Only verify that each surface builds into self-contained HTML (no artifacts written to disk)
+  ```
+
+  </TabItem>
+</Tabs>
 
 ## 4. Package into a Distributable File
 
-```bash
-pnpm pack
-```
+<Tabs groupId="package-manager">
+  <TabItem value="npm" label="npm">
+
+  ```bash
+  npm run pack
+  ```
+
+  </TabItem>
+  <TabItem value="pnpm" label="pnpm">
+
+  ```bash
+  pnpm pack
+  ```
+
+  </TabItem>
+  <TabItem value="yarn" label="yarn">
+
+  ```bash
+  yarn pack
+  ```
+
+  </TabItem>
+  <TabItem value="bun" label="bun">
+
+  ```bash
+  bun run pack
+  ```
+
+  </TabItem>
+</Tabs>
 
 `pack` first force-runs the project's `type-check` (`tsc --noEmit`), then builds and inlines all surfaces, generates the integrity manifest, runs full package validation, and finally writes a deterministic ZIP:
 

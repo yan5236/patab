@@ -1,7 +1,7 @@
 {
   "name": "@patab/widget-package",
-  "version": "1.0.0",
-  "private": true,
+  "version": "1.0.1",
+  "license": "MIT",
   "description": "PaTab 自定义组件 ZIP 与完整性共享基础包",
   "type": "module",
   "types": "./dist/index.d.ts",

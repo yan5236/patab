@@ -325,5 +325,89 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "home.features.stack.title": {
+    "message": "Any Tech Stack"
+  },
+  "home.features.stack.description": {
+    "message": "Plain JS, Vue, or any frontend framework you like — widgets are bundled as standalone artifacts running in a stack-agnostic sandbox."
+  },
+  "home.features.sdk.title": {
+    "message": "Widget SDK"
+  },
+  "home.features.sdk.description": {
+    "message": "Talk to the host through @patab/widget-sdk: read/write local storage, react to theme and locale changes — just a few lines of code."
+  },
+  "home.features.hmr.title": {
+    "message": "Hot-Reload Debugging"
+  },
+  "home.features.hmr.description": {
+    "message": "@patab/widget-cli ships a dev server that reloads on save. Paste the debug URL into PaTab and preview every change live."
+  },
+  "home.features.distribute.title": {
+    "message": "One-Click Distribution"
+  },
+  "home.features.distribute.description": {
+    "message": "Pack into a single .patab.zip file and share it directly with other PaTab users — no store, no review process."
+  },
+  "home.terminal.comment.create": {
+    "message": "# Create a widget project in one command"
+  },
+  "home.terminal.comment.dev": {
+    "message": "# Enter the project and start the dev server"
+  },
+  "home.terminal.output.simulator": {
+    "message": "  ➜ Simulator: http://127.0.0.1:5174/__patab_widget_simulator__"
+  },
+  "home.terminal.output.loaded": {
+    "message": "  ➜ Sandbox loaded, changes apply instantly…"
+  },
+  "home.terminal.comment.pack": {
+    "message": "# Pack into a distributable file"
+  },
+  "home.terminal.output.packed": {
+    "message": "  ✓ Packed: dist/my-widget-0.1.0.patab.zip"
+  },
+  "home.hero.badge": {
+    "message": "Widget Development Docs"
+  },
+  "home.hero.title.line1": {
+    "message": "Build Your Own Widgets"
+  },
+  "home.hero.title.line2": {
+    "message": "for the PaTab New Tab"
+  },
+  "home.hero.subtitle.line1": {
+    "message": "Write widgets in any frontend stack and drop them into a local-first browser workbench."
+  },
+  "home.hero.subtitle.line2": {
+    "message": "Develop, debug, pack, distribute — one command chain does it all."
+  },
+  "home.hero.cta.primary": {
+    "message": "Quick Start · 5 min"
+  },
+  "home.hero.cta.secondary": {
+    "message": "Explore the Platform"
+  },
+  "home.features.title": {
+    "message": "A Toolchain Built for Developers"
+  },
+  "home.features.subtitle": {
+    "message": "From scaffolding to distribution, every step has a ready-made tool."
+  },
+  "home.terminal.title": {
+    "message": "Four Commands from Zero to Distributable"
+  },
+  "home.terminal.subtitle": {
+    "message": "No tedious configuration — the scaffold prepares everything for you."
+  },
+  "home.terminal.cta": {
+    "message": "Read the Full Quick Start Guide"
+  },
+  "home.layout.title": {
+    "message": "Home"
+  },
+  "home.layout.description": {
+    "message": "PaTab custom widget development docs: build new-tab widgets with any tech stack"
   }
 }
