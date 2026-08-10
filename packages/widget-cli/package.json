@@ -1,6 +1,6 @@
 {
   "name": "@patab/widget-cli",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "license": "MIT",
   "description": "PaTab 自定义组件的校验、构建、打包与签名命令行工具",
   "type": "module",
