@@ -77,7 +77,12 @@ jobs:
           pnpm build:extension
 
       - name: 官方示例、确定性 ZIP 与签名验证
-        run: node scripts/verify-widget-examples.mjs
+        run: |
+          # install 时 widget-cli 尚未构建，dist/bin.js 缺失导致示例的 bin 链接创建失败；
+          # cli 构建完成后补建链接，否则 pnpm exec patab-widget 找不到可执行文件
+          pnpm --dir examples/vanilla-widget rebuild @patab/widget-cli
+          pnpm --dir examples/vue-widget rebuild @patab/widget-cli
+          node scripts/verify-widget-examples.mjs
 
       - name: 官方示例的网页导入契约
         working-directory: patab-web
