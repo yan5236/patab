@@ -74,6 +74,13 @@ function createPackageJson(slug: string, template: WidgetTemplate): string {
   }, null, 2)}\n`
 }
 
+/** 按模板生成环境类型声明，避免零框架 Vanilla 项目被错误绑定到 Vue 类型依赖。 */
+function createEnvironmentDeclarations(template: WidgetTemplate): string {
+  const viteClientReference = '/// <reference types="vite/client" />\n'
+  if (template === 'vanilla-ts') return viteClientReference
+  return `${viteClientReference}declare module '*.vue' { import type { Component } from 'vue'; const component: Component; export default component }\n`
+}
+
 /** 生成同一 surface 的 Vanilla HTML 入口；三个 surface 均独立构建，避免 modal 代码强制进入 widget 常驻包。 */
 function createVanillaSurfaceHtml(surface: string): string {
   return `<!doctype html>\n<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${surface}</title></head><body><main id="app"></main><script type="module" src="./${surface}.ts"></script></body></html>\n`
@@ -127,7 +134,7 @@ export async function createWidgetProject(options: CreateWidgetProjectOptions): 
     ['schema/patab.manifest.schema.json', `${JSON.stringify(PATAB_WIDGET_MANIFEST_V1_SCHEMA, null, 2)}\n`],
     ['package.json', createPackageJson(slug, options.template)],
     ['tsconfig.json', '{"compilerOptions":{"target":"ES2022","module":"ESNext","moduleResolution":"bundler","strict":true,"noEmit":true},"include":["src"]}\n'],
-    ['src/env.d.ts', "/// <reference types=\"vite/client\" />\ndeclare module '*.vue' { import type { Component } from 'vue'; const component: Component; export default component }\n"],
+    ['src/env.d.ts', createEnvironmentDeclarations(options.template)],
     ['src/widget.spec.ts', "import { expect, it } from 'vitest'\nimport { createWidgetMockHost } from '@patab/widget-sdk/testing'\n\n/** 验证组件可以通过公开 SDK Mock 读取实例存储。 */\nit('读取 Mock 存储', async () => { const host = createWidgetMockHost({ storage: { greeting: 'PaTab' } }); await expect(host.api.storage.get('greeting')).resolves.toEqual({ found: true, value: 'PaTab' }); host.close() })\n"],
     ['assets/icon.png', PLACEHOLDER_PNG],
     ['assets/screenshots/preview.png', PLACEHOLDER_PNG],

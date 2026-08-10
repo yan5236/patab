@@ -13,7 +13,7 @@ pnpm install
 pnpm dev
 pnpm check
 pnpm build
-pnpm pack
+pnpm run pack
 ```
 
 脚手架提供 `vue-ts` 与 `vanilla-ts` 两种模板。两者的最终产物契约相同，因此也可以使用其他 Vite 框架；CLI 只验证最终 ZIP，不根据源码框架作特殊放行。

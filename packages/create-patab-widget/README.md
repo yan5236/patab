@@ -41,7 +41,7 @@ cd my-widget
 pnpm install
 pnpm dev    # 本地 HMR 沙箱模拟器
 pnpm check  # Manifest 与资源校验
-pnpm pack   # 类型检查 + 构建 + 校验 + 确定性 ZIP 打包
+pnpm run pack   # 类型检查 + 构建 + 校验 + 确定性 ZIP 打包
 ```
 
 最终的 `.patab.zip` 通过 PaTab 的"添加自定义组件"入口导入安装。

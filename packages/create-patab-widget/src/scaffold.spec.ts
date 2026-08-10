@@ -40,6 +40,7 @@ describe('create-patab-widget 脚手架', () => {
     await expect(access(join(target, 'src', 'surfaces', 'settings.ts'))).resolves.toBeUndefined()
     await expect(access(join(target, 'src', 'widget.spec.ts'))).resolves.toBeUndefined()
     await expect(readFile(join(target, 'assets', 'icon.png'))).resolves.toHaveLength(70)
+    await expect(readFile(join(target, 'src', 'env.d.ts'), 'utf8')).resolves.toBe('/// <reference types="vite/client" />\n')
     await expect(access(join(target, 'vite.config.ts'))).rejects.toMatchObject({ code: 'ENOENT' })
   })
 
@@ -54,6 +55,7 @@ describe('create-patab-widget 脚手架', () => {
     await expect(readFile(join(target, 'src', 'surfaces', 'widget.vue'), 'utf8')).resolves.toContain('createWidgetApi')
     await expect(readFile(join(target, 'src', 'surfaces', 'detail.vue'), 'utf8')).resolves.toContain('context')
     await expect(readFile(join(target, 'src', 'surfaces', 'settings.vue'), 'utf8')).resolves.toContain('保存示例')
+    await expect(readFile(join(target, 'src', 'env.d.ts'), 'utf8')).resolves.toContain("declare module '*.vue'")
   })
 
   /** 验证目标目录已存在时失败且不覆盖，保护用户已创建但尚未安装依赖的项目。 */
