@@ -1,0 +1,183 @@
+/*
+ * 语义类规则镜像 packages/widget-sdk/src/theme.css（限定在 .demo 作用域内，避免污染文档站全局样式）。
+ * 一致性由 scripts/verify-theme-css-showcase.mjs 校验：theme.css 中的每个契约类都必须出现在本文件。
+ */
+
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--patab-section-border);
+  border-radius: 12px;
+  background: var(--patab-section-bg);
+  color: var(--pt-text);
+  font-family: var(--pt-font-sans);
+}
+
+/* ---- 以下规则与 theme.css 一一对应，仅多了 .demo 作用域前缀 ---- */
+
+.demo :global(.pt-surface) {
+  color: var(--pt-text);
+  background: var(--pt-surface);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-md);
+  box-shadow: var(--pt-shadow);
+}
+
+.demo :global(.pt-surface-strong) {
+  color: var(--pt-text);
+  background: var(--pt-surface-strong);
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-lg);
+  box-shadow: var(--pt-shadow);
+}
+
+.demo :global(.pt-text) {
+  color: var(--pt-text);
+}
+
+.demo :global(.pt-text-strong) {
+  color: var(--pt-text-strong);
+}
+
+.demo :global(.pt-text-muted) {
+  color: var(--pt-text-muted);
+}
+
+.demo :global(.pt-button),
+.demo :global(.pt-input) {
+  border: 1px solid var(--pt-border);
+  border-radius: var(--pt-radius-sm);
+  transition:
+    background-color var(--pt-motion-duration) var(--pt-motion-easing),
+    border-color var(--pt-motion-duration) var(--pt-motion-easing),
+    color var(--pt-motion-duration) var(--pt-motion-easing),
+    transform var(--pt-motion-duration) var(--pt-motion-easing);
+}
+
+.demo :global(.pt-button) {
+  color: var(--pt-accent-contrast);
+  background: var(--pt-accent);
+  cursor: pointer;
+}
+
+.demo :global(.pt-button:hover) {
+  background: var(--pt-accent-hover);
+}
+
+.demo :global(.pt-button:active) {
+  transform: translateY(1px);
+}
+
+.demo :global(.pt-input) {
+  box-sizing: border-box;
+  color: var(--pt-text);
+  background: var(--pt-input);
+}
+
+.demo :global(.pt-focus-ring:focus-visible),
+.demo :global(.pt-button:focus-visible),
+.demo :global(.pt-input:focus-visible) {
+  outline: 2px solid var(--pt-focus-ring);
+  outline-offset: 2px;
+}
+
+.demo :global(.pt-danger) {
+  color: var(--pt-danger);
+}
+
+/* ---- 以下为展示布局专用样式，不属于 SDK 契约 ---- */
+
+.demoBox {
+  padding: 0.9rem 1rem;
+}
+
+.demoBox p {
+  margin: 0;
+}
+
+.demoBox p + p {
+  margin-top: 0.35rem;
+}
+
+.demoButton {
+  align-self: flex-start;
+  padding: 0.45rem 1.1rem;
+  font: inherit;
+}
+
+.demoInput {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  font: inherit;
+}
+
+.demoFocus {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.35rem 0.9rem;
+  border: 1px dashed var(--pt-border);
+  border-radius: var(--pt-radius-sm);
+  cursor: default;
+}
+
+.demoText p {
+  margin: 0;
+}
+
+.demoText p + p {
+  margin-top: 0.25rem;
+}
+
+.panelLabel {
+  display: inline-block;
+  margin-bottom: 0.4rem;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--patab-blue);
+  background: var(--patab-badge-bg);
+  border: 1px solid var(--patab-badge-border);
+}
+
+.panelGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.className {
+  font-size: 0.82rem;
+  margin-bottom: 0.4rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--patab-section-border);
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+.radiusPreview {
+  width: 2.2rem;
+  height: 1.6rem;
+  border: 2px solid var(--patab-blue);
+  background: var(--patab-badge-bg);
+}
+
+.shadowPreview {
+  width: 2.2rem;
+  height: 1.6rem;
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+}
+
+.valueCell {
+  font-size: 0.8rem;
+  word-break: break-all;
+}

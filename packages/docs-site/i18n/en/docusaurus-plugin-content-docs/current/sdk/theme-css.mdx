@@ -2,6 +2,8 @@
 sidebar_position: 5
 ---
 
+import ThemeCssShowcase from '@site/src/components/ThemeCssShowcase';
+
 # theme.css and Theme Tokens
 
 ## Usage
@@ -28,6 +30,16 @@ The stylesheet defines semantic classes on top of the host-injected `--pt-*` tok
 
 :::note
 The above are all the contract classes provided by `theme.css`. The `pt-card`, `pt-title`, and `pt-muted` class names that appear in the official examples are **not** part of the SDK contract (they do not exist in `theme.css`); use contract classes such as `.pt-surface` or define your own styles if you need card styling.
+:::
+
+## Component Style Showcase
+
+The showcase below renders every contract class from `theme.css` and all 20 theme tokens (demo values come from the host fallback theme table, matching the real runtime environment). Hover, active, and focus-ring states are fully interactive:
+
+<ThemeCssShowcase />
+
+:::tip
+The showcase stays in sync with the SDK source: the semantic class rules mirror `packages/widget-sdk/src/theme.css`, and the token values mirror the host's `createFallbackTokens`. Completeness is verified automatically by `pnpm --filter docs-site verify:theme-css`.
 :::
 
 ## Theme Tokens (20)

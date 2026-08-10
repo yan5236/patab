@@ -2,6 +2,8 @@
 sidebar_position: 5
 ---
 
+import ThemeCssShowcase from '@site/src/components/ThemeCssShowcase';
+
 # theme.css 与主题 token
 
 ## 使用方式
@@ -28,6 +30,16 @@ import '@patab/widget-sdk/theme.css'
 
 :::note
 以上是 `theme.css` 提供的全部契约类。官方示例中出现的 `pt-card`、`pt-title`、`pt-muted` 类名**不属于** SDK 契约（`theme.css` 中没有这些类），如需卡片样式请用 `.pt-surface` 等契约类或自行定义。
+:::
+
+## 组件样式展示
+
+下面的展示直接渲染 `theme.css` 的全部契约类与 20 个主题 token（演示取值取自宿主回退主题表，与组件实际运行环境一致），可交互体验 hover、active 与焦点环效果：
+
+<ThemeCssShowcase />
+
+:::tip
+展示内容与 SDK 源码保持同步：语义类规则镜像 `packages/widget-sdk/src/theme.css`，token 取值镜像宿主的 `createFallbackTokens`，由 `pnpm --filter docs-site verify:theme-css` 自动校验完整性。
 :::
 
 ## 主题 token（20 个）

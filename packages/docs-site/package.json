@@ -12,6 +12,7 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
+    "verify:theme-css": "node scripts/verify-theme-css-showcase.mjs",
     "typecheck": "tsc"
   },
   "dependencies": {
