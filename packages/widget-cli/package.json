@@ -21,7 +21,7 @@
   "dependencies": {
     "@patab/widget-package": "workspace:*",
     "@patab/widget-sdk": "workspace:*",
-    "vite": "^8.0.16"
+    "vite": "^8.2.4"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",
